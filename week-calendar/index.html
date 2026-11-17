@@ -341,7 +341,7 @@ h1{font-family:var(--font-d);font-size:clamp(26px,3.2vw,38px);line-height:1.1;ma
   <div id="view-dash" style="display:contents">
   <header>
     <div>
-      <div class="eyebrow">Part 1: how I run the week</div>
+      <div class="eyebrow">How I run the week</div>
       <h1 id="h1">Monday, 9:00 AM. Here's my week.</h1>
     </div>
     <div class="hdr-r">
@@ -1102,7 +1102,7 @@ function msgsView(){
  all.sort((a,b)=>absOf(a.e.d,t(a.e.s))-absOf(b.e.d,t(b.e.s)));
  const n={slack:all.filter(x=>chOf(x.m)==="slack").length,email:all.filter(x=>chOf(x.m)==="email").length};
  const list=all.filter(x=>(MF.ch==="all"||chOf(x.m)===MF.ch)&&(!MF.fire||x.e.tags.includes(MF.fire)));
- let h=`<div class="mvhead"><div><div class="eyebrow">Part 1 · What I send</div><h1>Every message, Monday to Friday</h1>
+ let h=`<div class="mvhead"><div><div class="eyebrow">What I send</div><h1>Every message, Monday to Friday</h1>
   <p>${all.length} messages, each tied to a block in the week. Open any email to read the full draft. ${dataMode==="live"?"Nothing goes out until I mark it Ready.":"All drafts: nothing goes out until I approve it."}</p></div>
   <div class="mvf" role="group" aria-label="Filter messages">
    ${[["all","All",all.length],["slack","Slack",n.slack],["email","Email",n.email]].map(c=>`<button class="fchip" data-ch="${c[0]}" aria-pressed="${MF.ch===c[0]}">${c[1]} ${c[2]}</button>`).join("")}
