@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Investor Dashboard</title>
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="ld.css">
+<style>body{margin:0;background:#F7F6F3}
+.ld-tourbtn{all:unset;cursor:pointer;margin-left:auto;display:inline-flex;align-items:center;border-radius:999px;padding:6px 13px;font:600 13px/1.2 'AppSans',system-ui,sans-serif;background:#121210;color:#F7F6F3}
+.ld-tourbtn:focus-visible{outline:2px solid #0F7A55;outline-offset:2px}
+.kt-block{position:fixed;inset:0;z-index:58;background:transparent}
+.kt-spot{position:fixed;z-index:59;border-radius:12px;pointer-events:none;box-shadow:0 0 0 200vmax rgba(10,10,8,.74);outline:2px solid #2BCA95;outline-offset:0;transition:left .25s ease,top .25s ease,width .25s ease,height .25s ease}
+.tour{position:fixed;z-index:60;width:min(340px,calc(100vw - 24px));background:#FDFCFA;color:#121210;border:1px solid #DEDBD4;border-radius:14px;padding:14px 16px 12px;box-shadow:0 18px 50px rgba(0,0,0,.35);font:14px/1.45 'AppSans',system-ui,sans-serif;color-scheme:light}
+.tour .tn{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#0F7A55;font-weight:700}
+.tour .tt{display:block;font-family:'AppSerif',Georgia,serif;font-size:19px;font-weight:500;line-height:1.2;margin-top:6px}
+.tour p{margin:6px 0 12px;color:#3D3A35}
+.tour .tb{display:flex;gap:6px;align-items:center}
+.tour .sp{flex:1}
+.tour button{all:unset;cursor:pointer;font-weight:600;font-size:13px;padding:7px 13px;border-radius:999px;font-family:'AppSans',system-ui,sans-serif}
+.tour button:focus-visible{outline:2px solid #0F7A55;outline-offset:2px}
+.tour .go{background:#121210;color:#F7F6F3}
+.tour .back{background:#EDEBE6;color:#121210}
+.tour .skip{color:#67635C;padding-left:2px;text-decoration:underline;text-underline-offset:3px}
+@media (prefers-reduced-motion: reduce){.kt-spot{transition:none}}
+</style>
+</head><body>
+<div class="ld" lang="en" data-read>
+<div class="ld-wrap">
+<header id="top">
+  <div class="ld-brand"><span class="ld-pill">Investor dashboard</span><span class="ld-pill soft">Confidential · existing investors</span></div>
+  <p class="ld-eyebrow">Update through <span data-draw="asof" data-source="snapshot" data-field="as_of" data-row="0">—</span> · Draft for CEO review, prepared by Basav Sharma</p>
+  <h1 class="ld-h1">The company is <span data-draw="kv" data-k="customers" data-source="kpi" data-field="now" data-where="id=customers">—</span> customers and <span data-draw="kv" data-k="arr" data-source="kpi" data-field="now" data-where="id=arr">—</span> ARR.</h1>
+  <p class="ld-take">ARR is <span data-draw="dir" data-k="arr">—</span> <b data-draw="kv" data-k="arr" data-source="kpi" data-field="change_pct" data-where="id=arr">—</b> since the <span data-draw="lastmon" data-source="snapshot" data-field="last_update" data-row="0">—</span> update. <b data-draw="kv" data-k="signed" data-source="kpi" data-field="now" data-where="id=signed">—</b> more customers are under contract, and bringing them live is the Q4 priority. Cash of <b data-draw="kv" data-k="cash" data-source="kpi" data-field="now" data-where="id=cash">—</b> covers <b data-draw="kv" data-k="runway" data-source="kpi" data-field="now" data-where="id=runway">—</b> months at today’s burn and <b data-draw="kv" data-k="runway_hires" data-source="kpi" data-field="now" data-where="id=runway_hires">—</b> months once the planned hires join.</p>
+  <p class="ld-status"><span><span class="ld-dot"></span>Refreshes from the source systems each time it opens</span><span>Comparisons are to the last update, <span data-draw="lastupd" data-source="snapshot" data-field="last_update" data-row="0">—</span></span><span>* This version runs on sample numbers (see the foot of the page)</span></p>
+</header>
+<nav class="ld-nav" aria-label="Sections"><a href="#since">Since last update</a><a href="#growth">Growth</a><a href="#product">Product</a><a href="#money">Cash and runway</a><a href="#scorecard">Scorecard</a><a href="#quarter">Quarter</a><a href="#asks">Introductions</a></nav>
+
+<section class="ld-sec" id="since">
+  <h2 class="ld-h2">Since the last update <span class="soft">· 12 numbers</span></h2>
+  <p class="ld-lede">Each card shows where we are now and the change since <span data-draw="lastupd" data-source="snapshot" data-field="last_update" data-row="0">—</span>. Green marks an improvement since the last update.</p>
+  <div class="ld-tiles">
+<div class="ld-tile" id="t-arr"><p class="ld-tl">ARR</p><p class="ld-tv"><span data-draw="kv" data-k="arr" data-source="kpi" data-field="now" data-where="id=arr">—</span></p><p class="ld-td"><span class="chg" data-draw="kv" data-k="arr" data-source="kpi" data-field="change" data-where="id=arr">—</span> since <span data-draw="lastupd" data-source="snapshot" data-field="last_update" data-row="0">—</span></p><p class="ld-tx">Annual recurring revenue: signed monthly subscriptions × 12.</p></div>
+<div class="ld-tile" id="t-customers"><p class="ld-tl">Customers live</p><p class="ld-tv"><span data-draw="kv" data-k="customers" data-source="kpi" data-field="now" data-where="id=customers">—</span></p><p class="ld-td"><span class="chg" data-draw="kv" data-k="customers" data-source="kpi" data-field="change" data-where="id=customers">—</span> since <span data-draw="lastupd" data-source="snapshot" data-field="last_update" data-row="0">—</span></p><p class="ld-tx">Properties where the company answers end users today.</p></div>
+<div class="ld-tile" id="t-signed"><p class="ld-tl">Contracted, going live</p><p class="ld-tv"><span data-draw="kv" data-k="signed" data-source="kpi" data-field="now" data-where="id=signed">—</span></p><p class="ld-td"><span class="chg" data-draw="kv" data-k="signed" data-source="kpi" data-field="change" data-where="id=signed">—</span> since <span data-draw="lastupd" data-source="snapshot" data-field="last_update" data-row="0">—</span></p><p class="ld-tx">Contracts in deployment: phone, system connection and staff training.</p></div>
+<div class="ld-tile" id="t-arr_per_customer"><p class="ld-tl">ARR per customer</p><p class="ld-tv"><span data-draw="kv" data-k="arr_per_customer" data-source="kpi" data-field="now" data-where="id=arr_per_customer">—</span></p><p class="ld-td"><span class="chg" data-draw="kv" data-k="arr_per_customer" data-source="kpi" data-field="change" data-where="id=arr_per_customer">—</span> since <span data-draw="lastupd" data-source="snapshot" data-field="last_update" data-row="0">—</span></p><p class="ld-tx">Rises as customers add products beyond the core product.</p></div>
+<div class="ld-tile" id="t-products"><p class="ld-tl">Products per customer</p><p class="ld-tv"><span data-draw="kv" data-k="products" data-source="kpi" data-field="now" data-where="id=products">—</span></p><p class="ld-td"><span class="chg" data-draw="kv" data-k="products" data-source="kpi" data-field="change" data-where="id=products">—</span> since <span data-draw="lastupd" data-source="snapshot" data-field="last_update" data-row="0">—</span></p><p class="ld-tx">Average number of the company products each live customer uses.</p></div>
+<div class="ld-tile" id="t-nrr"><p class="ld-tl">Net revenue retention</p><p class="ld-tv"><span data-draw="kv" data-k="nrr" data-source="kpi" data-field="now" data-where="id=nrr">—</span></p><p class="ld-td">Logo churn: <span data-draw="kv" data-k="churn" data-source="kpi" data-field="now" data-where="id=churn">—</span> customers lost</p><p class="ld-tx">Revenue from last year’s customers today vs a year ago, upsell included.</p></div>
+<div class="ld-tile" id="t-interactions"><p class="ld-tl">Calls + messages a month</p><p class="ld-tv"><span data-draw="kv" data-k="interactions" data-source="kpi" data-field="now" data-where="id=interactions">—</span></p><p class="ld-td"><span class="chg" data-draw="kv" data-k="interactions" data-source="kpi" data-field="change" data-where="id=interactions">—</span> since <span data-draw="lastupd" data-source="snapshot" data-field="last_update" data-row="0">—</span></p><p class="ld-tx">Handled by the company in the month, all customers.</p></div>
+<div class="ld-tile" id="t-resolved"><p class="ld-tl">Resolved with no staff</p><p class="ld-tv"><span data-draw="kv" data-k="resolved" data-source="kpi" data-field="now" data-where="id=resolved">—</span></p><p class="ld-td"><span class="chg" data-draw="kv" data-k="resolved" data-source="kpi" data-field="change" data-where="id=resolved">—</span> since <span data-draw="lastupd" data-source="snapshot" data-field="last_update" data-row="0">—</span></p><p class="ld-tx">Share of customer requests closed without a person stepping in.</p></div>
+<div class="ld-tile" id="t-margin"><p class="ld-tl">Gross margin</p><p class="ld-tv"><span data-draw="kv" data-k="margin" data-source="kpi" data-field="now" data-where="id=margin">—</span></p><p class="ld-td"><span class="chg" data-draw="kv" data-k="margin" data-source="kpi" data-field="change" data-where="id=margin">—</span> since <span data-draw="lastupd" data-source="snapshot" data-field="last_update" data-row="0">—</span></p><p class="ld-tx">Revenue less voice, LLM, cloud and support costs.</p></div>
+<div class="ld-tile" id="t-burn"><p class="ld-tl">Net burn a month</p><p class="ld-tv"><span data-draw="kv" data-k="burn" data-source="kpi" data-field="now" data-where="id=burn">—</span></p><p class="ld-td"><span class="chg" data-draw="kv" data-k="burn" data-source="kpi" data-field="change" data-where="id=burn">—</span> since <span data-draw="lastupd" data-source="snapshot" data-field="last_update" data-row="0">—</span></p><p class="ld-tx">Cash out less cash in, per month.</p></div>
+<div class="ld-tile" id="t-cash"><p class="ld-tl">Cash</p><p class="ld-tv"><span data-draw="kv" data-k="cash" data-source="kpi" data-field="now" data-where="id=cash">—</span></p><p class="ld-td"><span class="chg" data-draw="kv" data-k="cash" data-source="kpi" data-field="change" data-where="id=cash">—</span> since <span data-draw="lastupd" data-source="snapshot" data-field="last_update" data-row="0">—</span></p><p class="ld-tx">Bank balance at month end.</p></div>
+<div class="ld-tile" id="t-runway"><p class="ld-tl">Runway</p><p class="ld-tv"><span data-draw="kv" data-k="runway" data-source="kpi" data-field="now" data-where="id=runway">—</span> <span class="ld-tl">months</span></p><p class="ld-td"><span class="chg" data-draw="kv" data-k="runway" data-source="kpi" data-field="change" data-where="id=runway">—</span> since <span data-draw="lastupd" data-source="snapshot" data-field="last_update" data-row="0">—</span></p><p class="ld-tx">Months of cash at today’s net burn.</p></div>
+  </div>
+</section>
+
+<section class="ld-sec" id="growth">
+  <h2 class="ld-h2">Growth <span class="soft">· revenue and customers</span></h2>
+  <p class="ld-lede">The plan to Jan 31 is <b data-draw="goal-h" data-source="snapshot" data-field="next_goal_customers" data-row="0">—</b> customers live and <b data-draw="goal-arr" data-source="snapshot" data-field="next_goal_arr_m" data-row="0">—</b> ARR. Most of that is the signed backlog going live, not new sales.</p>
+  <div class="ld-grid2">
+    <div class="ld-card" id="arr-chart"><h3 class="ld-h3">ARR by month</h3><p class="ld-cap">Actual to <span data-draw="asof-s" data-source="snapshot" data-field="as_of" data-row="0">—</span>, then plan</p>
+      <div class="ld-key"><span><i class="ld-sw" style="background:#0F7A55"></i>Actual</span><span><i class="ld-sw dash"></i>Plan</span><span><i class="ld-sw" style="background:#8A6A1F"></i>Jan 31 goal</span></div>
+      <div class="ld-chart" data-draw="c-arr" data-source="monthly plan snapshot"></div></div>
+    <div class="ld-card" id="customers-chart"><h3 class="ld-h3">Customers live, and contracted in deployment</h3><p class="ld-cap">Number on each bar is customers live</p>
+      <div class="ld-key"><span><i class="ld-sw box" style="background:#0F7A55"></i>Live</span><span><i class="ld-sw box" style="background:#9FE3C9"></i>Contracted, not live</span><span><i class="ld-sw box" style="background:#E3F1EA;outline:1px dashed #0F7A55"></i>Plan</span></div>
+      <div class="ld-chart" data-draw="c-customers" data-source="monthly plan"></div></div>
+    <div class="ld-card" id="backlog-card"><h3 class="ld-h3">Contracted backlog by stage</h3><p class="ld-cap"><b data-draw="bl-customers" data-source="backlog_sum" data-field="customers" data-row="0">—</b> customers worth <b data-draw="bl-arr" data-source="backlog_sum" data-field="arr_m" data-row="0">—</b> ARR once live. Signed-to-live takes <b data-draw="kv" data-k="days_live" data-source="kpi" data-field="now" data-where="id=days_live">—</b> days today; the goal is 21.</p>
+      <div class="ld-hb" data-draw="h-backlog" data-source="backlog"></div></div>
+    <div class="ld-card" id="brands-card"><h3 class="ld-h3">Live customers by brand family</h3><p class="ld-cap">Franchised and managed properties across the big four, plus independents</p>
+      <div class="ld-hb" data-draw="h-brands" data-source="brands"></div></div>
+  </div>
+</section>
+
+<section class="ld-sec" id="product">
+  <h2 class="ld-h2">Product <span class="soft">· usage, quality and adoption</span></h2>
+  <p class="ld-lede">The company answers end user calls in under <b data-draw="answer" data-source="snapshot" data-field="answer_sec" data-row="0">—</b> seconds, around the clock. Usage grows with each customer added and each product a customer turns on.</p>
+  <div class="ld-grid2">
+    <div class="ld-card" id="inter-chart"><h3 class="ld-h3">Calls and messages handled</h3><p class="ld-cap">Per month, all customers, in thousands</p>
+      <div class="ld-chart" data-draw="c-inter" data-source="monthly"></div></div>
+    <div class="ld-card" id="quality-chart"><h3 class="ld-h3">Resolved with no staff, and gross margin</h3><p class="ld-cap">Both rise as the agents learn each customer and as call costs fall</p>
+      <div class="ld-key"><span><i class="ld-sw" style="background:#0F7A55"></i>Resolved with no staff</span><span><i class="ld-sw" style="background:#8A6A1F"></i>Gross margin</span></div>
+      <div class="ld-chart" data-draw="c-quality" data-source="monthly"></div></div>
+    <div class="ld-card" id="products-card"><h3 class="ld-h3">Customers using each product</h3><p class="ld-cap">Out of <b data-draw="kv" data-k="customers" data-source="kpi" data-field="now" data-where="id=customers">—</b> live customers; one customer can use several</p>
+      <div class="ld-hb" data-draw="h-products" data-source="products kpi"></div></div>
+    <div class="ld-card" id="quotes-card"><h3 class="ld-h3">What operators say <span class="ld-tag">Public</span></h3><p class="ld-cap">Quoted from the company’s published customer stories</p>
+      <ul class="ld-q">
+        <li><blockquote>“We went from an hour to almost 20 minutes. Now everything is in one place.”</blockquote><span class="d"><b>General Manager</b>, select-service property</span></li>
+        <li><blockquote>“It pays for itself. It’s the clearest ROI decision I’ve made as an owner.”</blockquote><span class="d"><b>Owner</b>, 3 locations</span></li>
+        <li><blockquote>“We do more every day and our quality scores have climbed, while we save labor hours at the same time.”</blockquote><span class="d"><b>CEO</b>, operator with 50+ locations</span></li>
+        <li><blockquote>“Our industry has operated the same way for decades. This changed that.”</blockquote><span class="d"><b>Area General Manager</b>, enterprise customer</span></li>
+      </ul></div>
+  </div>
+</section>
+
+<section class="ld-sec" id="money">
+  <h2 class="ld-h2">Cash and runway <span class="soft">· where the money went</span></h2>
+  <p class="ld-lede">We raised <b data-draw="raised" data-source="snapshot" data-field="raised_m" data-row="0">—</b> (an accelerator plus the $5M seed in April). Burn rises to about <b data-draw="burnhire" data-source="snapshot" data-field="burn_after_hires_k" data-row="0">—</b> a month once 8 hires join by December, which is why Series A prep starts in Q1.</p>
+  <div class="ld-grid2">
+    <div class="ld-card" id="cash-chart"><h3 class="ld-h3">Cash at month end</h3><p class="ld-cap">Actual, then plan with the new hires</p>
+      <div class="ld-key"><span><i class="ld-sw" style="background:#09281E"></i>Actual</span><span><i class="ld-sw dash"></i>Plan</span></div>
+      <div class="ld-chart" data-draw="c-cash" data-source="monthly plan"></div></div>
+    <div class="ld-card" id="burn-chart"><h3 class="ld-h3">Net burn per month</h3><p class="ld-cap">Lighter bars are plan</p>
+      <div class="ld-chart" data-draw="c-burn" data-source="monthly plan"></div></div>
+    <div class="ld-card" id="funds-card"><h3 class="ld-h3">Where the money went</h3><p class="ld-cap"><b data-draw="fu-spent" data-source="funds_sum" data-field="spent_m" data-row="0">—</b> spent since January, before revenue</p>
+      <div class="ld-hb" data-draw="h-funds" data-source="funds"></div></div>
+    <div class="ld-card" id="team-card"><h3 class="ld-h3">Team</h3><p class="ld-cap">People on payroll</p>
+      <p class="ld-tv" style="margin-top:12px"><span data-draw="kv" data-k="headcount" data-source="kpi" data-field="now" data-where="id=headcount">—</span> <span class="ld-tl">now, 23 by December</span></p>
+      <p class="ld-td" style="margin-top:4px"><span class="chg" data-draw="kv" data-k="headcount" data-source="kpi" data-field="change" data-where="id=headcount">—</span> since <span data-draw="lastupd" data-source="snapshot" data-field="last_update" data-row="0">—</span></p>
+      <ul class="ld-list"><li><span class="d">Hiring</span><span>4 engineers, 2 deployment leads, 1 product manager, 1 operations associate</span></li><li><span class="d">Why</span><span>Each deployment lead takes about 6 customers live a month</span></li></ul></div>
+  </div>
+</section>
+
+<section class="ld-sec" id="scorecard">
+  <h2 class="ld-h2">What we said in <span data-draw="lastmon" data-source="snapshot" data-field="last_update" data-row="0">—</span>, and what happened</h2>
+  <p class="ld-lede"><b data-draw="sc-hit" data-source="score_sum" data-field="hit" data-row="0">—</b> achieved and <b data-draw="sc-close" data-source="score_sum" data-field="close" data-row="0">—</b> within a point, out of <b data-draw="sc-total" data-source="score_sum" data-field="total" data-row="0">—</b> goals. The other <b data-draw="sc-missed" data-source="score_sum" data-field="missed" data-row="0">—</b>, both on deployment, are on track for January with the plan already in motion.</p>
+  <div class="ld-card" style="margin-top:14px"><div class="ld-tablewrap">
+    <table class="ld-table" data-source="scorecard" data-row-key="goal"><thead><tr><th data-field="goal">Goal</th><th data-field="target">Target</th><th data-field="result">Result</th><th data-field="status">Status</th></tr></thead><tbody data-draw="score"></tbody></table>
+  </div></div>
+</section>
+
+<section class="ld-sec" id="quarter">
+  <h2 class="ld-h2">The quarter <span class="soft">· highlights, Q4 priorities, next 90 days</span></h2>
+  <div class="ld-grid3">
+    <div class="ld-card" id="wins"><h3 class="ld-h3">Highlights <span class="ld-tag">Public</span></h3>
+      <ul class="ld-list">
+        <li><span class="d">Jul 1</span><span>Enterprise customer case study published</span></li>
+        <li><span class="d">Aug 22</span><span>Boards and AI Task Management launched</span></li>
+        <li><span class="d">Oct 14</span><span>Predictive launched; new customer case study</span></li>
+        <li><span class="d">Q3</span><span>SOC 2 Type I in place, which opens brand IT reviews</span></li>
+      </ul></div>
+    <div class="ld-card" id="challenges"><h3 class="ld-h3">Q4 priorities <span class="ld-tag">Plan</span></h3>
+      <ul class="ld-list">
+        <li><span class="d">Go-lives</span><span>Average 31 days against a 21-day target. Plan: two more deployment leads and a standard go-live playbook.</span></li>
+        <li><span class="d">Unit cost</span><span>Margin at 64%, one point from target. Plan: route simple calls to smaller models and renegotiate voice minutes.</span></li>
+        <li><span class="d">Brand IT</span><span>SOC 2 Type I complete and Type II next, which shortens brand security reviews.</span></li>
+        <li><span class="d">Runway</span><span>16 months today, about 10 after the planned hires, as budgeted. Series A preparation starts in Q1.</span></li>
+      </ul></div>
+    <div class="ld-card" id="next90"><h3 class="ld-h3">Next 90 days</h3>
+      <ul class="ld-list">
+        <li><span class="d">Customers</span><span><b data-draw="goal-h" data-source="snapshot" data-field="next_goal_customers" data-row="0">—</b> live by Jan 31, mostly from the signed backlog</span></li>
+        <li><span class="d">Revenue</span><span><b data-draw="goal-arr" data-source="snapshot" data-field="next_goal_arr_m" data-row="0">—</b> ARR by Jan 31</span></li>
+        <li><span class="d">Speed</span><span>Signed-to-live under 21 days</span></li>
+        <li><span class="d">Team</span><span>8 hires in seats by December, each onboarded in a week</span></li>
+        <li><span class="d">Funding</span><span>Series A data room ready by end of Q1</span></li>
+      </ul></div>
+  </div>
+</section>
+
+<section class="ld-sec" id="asks">
+  <h2 class="ld-h2">Priority introductions</h2>
+  <div class="ld-asks">
+    <div class="ld-ask"><p class="no">1</p><h3>Customer groups with 10 to 50 properties</h3><p>An intro to a management company or owner group. One signed group is worth a year of single-customer sales.</p></div>
+    <div class="ld-ask"><p class="no">2</p><h3>Deployment leads from the industry</h3><p>Operators who have run customer operations. Two more roles open in Q1.</p></div>
+    <div class="ld-ask"><p class="no">3</p><h3>Series A preparation</h3><p>Your view on what a strong Series A looks like at our stage, and introductions to 2 or 3 firms that back vertical AI.</p></div>
+  </div>
+</section>
+
+<footer class="ld-foot" id="notes">
+  <details><summary>Where each number comes from, and what is sample</summary>
+    <p style="margin-top:10px">* the company’s real figures are private, so this version runs on sample numbers. They are built from public facts: the $5M seed announced Apr 28, 2026, 50+ customers across several major brands, the $2M+ ARR in the company’s Operations Lead job post, the product launch dates and the case studies. The rest follows customer-software benchmarks. The CEO replaces them with the real numbers before this is shared.</p>
+    <div class="ld-src">
+      <div><b>ARR, revenue, NRR, churn</b>Billing system (e.g. Stripe), read on every open</div>
+      <div><b>Customers live, signed, backlog</b>CRM deal stages (e.g. HubSpot)</div>
+      <div><b>Calls, messages, resolved</b>the company’s own call and message logs</div>
+      <div><b>Cash, burn, spend by use</b>Bank and card feeds (e.g. Mercury, Ramp)</div>
+      <div><b>Headcount</b>Payroll (e.g. Gusto, Rippling)</div>
+      <div><b>Goals, wins, asks</b>Written by the CEO each quarter</div>
+    </div>
+    <dl>
+      <dt>ARR</dt><dd>Monthly subscription revenue at month end × 12. Excludes setup fees.</dd>
+      <dt>Customers live</dt><dd>Properties where at least one the company product handles real end users.</dd>
+      <dt>Signed, not live</dt><dd>Signed contracts where go-live has not happened yet.</dd>
+      <dt>Resolved with no staff</dt><dd>Calls and messages closed by the company with no hand-off to a person.</dd>
+      <dt>Net revenue retention</dt><dd>Revenue today from customers live a year ago, divided by their revenue then.</dd>
+      <dt>Net burn</dt><dd>Cash out minus cash in for the month.</dd>
+      <dt>Runway</dt><dd>Cash divided by net burn, in months.</dd>
+    </dl>
+  </details>
+</footer>
+</div>
+</div>
+<script src="d3.min.js"></script>
+<script>window.__DATA={"backlog":[{"stage":"Kickoff booked","customers":8,"arr_k":250},{"stage":"Phone + system hookup","customers":9,"arr_k":300},{"stage":"Staff training, go-live","customers":5,"arr_k":170}],"brands":[{"brand":"a major brand","customers":24},{"brand":"a major brand","customers":14},{"brand":"a major brand","customers":9},{"brand":"a major brand","customers":8},{"brand":"Independent","customers":9}],"funds":[{"use":"Team: engineering + deployment","spent_k":1840},{"use":"Voice, LLM and cloud","spent_k":530},{"use":"Sales, events and travel","spent_k":360},{"use":"Legal, SOC 2, insurance, other","spent_k":240}],"monthly":[{"month":"2026-01","arr_m":0.25,"customers_live":12,"signed_not_live":6,"interactions_k":20,"resolved_pct":52,"gross_margin_pct":41,"net_burn_k":120,"cash_m":0.68,"headcount":4,"products_per_customer":1.2},{"month":"2026-02","arr_m":0.48,"customers_live":22,"signed_not_live":9,"interactions_k":36,"resolved_pct":56,"gross_margin_pct":46,"net_burn_k":130,"cash_m":0.55,"headcount":5,"products_per_customer":1.3},{"month":"2026-03","arr_m":0.8,"customers_live":36,"signed_not_live":12,"interactions_k":60,"resolved_pct":60,"gross_margin_pct":50,"net_burn_k":150,"cash_m":0.4,"headcount":7,"products_per_customer":1.4},{"month":"2026-04","arr_m":1.15,"customers_live":51,"signed_not_live":10,"interactions_k":92,"resolved_pct":63,"gross_margin_pct":53,"net_burn_k":175,"cash_m":5.23,"headcount":9,"products_per_customer":1.5},{"month":"2026-05","arr_m":1.27,"customers_live":54,"signed_not_live":12,"interactions_k":98,"resolved_pct":64,"gross_margin_pct":55,"net_burn_k":195,"cash_m":5.03,"headcount":10,"products_per_customer":1.5},{"month":"2026-06","arr_m":1.4,"customers_live":56,"signed_not_live":14,"interactions_k":108,"resolved_pct":65,"gross_margin_pct":57,"net_burn_k":210,"cash_m":4.82,"headcount":11,"products_per_customer":1.6},{"month":"2026-07","arr_m":1.6,"customers_live":58,"signed_not_live":15,"interactions_k":120,"resolved_pct":66,"gross_margin_pct":58,"net_burn_k":220,"cash_m":4.6,"headcount":12,"products_per_customer":1.6},{"month":"2026-08","arr_m":1.75,"customers_live":60,"signed_not_live":17,"interactions_k":142,"resolved_pct":68,"gross_margin_pct":60,"net_burn_k":228,"cash_m":4.37,"headcount":13,"products_per_customer":1.8},{"month":"2026-09","arr_m":1.92,"customers_live":62,"signed_not_live":20,"interactions_k":166,"resolved_pct":70,"gross_margin_pct":62,"net_burn_k":235,"cash_m":4.14,"headcount":14,"products_per_customer":2.1},{"month":"2026-10","arr_m":2.1,"customers_live":64,"signed_not_live":22,"interactions_k":190,"resolved_pct":72,"gross_margin_pct":64,"net_burn_k":240,"cash_m":3.9,"headcount":15,"products_per_customer":2.3}],"plan":[{"month":"2026-11","arr_m":2.35,"customers_live":70,"net_burn_k":300,"cash_m":3.6,"headcount":18},{"month":"2026-12","arr_m":2.6,"customers_live":77,"net_burn_k":360,"cash_m":3.24,"headcount":23},{"month":"2027-01","arr_m":2.9,"customers_live":86,"net_burn_k":390,"cash_m":2.85,"headcount":23}],"products":[{"product":"AI Voice Agent","customers":60,"launched":"Live"},{"product":"Customer Messaging","customers":40,"launched":"Live"},{"product":"AI Sales Agent","customers":17,"launched":"Live"},{"product":"Boards","customers":13,"launched":"Aug 22"},{"product":"Task Management","customers":10,"launched":"Aug 22"},{"product":"Preventive Maintenance","customers":5,"launched":"Live"},{"product":"Predictive","customers":2,"launched":"Oct 14"}],"scorecard":[{"goal":"Customers live by Oct 31","target":"62","result":"64","status":"Achieved"},{"goal":"ARR by Oct 31","target":"$2.0M","result":"$2.1M","status":"Achieved"},{"goal":"Launch housekeeping and task tools","target":"Q3","result":"Boards + Task Management live Aug 22","status":"Achieved"},{"goal":"SOC 2 Type I","target":"Q3","result":"Done; Type II is next","status":"Achieved"},{"goal":"Gross margin","target":"65%","result":"64%, up from 58% in July","status":"Within 1 point"},{"goal":"Signed-to-live time","target":"21 days","result":"31 days. Brand-managed customers added an IT security review; SOC 2 Type I and a standard security pack now shorten it.","status":"On track for January"},{"goal":"Deployment hires","target":"3","result":"1 joined; 2 signed, start Nov 23. We held out for customer opening experience.","status":"Starting Nov 23"}],"snapshot":[{"as_of":"2026-10-31","last_update":"2026-07-31","nrr_pct":128,"logo_churn":0,"days_to_live":31,"answer_sec":0.8,"raised_m":5.5,"next_goal_customers":86,"next_goal_arr_m":2.9,"burn_after_hires_k":390}]};</script>
+<script>
+window.__DATA = window.__DATA || {};
+window.dash = (function(){
+  const calcs = {}, draws = {}, order = [];
+  const val = {};
+  const api = {
+    data(id){ if (id in window.__DATA) { const d = window.__DATA[id]; return {status:'ok', data:d, columns: d.length?Object.keys(d[0]):[], meta:null}; }
+      if (id in calcs) { if (!(id in val)) { const c = calcs[id]; val[id] = c.fn(...c.inputs.map(i => api.data(i).data)); } return {status:'ok', data: val[id]}; }
+      return {status:'missing', data:[]}; },
+    calc(id, c){ calcs[id] = c; },
+    loader(){},
+    draw(name, fn){ draws[name] = fn; order.push(name); },
+    onData(fn){ fn(); },
+    setLink(){}, params(){return {};}, setParams(){}, resetParams(){}, refresh(){}, colors:['#0F7A55','#2BCA95']
+  };
+  api.__run = function(){ order.forEach(n => document.querySelectorAll('[data-draw="'+n+'"]').forEach(el => { try { draws[n](el); } catch(e){ console.error('draw '+n+': '+e.message); } })); };
+  return api;
+})();
+
+</script>
+<script src="charts.js"></script>
+<script src="app.js"></script>
+<script>
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;"})[c]);
+let KT = null;
+function kTour(steps, key) { kTourEnd(); KT = { steps, key, i: -1, from: document.activeElement }; kTourGo(0); }
+function kTourSeen(key) { try { return !!sessionStorage.getItem(key); } catch (e) { return false; } }
+function kTourEnd() {
+  if (!KT) return;
+  try { sessionStorage.setItem(KT.key, "1"); } catch (e) {}
+  document.querySelectorAll(".kt-spot,.kt-block,.tour").forEach(x => x.remove());
+  document.querySelectorAll(".tour-on").forEach(x => x.classList.remove("tour-on"));
+  const from = KT.from; KT = null;
+  if (from && from.focus && document.body.contains(from)) from.focus({ preventScroll: true });
+}
+function kTourGo(i) {
+  if (!KT) return;
+  const n = KT.steps.length;
+  if (i >= n) { kTourEnd(); return; }
+  const st = KT.steps[i], el = st.el();
+  if (!el) { if (i + 1 < n) kTourGo(i + 1); else kTourEnd(); return; }
+  KT.i = i;
+  document.querySelectorAll(".tour-on").forEach(x => x.classList.remove("tour-on"));
+  el.classList.add("tour-on");
+  el.scrollIntoView({ block: "center", inline: "nearest" });
+  const mk = (cls, tag) => { let x = document.querySelector("." + cls); if (!x) { x = document.createElement(tag || "div"); x.className = cls; document.body.appendChild(x); } return x; };
+  const blk = mk("kt-block"), spot = mk("kt-spot"), c = mk("tour");
+  blk.setAttribute("aria-hidden", "true"); spot.setAttribute("aria-hidden", "true");
+  c.setAttribute("role", "dialog"); c.setAttribute("aria-label", "Quick tour"); c.setAttribute("aria-live", "polite");
+  const txt = typeof st.text === "function" ? st.text() : st.text;
+  c.innerHTML = `<span class="tn">Quick tour · ${i + 1} of ${n}</span>${st.title ? `<b class="tt">${esc(st.title)}</b>` : ""}<p>${esc(txt)}</p>` +
+    `<div class="tb"><button class="skip">Skip tour</button><span class="sp"></span>${i ? `<button class="back">Back</button>` : ""}<button class="go">${i === n - 1 ? "Done" : "Next"}</button></div>`;
+  c.querySelector(".skip").onclick = kTourEnd;
+  c.querySelector(".go").onclick = () => kTourGo(i + 1);
+  const bk = c.querySelector(".back"); if (bk) bk.onclick = () => kTourGo(i - 1);
+  kTourPlace();
+  c.querySelector(".go").focus({ preventScroll: true });
+}
+function kTourPlace() {
+  if (!KT) return;
+  const el = document.querySelector(".tour-on"), spot = document.querySelector(".kt-spot"), c = document.querySelector(".tour");
+  if (!el || !spot || !c) return;
+  const r = el.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = innerHeight, pad = 8, gap = 14, m = 12;
+  const L = Math.max(4, r.left - pad), T = Math.max(4, r.top - pad), R = Math.min(vw - 4, r.right + pad), B = Math.min(vh - 4, r.bottom + pad);
+  Object.assign(spot.style, { left: L + "px", top: T + "px", width: Math.max(0, R - L) + "px", height: Math.max(0, B - T) + "px" });
+  const w = c.offsetWidth, h = c.offsetHeight;
+  let x = Math.max(m, Math.min(vw - w - m, L)), y;
+  if (B + gap + h <= vh - m) y = B + gap;
+  else if (T - gap - h >= m) y = T - gap - h;
+  else if (R + gap + w <= vw - m) { x = R + gap; y = Math.max(m, Math.min(vh - h - m, T)); }
+  else if (L - gap - w >= m) { x = L - gap - w; y = Math.max(m, Math.min(vh - h - m, T)); }
+  else y = vh - h - m;
+  Object.assign(c.style, { left: x + "px", top: y + "px" });
+}
+addEventListener("resize", kTourPlace);
+addEventListener("scroll", kTourPlace, true);
+document.addEventListener("keydown", e => {
+  if (!KT) return;
+  if (e.key === "Escape") kTourEnd();
+  else if (e.key === "Tab") { const b = [...document.querySelectorAll(".tour button")]; const k = b.indexOf(document.activeElement); e.preventDefault(); (b[(k + (e.shiftKey ? b.length - 1 : 1)) % b.length] || b[0]).focus(); }
+});
+
+const TOUR_KEY = "app-tour-dash";
+const TOUR = [
+ {el: () => document.querySelector("#top .ld-h1"), title: "The quarter in one line", text: "Customers live and ARR, then the change since the July update, cash and runway."},
+ {el: () => document.getElementById("since"), title: "Twelve numbers", text: "Each card shows where we are now and the change since the last update. Hover a card for the definition."},
+ {el: () => document.getElementById("growth"), title: "Growth against plan", text: "ARR and customers by month, with the plan to January. Hover any bar for the exact figure."},
+ {el: () => document.getElementById("scorecard"), title: "July commitments and results", text: "Every goal from the last update, with its result and status."},
+ {el: () => document.getElementById("asks"), title: "Priority introductions", text: "The three introductions that speed up the plan this quarter."}];
+const tb = document.createElement("button"); tb.className = "ld-tourbtn"; tb.type = "button"; tb.textContent = "Quick tour";
+tb.onclick = () => kTour(TOUR, TOUR_KEY);
+const brand = document.querySelector(".ld-brand"); if (brand) brand.appendChild(tb);
+if (!kTourSeen(TOUR_KEY)) setTimeout(() => { if (!KT) kTour(TOUR, TOUR_KEY); }, 900);
+
+document.fonts.ready.then(() => { dash.__run(); window.__done = true; });
+</script>
+</body></html>

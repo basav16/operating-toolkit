@@ -1,0 +1,1204 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Week Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap">
+<style>
+body{margin:0}
+/* Layout: header + inbox strip, then a 5-day calendar (each day = my lane + a background lane) beside a detail panel */
+:root{
+  --bg:#F7F6F3; --surface:#FDFCFA; --ink:#121210; --muted:#67635C; --line:#DEDBD4; --grid:#EDEBE6;
+  --accent:#0F7A55; --accent-f:#E3F1EA; --mint:#2BCA95; --forest:#09281E;
+  --msg:#1C5BD0; --think:#7B3FC6; --back:#0E7C78; --deadline:#B42318;
+  --inbox-f:#F6E3E0; --inbox-s:#B42318;
+  --onb-f:#E3F1EA; --onb-s:#0F7A55;
+  --inv-f:#F1EAD8; --inv-s:#8A6A1F;
+  --ceo-f:#ECEAE4; --ceo-s:#4A4740;
+  --team-f:#F3F1EC; --team-s:#8C887F;
+  --back-f:#E2F2F1;
+  --p0-f:#B42318; --p0-t:#FFF6F4; --p1-f:#09281E; --p1-t:#2BCA95; --p2-f:#F1EAD8; --p2-t:#8A6A1F;
+  --chip:#FFFFFF; --scrim:rgba(18,18,16,.5);
+  --font-d:"Newsreader", Georgia, "Times New Roman", serif;
+  --font-b:"Hanken Grotesk", "Segoe UI", system-ui, sans-serif;
+  --font-m:"Hanken Grotesk", "Segoe UI", system-ui, sans-serif;
+  --hour:84px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0B0B0E; --surface:#17171B; --ink:#F2F0EB; --muted:#A19D95; --line:#2E2D2A; --grid:#1E1E21;
+  --accent:#2BCA95; --accent-f:#09281E;
+  --msg:#7FA8FF; --think:#C49BFF; --back:#4FC9C2; --deadline:#F49B8F;
+  --inbox-f:#3A1F1B; --inbox-s:#F49B8F; --onb-f:#09281E; --onb-s:#2BCA95; --inv-f:#2E2614; --inv-s:#CDB57A;
+  --ceo-f:#222220; --ceo-s:#A19D95; --team-f:#1E1E1C; --team-s:#8C887F; --back-f:#16302F;
+  --p0-f:#B42318; --p0-t:#FFF6F4; --p1-f:#09281E; --p1-t:#2BCA95; --p2-f:#2E2614; --p2-t:#CDB57A;
+  --chip:#1C1C20; --scrim:rgba(0,0,0,.6); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0B0B0E; --surface:#17171B; --ink:#F2F0EB; --muted:#A19D95; --line:#2E2D2A; --grid:#1E1E21;
+  --accent:#2BCA95; --accent-f:#09281E;
+  --msg:#7FA8FF; --think:#C49BFF; --back:#4FC9C2; --deadline:#F49B8F;
+  --inbox-f:#3A1F1B; --inbox-s:#F49B8F; --onb-f:#09281E; --onb-s:#2BCA95; --inv-f:#2E2614; --inv-s:#CDB57A;
+  --ceo-f:#222220; --ceo-s:#A19D95; --team-f:#1E1E1C; --team-s:#8C887F; --back-f:#16302F;
+  --p0-f:#B42318; --p0-t:#FFF6F4; --p1-f:#09281E; --p1-t:#2BCA95; --p2-f:#2E2614; --p2-t:#CDB57A;
+  --chip:#1C1C20; --scrim:rgba(0,0,0,.6); color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-b);font-size:14px;line-height:1.45;font-variant-numeric:tabular-nums}
+.wrap{max-width:1560px;margin:0 auto;padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;gap:12px 32px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font-family:var(--font-m);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--font-d);font-size:clamp(26px,3.2vw,38px);line-height:1.1;margin:4px 0 0;text-wrap:balance;font-weight:400;letter-spacing:-.01em}
+.layers{display:flex;flex-wrap:wrap;gap:8px}
+.layer{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;user-select:none;font-weight:600}
+.layer input{accent-color:currentColor;margin:0}
+.layer.do{color:var(--ink)} .layer.msg{color:var(--msg)} .layer.think{color:var(--think);font-style:italic} .layer.back{color:var(--back);border-style:dashed}
+.layer:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+
+.inbox{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+@media (max-width:1100px){.inbox{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:620px){.inbox{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ic{all:unset;box-sizing:border-box;cursor:pointer;background:var(--chip);border:1px solid var(--line);border-radius:10px;padding:9px 10px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.ic:hover{border-color:var(--inbox-s)} .ic:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ic.on{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.ic .top{display:flex;align-items:center;gap:6px;font-family:var(--font-m);font-size:11px;color:var(--muted)}
+.pill{font-family:var(--font-m);font-size:10px;font-weight:700;padding:1px 7px;border-radius:999px;border:0;letter-spacing:.02em}
+.p0{background:var(--p0-f);color:var(--p0-t)} .p1{background:var(--p1-f);color:var(--p1-t)} .p2{background:var(--p2-f);color:var(--p2-t)}
+.ic .nm{font-weight:600;font-size:13px;line-height:1.25}
+.ic .res{font-size:11.5px;color:var(--onb-s);font-weight:600}
+.ic .res::before{content:"\2713  "}
+.hint{font-size:12px;color:var(--muted)}
+
+.main{display:block}
+.calbox{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow-x:auto;min-width:0}
+.cal{min-width:1020px;display:grid;grid-template-columns:52px repeat(5,minmax(0,1fr))}
+.dh{position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--line);border-left:1px solid var(--line);padding:10px 10px 8px;display:flex;flex-direction:column;gap:6px;z-index:3}
+.dh .d{display:flex;align-items:baseline;gap:6px}
+.dh .d b{font-family:var(--font-d);font-size:17px}
+.dh .d span{font-family:var(--font-m);font-size:11px;color:var(--muted)}
+.bars{display:flex;flex-direction:column;gap:3px}
+.bar{display:grid;grid-template-columns:64px 1fr 32px;align-items:center;gap:6px;font-size:10.5px;color:var(--muted)}
+.bar i{display:block;height:5px;border-radius:3px;background:var(--grid);position:relative;overflow:hidden}
+.bar i em{position:absolute;inset:0 auto 0 0;border-radius:3px}
+.bar .n{font-family:var(--font-m);text-align:right;font-variant-numeric:tabular-nums}
+.dl{display:flex;flex-direction:column;gap:2px;min-height:30px}
+.dl div{font-size:11px;color:var(--deadline);font-weight:600;line-height:1.25}
+.dl div span{font-family:var(--font-m);font-weight:500;margin-right:4px}
+.corner{border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);z-index:3}
+.times{position:relative}
+.times div{position:absolute;right:6px;font-family:var(--font-m);font-size:10.5px;color:var(--muted);transform:translateY(-50%)}
+.times div:first-child{transform:none}
+.col{position:relative;border-left:1px solid var(--line)}
+.col .hl{position:absolute;left:0;right:0;border-top:1px solid var(--grid)}
+.col .hl.half{border-top-style:dashed;opacity:.6}
+.lane-main{position:absolute;top:0;bottom:0;left:4px}
+.lane-back{position:absolute;top:0;bottom:0;right:3px}
+.ev{all:unset;box-sizing:border-box;position:absolute;left:0;right:4px;border-radius:6px;padding:3px 7px;overflow:hidden;cursor:pointer;border:1px solid;display:flex;flex-direction:column;gap:1px;transition:opacity .15s}
+.ev:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.ev.sel{box-shadow:0 0 0 2px var(--ink);z-index:2}
+.ev.dim,.bk.dim{opacity:.22}
+.ev .t{font-family:var(--font-m);font-size:10px;color:var(--muted);line-height:1.2;display:flex;gap:6px;align-items:center}
+.ev .ti{font-weight:600;font-size:12px;line-height:1.22;color:var(--ink)}
+.ev .sh{font-size:11px;color:var(--think);font-style:italic;line-height:1.25}
+.ev .ms{font-size:10.5px;color:var(--msg);font-weight:600}
+.ev.short{flex-direction:row;align-items:center;gap:6px;padding-block:0}
+.ev.short .t{flex:none}
+.ev.short .ti{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
+.c-inbox{background:var(--inbox-f);border-color:var(--inbox-s)}
+.c-onb{background:var(--onb-f);border-color:var(--onb-s)}
+.c-inv{background:var(--inv-f);border-color:var(--inv-s)}
+.c-ceo{background:var(--ceo-f);border-color:var(--ceo-s)}
+.c-team{background:var(--team-f);border-color:var(--team-s)}
+.bk{all:unset;box-sizing:border-box;position:absolute;width:14px;border:1.5px dashed var(--back);background:var(--back-f);border-radius:7px;cursor:pointer;display:flex;justify-content:center;overflow:hidden;transition:opacity .15s}
+.bk span{writing-mode:vertical-rl;font-size:9.5px;color:var(--back);font-weight:600;white-space:nowrap;padding:6px 0;line-height:1}
+.bk:focus-visible{outline:2px solid var(--accent)}
+.bk.sel{background:var(--back);} .bk.sel span{color:var(--surface)}
+.mk{position:absolute;left:0;right:0;height:0;border-top:2px solid var(--deadline);z-index:1;pointer-events:none}
+.mk::before{content:"";position:absolute;left:-4px;top:-5px;width:8px;height:8px;border-radius:50%;background:var(--deadline)}
+.cats{display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 12px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);min-width:1020px}
+.cats span{display:inline-flex;align-items:center;gap:6px}
+.cats i{width:12px;height:12px;border-radius:3px;border:1px solid;display:inline-block}
+.cats i.d{border-style:dashed;border-color:var(--back);background:var(--back-f)}
+.cats i.r{height:0;border:0;border-top:2px solid var(--deadline);border-radius:0}
+
+.overlay{position:fixed;inset:0;z-index:20;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.panel{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 22px 20px;display:flex;flex-direction:column;gap:14px;width:min(600px,100%);max-height:min(86vh,100%);overflow:auto;box-shadow:0 24px 60px rgba(0,0,0,.28);animation:pop .16s ease-out}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+.x{all:unset;cursor:pointer;position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--muted);font-size:22px;line-height:1;background:var(--grid)}
+.x:hover{color:var(--ink)} .x:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.panel .when{padding-right:44px}
+#panel{display:flex;flex-direction:column;gap:18px}
+.panel .when{font-family:var(--font-m);font-size:11.5px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.panel .cat{font-size:10.5px;padding:2px 8px;border-radius:999px;border:1px solid;font-family:var(--font-b);font-weight:600;color:var(--ink)}
+.panel h2{font-family:var(--font-d);font-size:21px;line-height:1.15;margin:0;text-wrap:balance}
+.sec{display:flex;flex-direction:column;gap:6px}
+.sec h3{margin:0;font-size:10.5px;font-family:var(--font-m);letter-spacing:.08em;text-transform:uppercase;font-weight:500}
+.sec.do h3{color:var(--muted)} .sec.msg h3{color:var(--msg)} .sec.think h3{color:var(--think)} .sec.back h3{color:var(--back)}
+.sec ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:3px}
+.sec.do li{color:var(--ink)}
+.m{border:1px solid var(--line);border-radius:8px;padding:9px 11px;display:flex;flex-direction:column;gap:4px}
+.m .to{font-family:var(--font-m);font-size:10.5px;color:var(--msg);opacity:.85}
+.m p{margin:0;color:var(--msg);font-size:13px;white-space:pre-line}
+.sec.think p{margin:0;color:var(--think);font-style:italic;font-size:13.5px}
+.sec.back li{color:var(--back);font-size:13px}
+.sec.back li b{font-family:var(--font-m);font-weight:500;font-size:11px;margin-right:4px}
+.empty{font-size:12.5px;color:var(--muted)}
+.foot{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 24px}
+@media (prefers-reduced-motion: reduce){.ev,.bk{transition:none}.panel{animation:none}}
+
+.brandmark{flex:1 0 100%;display:flex;align-items:center;gap:12px;padding:2px 0 6px;border-bottom:1px solid var(--line);margin-bottom:4px}.brandmark img{height:18px;width:auto;display:block}.brandmark .lg-d{display:none}.brandmark span{font-size:12px;color:var(--muted);letter-spacing:.02em}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .brandmark .lg-l{display:none}:root:not([data-theme="light"]) .brandmark .lg-d{display:block}}:root[data-theme="dark"] .brandmark .lg-l{display:none}:root[data-theme="dark"] .brandmark .lg-d{display:block}
+:root{--kit-focus:var(--accent);--kit-scrim:var(--scrim);--kit-good:var(--onb-s);--kit-good-f:var(--onb-f);--kit-bad:var(--deadline);--kit-bad-f:var(--inbox-f)}
+.handles{margin:-8px 0 0;font-size:12.5px;color:var(--muted)}
+.handles b{color:var(--ink);font-weight:600}
+.foot a{color:var(--accent);font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.cats i.pb{width:22px;height:6px;border:0;border-radius:3px;background:linear-gradient(90deg,var(--onb-s) 0 60%,var(--grid) 60%)}
+.ic .top .pill+.pill{margin-left:-2px}
+/* full message view */
+.mbody{display:flex;flex-direction:column;gap:8px}
+.mbody p{margin:0}
+.mcard .mbody{max-height:5.9em;overflow:hidden;position:relative;cursor:pointer}
+.mcard .mbody.long::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2.2em;background:linear-gradient(transparent,var(--surface))}
+.mcard .mfoot{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.mopen{all:unset;cursor:pointer;font-size:12.5px;font-weight:700;color:var(--ink);background:var(--grid);border-radius:999px;padding:5px 12px}
+.mopen:hover{background:var(--line)} .mopen:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.email{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.email .eh{padding:12px 16px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;font-size:13px;background:var(--bg)}
+.email .eh b{color:var(--muted);font-weight:600}
+.email .eh .sj{font-weight:700;color:var(--ink)}
+.email .eb{padding:16px 18px;display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.55;color:var(--ink)}
+.email .eb p{margin:0}
+.email .ef{padding:10px 16px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.email .ef .mcopy{margin-left:auto}
+.ic .res.open{color:var(--muted)} .ic .res.open::before{content:"\2192  "}
+.ic .res.risk{color:var(--deadline)} .ic .res.risk::before{content:"!  "}
+.m .to{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.m .subj{font-weight:600}
+.mcopy{all:unset;cursor:pointer;margin-left:auto;font-family:var(--font-b);font-size:11px;font-weight:600;color:var(--muted);padding:2px 8px;border-radius:6px;border:1px solid var(--line)}
+.mcopy:hover{color:var(--ink)} .mcopy:focus-visible{outline:2px solid var(--accent)}
+.mst{font-family:var(--font-b);font-size:10px;font-weight:700;padding:1px 7px;border-radius:999px;background:var(--grid);color:var(--muted)}
+.mst.s-ready{background:var(--inv-f);color:var(--inv-s)} .mst.s-sent,.mst.s-drafted{background:var(--onb-f);color:var(--onb-s)}
+.mact{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px}
+.mact .hint{font-size:11.5px}
+/* ---------- Shared: view tabs, data chip, Connect data dialog, toast ---------- */
+.topbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.vtabs{display:inline-flex;gap:2px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px}
+.vtabs button{all:unset;cursor:pointer;white-space:nowrap;padding:7px 12px;border-radius:999px;font-size:13px;font-weight:600;color:var(--muted);display:inline-flex;gap:7px;align-items:center}
+.vtabs button[aria-selected="true"]{background:var(--ink);color:var(--surface)}
+.vtabs button:focus-visible{outline:2px solid var(--kit-focus);outline-offset:2px}
+.vtabs .yl{width:9px;height:9px;border-radius:50%;background:#2BCA95;box-shadow:0 0 0 1px rgba(0,0,0,.15)}
+.datachip{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 4px 4px 12px;max-width:100%}
+.datachip .led{flex:none;width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.datachip .led.live{background:var(--kit-good);box-shadow:0 0 0 3px var(--kit-good-f)}
+.datachip .led.file{background:var(--kit-focus)}
+.datachip #dataLbl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.datachip b{flex:none;font-weight:600;color:var(--ink);background:var(--grid);padding:5px 11px;border-radius:999px}
+.datachip:hover b{background:var(--line)}
+.datachip:focus-visible{outline:2px solid var(--kit-focus);outline-offset:2px}
+.kov{position:fixed;inset:0;z-index:30;background:var(--kit-scrim);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.kpanel{position:relative;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:22px;width:min(640px,100%);max-height:min(88vh,100%);overflow:auto;box-shadow:0 24px 60px rgba(0,0,0,.28);display:flex;flex-direction:column;gap:14px;animation:kpop .16s ease-out}
+@keyframes kpop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+.kpanel h2{font-family:var(--font-d);font-size:21px;line-height:1.15;margin:0;padding-right:44px}
+.kpanel .now{font-size:13px;color:var(--muted);margin:0}
+.kpanel .now b{color:var(--ink)}
+.kx{all:unset;cursor:pointer;position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--muted);font-size:20px;line-height:1;background:var(--grid)}
+.kx:hover{color:var(--ink)} .kx:focus-visible{outline:2px solid var(--kit-focus);outline-offset:2px}
+.kopts{display:grid;gap:10px}
+.kopt{border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 14px;align-items:center}
+.kopt b{font-size:14px;grid-column:1}
+.kopt span{grid-column:1;font-size:12.5px;color:var(--muted)}
+.kopt .kbtn{grid-column:2;grid-row:1/span 2}
+@media (max-width:560px){.kopt{grid-template-columns:minmax(0,1fr)}.kopt .kbtn{grid-column:1;grid-row:auto;justify-self:start;margin-top:6px}}
+.kbtn{all:unset;box-sizing:border-box;cursor:pointer;font-size:13px;font-weight:600;padding:8px 14px;border-radius:8px;background:var(--ink);color:var(--surface);white-space:nowrap;text-align:center;font-family:var(--font-b)}
+.kbtn.ghost{background:var(--grid);color:var(--ink)}
+.kbtn[disabled]{opacity:.5;cursor:default}
+.kbtn:focus-visible,.klink:focus-visible{outline:2px solid var(--kit-focus);outline-offset:2px}
+.klink{all:unset;cursor:pointer;font-size:12.5px;color:var(--kit-focus);font-weight:600;text-decoration:underline;align-self:flex-start}
+.kmsg{font-size:13px;border-radius:8px;padding:9px 12px;margin:0}
+.kmsg.err{background:var(--kit-bad-f);color:var(--kit-bad)} .kmsg.ok{background:var(--kit-good-f);color:var(--kit-good)}
+.ktoast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:40;background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:10px;font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion: reduce){.kpanel{animation:none}}
+
+/* ---------- Quick tour: spotlight + bubble (shared by every app) ---------- */
+.kt-block{position:fixed;inset:0;z-index:58;background:transparent}
+.kt-spot{position:fixed;z-index:59;border-radius:12px;pointer-events:none;box-shadow:0 0 0 200vmax rgba(10,10,8,.74);outline:2px solid #2BCA95;outline-offset:0;transition:left .25s ease,top .25s ease,width .25s ease,height .25s ease}
+.tour{position:fixed;z-index:60;width:min(340px,calc(100vw - 24px));background:#FDFCFA;color:#121210;border:1px solid #DEDBD4;border-radius:14px;padding:14px 16px 12px;box-shadow:0 18px 50px rgba(0,0,0,.35);font:14px/1.45 var(--font-b,system-ui),sans-serif;color-scheme:light}
+.tour .tn{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#0F7A55;font-weight:700}
+.tour .tt{display:block;font-family:var(--font-d,Georgia),serif;font-size:19px;font-weight:500;line-height:1.2;margin-top:6px}
+.tour p{margin:6px 0 12px;color:#3D3A35}
+.tour .tb{display:flex;gap:6px;align-items:center}
+.tour .sp{flex:1}
+.tour button{all:unset;cursor:pointer;font-weight:600;font-size:13px;padding:7px 13px;border-radius:999px;font-family:var(--font-b,system-ui),sans-serif}
+.tour button:focus-visible{outline:2px solid #0F7A55;outline-offset:2px}
+.tour .go{background:#121210;color:#F7F6F3}
+.tour .back{background:#EDEBE6;color:#121210}
+.tour .skip{color:#67635C;padding-left:2px;text-decoration:underline;text-underline-offset:3px}
+@media (prefers-reduced-motion: reduce){.kt-spot{transition:none}}
+
+/* ---------- How it works (stone + green) ---------- */
+.hw{--hw-ink:#121210;--hw-mut:#5E5A53;--hw-line:#DEDBD4;--hw-card:#FDFCFA;--hw-soft:#E3F1EA;--hw-bg:#EDEBE6;
+ color:var(--hw-ink);background:var(--hw-bg);border:1px solid #DEDBD4;border-top:4px solid #0F7A55;border-radius:16px;padding:22px 22px 28px;
+ font:14px/1.5 var(--font-b,system-ui),sans-serif;display:grid;gap:22px;color-scheme:light;min-width:0;overflow-wrap:anywhere}
+.hw *{box-sizing:border-box}
+.hw h3{margin:0;font-size:20px;letter-spacing:-.01em}
+.hw .lede{margin:4px 0 0;color:var(--hw-mut);max-width:80ch}
+.hw .eyebrow{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--hw-mut);font-weight:600;margin:0 0 8px;font-family:var(--font-b,system-ui),sans-serif}
+.hw .flowbox{background:var(--hw-card);border:1px solid var(--hw-line);border-radius:12px;padding:14px;overflow-x:auto}
+.hw .flowbox svg{display:block;width:100%;min-width:760px;height:auto}
+.hw .flowbox text{font-family:var(--font-b,system-ui),sans-serif}
+.hw .t-ink{fill:var(--hw-ink)} .hw .t-mut{fill:var(--hw-mut)}
+.hw .node{fill:var(--hw-card)} .hw .hub{fill:var(--hw-soft);stroke:var(--hw-line)}
+.hw .wire{fill:none;stroke-width:1.6;stroke-dasharray:5 6;animation:hwflow 1.6s linear infinite;opacity:.85}
+@keyframes hwflow{to{stroke-dashoffset:-22}}
+@media (prefers-reduced-motion:reduce){.hw .wire{animation:none;stroke-dasharray:none}}
+.hw .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;counter-reset:hw}
+.hw .step{border:1px solid var(--hw-line);border-radius:10px;padding:12px 14px;background:var(--hw-card);min-width:0}
+.hw .step b{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.hw .step b::before{counter-increment:hw;content:counter(hw);display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--hw-ink);color:var(--hw-card);font-size:12px;flex:none}
+.hw .step p{margin:0;color:var(--hw-mut);font-size:13px}
+.hw .step code,.hw td code{font:12px ui-monospace,Consolas,monospace;background:var(--hw-soft);padding:1px 5px;border-radius:4px;color:var(--hw-ink)}
+.hw .facts{display:flex;flex-wrap:wrap;gap:8px}
+.hw .fact{border:1px solid var(--hw-line);border-radius:999px;padding:5px 12px;font-size:12.5px;background:var(--hw-card)}
+.hw .fact b{font-variant-numeric:tabular-nums}
+.hw table{width:100%;border-collapse:collapse;font-size:13px;background:var(--hw-card);border:1px solid var(--hw-line);border-radius:10px;overflow:hidden}
+.hw th,.hw td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--hw-line);vertical-align:top}
+.hw th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--hw-mut)}
+.hw td{color:var(--hw-mut)} .hw td b{color:var(--hw-ink)}
+.hw .note{font-size:12px;color:var(--hw-mut);margin:0}
+.hw .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;align-items:start}
+.hw .try{border:2px dashed #8FC9AE;border-radius:12px;padding:14px 16px;background:var(--hw-card);display:flex;gap:12px 18px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.hw .try p{margin:0;color:var(--hw-mut);font-size:13px;max-width:64ch}
+.hw .try b{color:var(--hw-ink)}
+.hw .row2{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.hw .hbtn{all:unset;box-sizing:border-box;cursor:pointer;border:1px solid var(--hw-ink);border-radius:8px;padding:7px 12px;font-size:12.5px;font-weight:600;background:var(--hw-card);color:var(--hw-ink);white-space:nowrap}
+.hw .hbtn.dark{background:var(--hw-ink);color:var(--hw-card)}
+.hw .hbtn:focus-visible{outline:2px solid var(--hw-ink);outline-offset:2px}
+.hw .rails{margin:0;padding-left:18px;color:var(--hw-mut);font-size:13px;display:grid;gap:5px}
+.hw .rails b{color:var(--hw-ink)}
+.hw details{background:var(--hw-card);border:1px solid var(--hw-line);border-radius:10px;min-width:0}
+.hw summary{cursor:pointer;padding:12px 14px;font-weight:600;list-style:none;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.hw summary::-webkit-details-marker{display:none}
+.hw summary .sm{font-weight:400;font-size:12.5px;color:var(--hw-mut)}
+.hw summary::before{content:"▸";font-size:12px;color:var(--hw-mut);margin-right:-4px}
+.hw details[open] summary::before{content:"▾"}
+.hw summary span:first-of-type{margin-right:auto}
+.hw pre{margin:0;padding:14px 16px;overflow:auto;max-height:560px;border-top:1px solid var(--hw-line);font:12px/1.6 "JetBrains Mono",ui-monospace,Consolas,monospace;background:#FDFCFA;color:#121210;tab-size:2;white-space:pre;overflow-wrap:normal}
+.hw pre .c{color:#67635C;font-style:italic} .hw pre .s{color:#0F7A55}
+@media (max-width:620px){.hw{padding:16px}.hw table{display:block;overflow-x:auto}}
+.hw details.more .more-in{padding:14px;display:grid;gap:18px;border-top:1px solid var(--hw-line)}
+/* ---------- v4: Messages tab, Start here tour, Play the week ---------- */
+.vtabs .n{font-family:var(--font-m);font-size:10.5px;font-weight:500;padding:0 6px;border-radius:999px;background:var(--grid);color:var(--muted)}
+.vtabs button[aria-selected="true"] .n{background:var(--muted);color:var(--surface)}
+.hdr-r{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:flex-end}
+.starthere{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:6px 13px;font-size:13px;font-weight:600;background:var(--ink);color:var(--bg)}
+.starthere:focus-visible,.pbtn:focus-visible,.fchip:focus-visible,.mgo:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.play{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 14px;align-items:center}
+.pbtn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--ink);color:var(--surface);font-weight:600;font-size:13px;padding:8px 16px;border-radius:999px;min-width:150px;white-space:nowrap}
+.pbtn svg{width:12px;height:12px;fill:currentColor}
+.ptrack{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ptrack input{width:100%;margin:0;accent-color:var(--accent);cursor:pointer}
+.pdays{display:grid;font-family:var(--font-m);font-size:10.5px;color:var(--muted)}
+.ptime{font-family:var(--font-m);font-size:13px;font-weight:500;white-space:nowrap;text-align:right;min-width:104px}
+.pstats{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px 18px;font-size:12.5px;color:var(--muted)}
+.pstats b{color:var(--ink);font-variant-numeric:tabular-nums}
+.pstats .meNow{color:var(--ink)} .pstats .bkNow{color:var(--back)}
+@media (max-width:620px){.play{grid-template-columns:1fr}.ptime{text-align:left}.pbtn{justify-self:start}}
+.ev.fut,.bk.fut{opacity:.25}
+.ev.now{box-shadow:0 0 0 2px var(--accent);z-index:2}
+.bk.now{background:var(--back)} .bk.now span{color:var(--surface)}
+.nowline{position:absolute;left:0;right:0;height:0;border-top:2px solid var(--accent);z-index:4;pointer-events:none}
+.nowline::before{content:"";position:absolute;left:-5px;top:-6px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+.dh.fut .d,.dh.fut .bars{opacity:.4}
+.ic .res.moving{color:var(--accent)} .ic .res.moving::before{content:"\25D4  "}
+.ic.st-done{border-color:var(--onb-s)}
+.mv{display:flex;flex-direction:column;gap:18px}
+.mvhead{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
+.mvhead p{margin:6px 0 0;color:var(--muted);max-width:70ch}
+.mvf{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.fchip{all:unset;box-sizing:border-box;cursor:pointer;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 13px;font-size:13px;font-weight:600;color:var(--muted)}
+.fchip[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.mvf select{font:inherit;font-size:13px;font-weight:600;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);max-width:100%}
+.mday h3{font-family:var(--font-d);font-size:18px;margin:0 0 10px;display:flex;gap:10px;align-items:baseline}
+.mday h3 span{font-family:var(--font-m);font-size:11px;font-weight:500;color:var(--muted)}
+.mlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr));gap:10px}
+.mcard{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--msg);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.mcard .mwhen{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.mcard .mwhen b{font-family:var(--font-m);font-weight:500;color:var(--ink)}
+.mcard .m{border:0;padding:0}
+.mgo{all:unset;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--accent);align-self:flex-start}
+.mempty{color:var(--muted);font-size:14px}
+</style>
+
+</head><body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brandmark"><img class="lg-d" src="data:image/png;base64,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" alt="" width="98" height="18" aria-hidden="true"><span>Basav Sharma</span></div>
+    <div class="vtabs" role="tablist" aria-label="View">
+      <button role="tab" data-tab="dash" aria-selected="true">Week plan</button>
+      <button role="tab" data-tab="msgs" aria-selected="false" tabindex="-1">Messages <span class="n" id="msgN"></span></button>
+      <button role="tab" data-tab="how" aria-selected="false" tabindex="-1"><i class="yl" aria-hidden="true"></i>How it works</button>
+    </div>
+    <button class="datachip" id="dataBtn" aria-haspopup="dialog"><i class="led" aria-hidden="true"></i><span id="dataLbl">Sample data</span><b>Connect data</b></button>
+  </div>
+
+  <div id="view-dash" style="display:contents">
+  <header>
+    <div>
+      <div class="eyebrow">Part 1: how I run the week</div>
+      <h1 id="h1">Monday, 9:00 AM. Here's my week.</h1>
+    </div>
+    <div class="hdr-r">
+    <button class="starthere" id="tourBtn">Quick tour</button>
+    <div class="layers" role="group" aria-label="Show layers">
+      <label class="layer do"><input type="checkbox" id="L-do" checked> What I do</label>
+      <label class="layer msg"><input type="checkbox" id="L-msg" checked> What I send</label>
+      <label class="layer think"><input type="checkbox" id="L-think" checked> My thinking</label>
+      <label class="layer back"><input type="checkbox" id="L-back" checked> Running in background</label>
+    </div>
+    </div>
+  </header>
+
+  <div>
+    <div class="inbox" id="inbox"></div>
+    <div class="hint" style="margin-top:6px" id="hint"></div>
+  </div>
+
+  <div class="play" id="playbar">
+    <button class="pbtn" id="playBtn"></button>
+    <div class="ptrack"><input type="range" id="pRange" min="0" step="15" aria-label="Time in the week"><div class="pdays" id="pDays"></div></div>
+    <span class="ptime" id="pTime"></span>
+    <div class="pstats" id="pStats" aria-live="polite"></div>
+  </div>
+
+  <div class="main">
+    <div class="calbox">
+      <div class="cal" id="cal"></div>
+      <div class="cats">
+        <span><i class="c-inbox"></i>Inbox fire</span>
+        <span><i class="c-onb"></i>Onboarding project</span>
+        <span><i class="c-inv"></i>Investor update</span>
+        <span><i class="c-ceo"></i>CEO + closing loops</span>
+        <span><i class="c-team"></i>Team</span>
+        <span><i class="d"></i>Running in background (others working while I do something else)</span>
+        <span><i class="r"></i>Deadline</span>
+        <span><i class="pb"></i>Bars under each day: how far the two Friday projects are by end of that day</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>Assumed: ~15 people in SF; Google Workspace, Slack, GitHub, Linear, Ramp, Rippling; I have Slack and Google admin, not GitHub or Linear.</span>
+    <span>Names in brackets, like [name], are placeholders. The plan lives in one Google Sheet: see the <a href="#how" id="howLink">How it works tab</a>.</span>
+  </div>
+  </div>
+
+  <div id="view-msgs" class="mv" hidden></div>
+  <div id="view-how" hidden></div>
+</div>
+<div class="overlay" id="overlay" hidden>
+  <div class="panel" id="panelbox" role="dialog" aria-modal="true" aria-labelledby="ptitle">
+    <button class="x" id="close" aria-label="Close">&#x2715;</button>
+    <div id="panel"></div>
+  </div>
+</div>
+<div class="kov" id="kov" hidden>
+  <div class="kpanel" role="dialog" aria-modal="true" aria-labelledby="ktitle">
+    <button class="kx" id="kclose" aria-label="Close">&#x2715;</button>
+    <h2 id="ktitle">Connect your data</h2>
+    <p class="now" id="know"></p>
+    <div class="kopts">
+      <div class="kopt"><b>1. Get the template</b><span>Six tabs (Inbox, Blocks, Messages, Background, Deadlines, Days), the same columns as the Google Sheet. Opens in Excel or Google Sheets.</span><button class="kbtn ghost" id="kdl">Download .xlsx</button></div>
+      <div class="kopt"><b>2. Try it with your file</b><span>Move a block, add a message, mark an inbox item At risk. Save as .xlsx and load it here. It stays in your browser.</span><button class="kbtn" id="kup">Load .xlsx</button><input type="file" id="kfile" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden></div>
+      <div class="kopt"><b>3. Go live</b><span>The Sheet becomes the database, a short Apps Script posts to Slack, Gmail and Calendar, and this page runs privately inside Google.</span><button class="kbtn ghost" id="kgo">Show me how</button></div>
+    </div>
+    <p class="kmsg" id="kmsg" role="status" hidden></p>
+    <div style="display:flex;gap:18px;flex-wrap:wrap"><button class="klink" id="krefresh" hidden>Refresh from the Sheet</button><button class="klink" id="ksample" hidden>Back to sample data</button></div>
+  </div>
+</div>
+<script type="text/plain" id="code-gs">/**
+ * Week Plan: Google Sheet + Apps Script
+ * Built by Basav Sharma.
+ *
+ * The Sheet is the plan. This script keeps everything else in step with it:
+ *   1. Blocks tab -> Google Calendar events (re-running updates them, never duplicates).
+ *   2. Emails marked Ready -> Gmail drafts. A person presses Send.
+ *   3. Slack messages marked Ready -> sent when their block starts (checked every 15 minutes).
+ *   4. 5:15 PM on weekdays -> end-of-day note to the CEO, built from the Inbox tab.
+ *   5. The dashboard (HTML file "Dashboard") is served from here, private to the company's Google domain.
+ * Nothing goes out unless a person has set the row to Ready.
+ *
+ * Setup, about 15 minutes:
+ *   - Upload Week_Plan_Template.xlsx to Google Drive and save it as a Google Sheet.
+ *   - Extensions > Apps Script: paste this file as Code.gs, add an HTML file named Dashboard (the dashboard page).
+ *   - Project Settings > Script properties: SLACK_TOKEN (Slack app token with chat:write; a user token posts as you)
+ *     and CEO_SLACK_ID (the CEO's Slack member ID, for the end-of-day note).
+ *   - Reload the Sheet, then Week plan > Turn on automation (approve Google's prompt once).
+ *   - Deploy > New deployment > Web app (execute as me, access: anyone at the company) for the dashboard link.
+ */
+
+const TABS = ['Days', 'Inbox', 'Blocks', 'Messages', 'Background', 'Deadlines'];
+const COLORS = { 'Inbox fire': 'ORANGE', 'Onboarding project': 'GREEN', 'Investor update': 'YELLOW', 'CEO + closing loops': 'GRAY', 'Team': 'MAUVE' };
+
+function onOpen() {
+  SpreadsheetApp.getUi().createMenu('Week plan')
+    .addItem('Put my blocks on Google Calendar', 'pushBlocksToCalendar')
+    .addItem('Make Gmail drafts (emails marked Ready)', 'createEmailDrafts')
+    .addItem('Send Slack messages that are due (marked Ready)', 'sendDueSlackMessages')
+    .addItem('Send end-of-day note to CEO', 'sendEodNote')
+    .addSeparator()
+    .addItem('Turn on automation', 'installTriggers')
+    .addToUi();
+}
+
+// ---------- 1. Calendar ----------
+function pushBlocksToCalendar() {
+  const cal = CalendarApp.getDefaultCalendar();
+  let added = 0, updated = 0;
+  readTab_('Blocks').forEach(b => {
+    const start = at_(b.date, b.start), end = at_(b.date, b.end);
+    const desc = String(b.steps || '') + (b.thinking ? '\n\nWhy: ' + b.thinking : '');
+    let ev = b.calendar_event_id ? cal.getEventById(b.calendar_event_id) : null;
+    if (ev) {
+      ev.setTime(start, end); ev.setTitle(b.title); ev.setDescription(desc); updated++;
+    } else {
+      ev = cal.createEvent(b.title, start, end, { description: desc });
+      setCell_('Blocks', b._row, 'calendar_event_id', ev.getId()); added++;
+    }
+    if (COLORS[b.workstream]) ev.setColor(CalendarApp.EventColor[COLORS[b.workstream]]);
+  });
+  toast_(`${added} blocks added and ${updated} updated on your calendar.`);
+  return { added: added, updated: updated };
+}
+
+// ---------- 2. Gmail drafts ----------
+function createEmailDrafts() {
+  let n = 0;
+  readTab_('Messages').forEach(m => {
+    if (m.channel !== 'Email' || m.status !== 'Ready') return;
+    if (!/@/.test(m.send_to)) { mark_(m, 'Needs email address'); return; }
+    GmailApp.createDraft(String(m.send_to), m.subject || '(no subject)', String(m.text));
+    mark_(m, 'Drafted');
+    n++;
+  });
+  toast_(n + ' Gmail drafts ready to review and send.');
+  return n;
+}
+
+// ---------- 3. Slack, when the block starts ----------
+function sendDueSlackMessages() {
+  const token = prop_('SLACK_TOKEN');
+  if (!token) throw new Error('Add SLACK_TOKEN in Project Settings > Script properties.');
+  const blocks = byKey_(readTab_('Blocks'), 'block_id'), now = new Date();
+  let n = 0;
+  readTab_('Messages').forEach(m => {
+    if (!/^Slack/.test(m.channel) || m.status !== 'Ready') return;
+    const b = blocks[m.block_id];
+    if (!b || at_(b.date, b.start) > now) return;
+    if (!m.send_to) { mark_(m, 'Needs Slack ID'); return; }
+    const errors = String(m.send_to).split(/[,\s]+/).filter(Boolean)
+      .map(id => slack_(token, id, String(m.text))).filter(r => !r.ok).map(r => r.error);
+    mark_(m, errors.length ? 'Error: ' + errors.join(', ') : 'Sent');
+    if (!errors.length) n++;
+  });
+  return n;
+}
+
+// ---------- 4. End-of-day note to the CEO ----------
+function sendEodNote() {
+  const now = new Date(), today = startOfDay_(now);
+  if (now.getDay() === 0 || now.getDay() === 6) return '';
+  const rows = readTab_('Inbox');
+  const line = r => '• ' + r.item + (r.resolution ? ': ' + r.resolution : '');
+  const sections = [
+    ['Done today', rows.filter(r => r.status === 'Done' && r.closed_on && startOfDay_(asDate_(r.closed_on)).getTime() === today.getTime())],
+    ['At risk', rows.filter(r => r.status === 'At risk')],
+    ['Need from you', rows.filter(r => r.status === 'Need CEO')],
+  ];
+  const parts = [`*End of day, ${fmt_(now, 'EEE MMM d')}*`];
+  sections.forEach(([label, list]) => { if (list.length) parts.push(`*${label}*\n` + list.map(line).join('\n')); });
+  parts.push(`Still open: ${rows.filter(r => r.status === 'Open').length}. Full plan: ${SpreadsheetApp.getActive().getUrl()}`);
+  const text = parts.join('\n\n');
+  const token = prop_('SLACK_TOKEN'), ceo = prop_('CEO_SLACK_ID');
+  if (!token || !ceo) { Logger.log(text); toast_('Add SLACK_TOKEN and CEO_SLACK_ID to send. Note written to the log.'); return text; }
+  const r = slack_(token, ceo, text);
+  if (!r.ok) throw new Error('Slack said: ' + r.error);
+  return text;
+}
+
+// ---------- Automation ----------
+function installTriggers() {
+  ScriptApp.getProjectTriggers().forEach(t => {
+    if (['sendDueSlackMessages', 'sendEodNote'].indexOf(t.getHandlerFunction()) >= 0) ScriptApp.deleteTrigger(t);
+  });
+  ScriptApp.newTrigger('sendDueSlackMessages').timeBased().everyMinutes(15).create();
+  ScriptApp.newTrigger('sendEodNote').timeBased().everyDays(1).atHour(17).nearMinute(15).create();
+  toast_('Automation is on: Ready Slack messages every 15 min, CEO note at 5:15 PM.');
+}
+
+// ---------- Dashboard (web app) ----------
+function doGet() {
+  return HtmlService.createHtmlOutputFromFile('Dashboard')
+    .setTitle('Week plan')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
+/** Called by the dashboard: every tab as plain rows (dates become text). */
+function getData() {
+  const out = {};
+  TABS.forEach(n => { out[n] = readTab_(n).map(plain_); });
+  return out;
+}
+
+/** Called by the dashboard's Approve / Pull back buttons. Sending stays with the script. */
+function setMessageStatus(row, status) {
+  if (['Draft', 'Ready'].indexOf(status) < 0) throw new Error('The dashboard can only set Draft or Ready.');
+  const m = readTab_('Messages').filter(r => r._row === Number(row))[0];
+  if (!m) throw new Error('No message on row ' + row);
+  if (['Sent', 'Drafted'].indexOf(m.status) >= 0) throw new Error('Already ' + m.status + '.');
+  setCell_('Messages', m._row, 'status', status);
+  return true;
+}
+
+// ---------- Helpers ----------
+function slack_(token, channel, text) {
+  const res = UrlFetchApp.fetch('https://slack.com/api/chat.postMessage', {
+    method: 'post',
+    contentType: 'application/json; charset=utf-8',
+    headers: { Authorization: 'Bearer ' + token },
+    payload: JSON.stringify({ channel: channel, text: text }),
+    muteHttpExceptions: true,
+  });
+  return JSON.parse(res.getContentText());
+}
+function mark_(m, status) {
+  setCell_('Messages', m._row, 'status', status);
+  if (status === 'Sent' || status === 'Drafted') setCell_('Messages', m._row, 'sent_at', new Date());
+}
+function sheet_(name) {
+  const sh = SpreadsheetApp.getActive().getSheetByName(name);
+  if (!sh) throw new Error('Missing tab: ' + name);
+  return sh;
+}
+/** A tab as objects keyed by the header row; _row is the Sheet row number. */
+function readTab_(name) {
+  const values = sheet_(name).getDataRange().getValues();
+  const head = values.shift().map(h => String(h).trim());
+  return values.map((r, i) => {
+    const o = { _row: i + 2 };
+    head.forEach((h, j) => { if (h) o[h] = r[j]; });
+    return o;
+  }).filter(o => head.some(h => h && o[h] !== ''));
+}
+function setCell_(name, row, col, value) {
+  const sh = sheet_(name);
+  const j = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].indexOf(col);
+  if (j < 0) throw new Error(`Tab ${name} has no column ${col}`);
+  sh.getRange(row, j + 1).setValue(value);
+}
+function byKey_(rows, key) { const o = {}; rows.forEach(r => { o[r[key]] = r; }); return o; }
+function prop_(key) { return PropertiesService.getScriptProperties().getProperty(key); }
+function toast_(msg) { try { SpreadsheetApp.getActive().toast(msg); } catch (e) { Logger.log(msg); } }
+function tz_() { return SpreadsheetApp.getActive().getSpreadsheetTimeZone(); }
+function fmt_(d, pattern) { return Utilities.formatDate(d, tz_(), pattern); }
+function asDate_(v) {
+  if (v instanceof Date) return new Date(v.getTime());
+  const m = String(v).match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{2}))?/);
+  if (m) return new Date(+m[1], m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0));
+  const d = new Date(v);
+  if (isNaN(d.getTime())) throw new Error('Not a date: ' + v);
+  return d;
+}
+function startOfDay_(d) { const x = new Date(d.getTime()); x.setHours(0, 0, 0, 0); return x; }
+/** A date cell plus "9:15" (or a Sheets time cell) = one moment. */
+function at_(date, t) {
+  const s = t instanceof Date ? fmt_(t, 'H:mm') : String(t);
+  const m = s.match(/(\d{1,2}):(\d{2})\s*(am|pm)?/i);
+  if (!m) throw new Error('Not a time: ' + t);
+  let h = +m[1];
+  if (m[3] && /pm/i.test(m[3]) && h < 12) h += 12;
+  if (m[3] && /am/i.test(m[3]) && h === 12) h = 0;
+  const x = startOfDay_(asDate_(date));
+  x.setHours(h, +m[2], 0, 0);
+  return x;
+}
+/** Dates can't travel to the browser, so turn them into text first. */
+function plain_(row) {
+  const o = {};
+  Object.keys(row).forEach(k => {
+    const v = row[k];
+    if (!(v instanceof Date)) { o[k] = v; return; }
+    if (v.getFullYear() < 1900) o[k] = fmt_(v, 'H:mm');
+    else o[k] = fmt_(v, 'HH:mm') === '00:00' ? fmt_(v, 'yyyy-MM-dd') : fmt_(v, 'yyyy-MM-dd HH:mm');
+  });
+  return o;
+}</script>
+<script>
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+// ---------- Shared: data in and out, the Connect data dialog, How it works helpers ----------
+// The page runs three ways with the same code:
+//   sample = the rows built into this page;  file = an .xlsx someone uploads (read in the browser, never sent anywhere);
+//   live   = served by Apps Script from the Google Sheet (google.script.run exists), reads and writes the Sheet.
+const SHEETJS = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+const GAS = !!(window.google && google.script && google.script.run);
+let dataMode = "sample", dataName = "", xlsxP = null, toastT = null, kLast = null;
+const pad2 = n => String(n).padStart(2, "0");
+
+function loadXLSX() {
+  return xlsxP || (xlsxP = new Promise((res, rej) => {
+    if (window.XLSX) return res(window.XLSX);
+    const s = document.createElement("script");
+    s.src = SHEETJS;
+    s.onload = () => res(window.XLSX);
+    s.onerror = () => { xlsxP = null; rej(new Error("Couldn't load the Excel reader. Check the connection and try again.")); };
+    document.head.appendChild(s);
+  }));
+}
+/** Every tab of an .xlsx as rows keyed by the header row. */
+async function readXlsx(file) {
+  const X = await loadXLSX();
+  const wb = X.read(await file.arrayBuffer(), { type: "array" });
+  const tabs = {};
+  wb.SheetNames.forEach(n => {
+    tabs[n.trim()] = X.utils.sheet_to_json(wb.Sheets[n], { defval: "", raw: true }).map(r => {
+      const o = {};
+      Object.keys(r).forEach(k => { const v = r[k]; o[String(k).trim()] = typeof v === "string" ? v.trim() : v; });
+      return o;
+    });
+  });
+  return tabs;
+}
+// Excel stores dates as day counts from 1899-12-30; read them as wall-clock values, whatever the time zone.
+function serialParts(n) { const d = new Date(Math.round((n - 25569) * 864e5 / 6e4) * 6e4); return { y: d.getUTCFullYear(), m: d.getUTCMonth() + 1, d: d.getUTCDate(), h: d.getUTCHours(), mi: d.getUTCMinutes() }; }
+function isoDate(v) {
+  if (v instanceof Date && !isNaN(v)) return v.getFullYear() + "-" + pad2(v.getMonth() + 1) + "-" + pad2(v.getDate());
+  if (typeof v === "number") { const p = serialParts(v); return p.y + "-" + pad2(p.m) + "-" + pad2(p.d); }
+  const s = String(v || "").trim();
+  let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m) return m[1] + "-" + pad2(m[2]) + "-" + pad2(m[3]);
+  m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+  if (m) return (m[3].length === 2 ? "20" + m[3] : m[3]) + "-" + pad2(m[1]) + "-" + pad2(m[2]);
+  return "";
+}
+function parseDT(v) {
+  if (typeof v === "number") { const p = serialParts(v); return new Date(p.y, p.m - 1, p.d, p.h, p.mi); }
+  const s = String(v || "").trim(), d = isoDate(s);
+  if (!d) return null;
+  const t = s.match(/[ T](\d{1,2}):(\d{2})/), [y, m, dd] = d.split("-").map(Number);
+  return new Date(y, m - 1, dd, t ? +t[1] : 0, t ? +t[2] : 0);
+}
+/** "9:15", "2:30 PM" or an Excel time cell -> "H:MM" (24-hour). */
+function hm(v) {
+  if (typeof v === "number") { const mins = Math.round((v % 1) * 1440); return Math.floor(mins / 60) + ":" + pad2(mins % 60); }
+  const m = String(v || "").match(/(\d{1,2}):(\d{2})\s*(am|pm)?/i);
+  if (!m) return "";
+  let h = +m[1];
+  if (m[3] && /pm/i.test(m[3]) && h < 12) h += 12;
+  if (m[3] && /am/i.test(m[3]) && h === 12) h = 0;
+  return h + ":" + m[2];
+}
+/** Checks that the tabs and columns the page needs are there; says exactly what is missing. */
+function need(tabs, spec) {
+  const miss = [];
+  Object.entries(spec).forEach(([t, cols]) => {
+    if (!tabs[t]) { miss.push(`the "${t}" tab`); return; }
+    const have = new Set(Object.keys(tabs[t][0] || {}));
+    cols.forEach(c => { if (!have.has(c)) miss.push(`column "${c}" in "${t}"`); });
+  });
+  if (miss.length) throw new Error("This file is missing " + miss.join(", ") + ". Start from the template so the tabs match.");
+}
+function b64Blob(b64, type) { const bin = atob(b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new Blob([u], { type }); }
+async function saveFile(name, blob) {
+  if (window.claude && typeof window.claude.use === "function") {
+    try { const dl = await window.claude.use("downloads"); if (dl) { await dl.save({ filename: name, data: blob }); return true; } }
+    catch (e) { if (e && e.code === "declined") return false; if (e && e.code === "rate_limited") { toast("A save prompt is already open."); return false; } }
+  }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  return true;
+}
+function dlTemplate() { saveFile(APP.tplName, b64Blob(APP.tplB64, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")); }
+async function copyText(s) {
+  try { await navigator.clipboard.writeText(s); return true; }
+  catch (e) {
+    const ta = document.createElement("textarea");
+    ta.value = s; ta.setAttribute("readonly", ""); ta.style.cssText = "position:fixed;opacity:0;top:0;left:0";
+    document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand("copy"); } catch (_) { ok = false; }
+    ta.remove(); return ok;
+  }
+}
+function toast(msg) {
+  let t = document.getElementById("ktoast");
+  if (!t) { t = document.createElement("div"); t.id = "ktoast"; t.className = "ktoast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 3400);
+}
+/** Light code colouring: comments and strings only. */
+function hl(src) {
+  let o = "", i = 0; const n = src.length, e = s => s.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+  while (i < n) {
+    const c = src[i], d = src[i + 1];
+    if (c === "/" && d === "/") { let j = src.indexOf("\n", i); if (j < 0) j = n; o += `<span class="c">${e(src.slice(i, j))}</span>`; i = j; continue; }
+    if (c === "/" && d === "*") { let j = src.indexOf("*/", i + 2); j = j < 0 ? n : j + 2; o += `<span class="c">${e(src.slice(i, j))}</span>`; i = j; continue; }
+    if (c === "'" || c === '"' || c === "`") { let j = i + 1; while (j < n && src[j] !== c) { if (src[j] === "\\") j++; j++; } j++; o += `<span class="s">${e(src.slice(i, j))}</span>`; i = j; continue; }
+    o += e(c); i++;
+  }
+  return o;
+}
+function wrap2(s, n) { const w = s.split(" "); let a = "", b = ""; w.forEach(x => { if (!b && (a + " " + x).trim().length <= n) a = (a + " " + x).trim(); else b = (b + " " + x).trim(); }); return [a, b]; }
+/** The animated sources -> Sheet + script -> outputs picture, same drawing as my portfolio. */
+function hwFlow(o) {
+  const W = 1000, s = o.steps.length, hubX = 300, hubW = 300, hubY = 24, hubH = 50 + s * 62, H = hubY + hubH + 10, cy = hubY + hubH / 2;
+  const T = (x, y, cls, size, txt, extra) => `<text x="${x}" y="${y}" class="${cls}" font-size="${size}" ${extra || ""}>${esc(txt)}</text>`;
+  let v = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.aria)}"><defs><marker id="hwArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="context-stroke"/></marker></defs>`;
+  v += T(10, 14, "t-mut", 11, o.labels[0], 'font-weight="600" letter-spacing="1.2"') + T(hubX, 14, "t-mut", 11, o.labels[1], 'font-weight="600" letter-spacing="1.2"') + T(740, 14, "t-mut", 11, o.labels[2], 'font-weight="600" letter-spacing="1.2"');
+  const n = o.srcs.length, sg = (hubH - 40) / Math.max(1, n - 1);
+  o.srcs.forEach((x, i) => {
+    const y = hubY + i * sg, ty = cy - (n - 1) * 5 + i * 10;
+    v += `<path class="wire" stroke="${x[2]}" d="M240 ${y + 20} C 275 ${y + 20}, 265 ${ty}, ${hubX - 2} ${ty}" marker-end="url(#hwArr)"/>` +
+      `<rect class="node" x="10" y="${y}" width="230" height="40" rx="8" stroke="${x[2]}" stroke-width="1.5"/><rect x="10" y="${y}" width="6" height="40" rx="3" fill="${x[2]}"/>` +
+      T(26, y + 17, "t-ink", 12.5, x[0], 'font-weight="650"') + T(26, y + 32, "t-mut", 10.5, x[1]);
+  });
+  v += `<rect class="hub" x="${hubX}" y="${hubY}" width="${hubW}" height="${hubH}" rx="14" stroke-width="1"/>` + T(hubX + 18, hubY + 28, "t-ink", 15, o.hub, 'font-weight="700"');
+  o.steps.forEach((x, i) => {
+    const y = hubY + 62 + i * 62, [l1, l2] = wrap2(x[1], 41);
+    v += `<circle cx="${hubX + 27}" cy="${y}" r="9" class="t-ink"/><text x="${hubX + 27}" y="${y + 4}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--hw-card)">${i + 1}</text>` +
+      T(hubX + 44, y + 4, "t-ink", 12.5, x[0], 'font-weight="650"') + T(hubX + 44, y + 20, "t-mut", 11.5, l1) + T(hubX + 44, y + 35, "t-mut", 11.5, l2);
+  });
+  const m = o.outs.length, og = (hubH - 34) / Math.max(1, m - 1);
+  o.outs.forEach((x, i) => {
+    const y = hubY + i * og;
+    v += `<path class="wire" stroke="#8C887F" d="M${hubX + hubW + 2} ${cy - (m - 1) * 3 + i * 6} C 650 ${cy}, 690 ${y + 17}, 738 ${y + 17}" marker-end="url(#hwArr)"/>` +
+      `<rect class="node" x="740" y="${y}" width="250" height="34" rx="7" stroke="#DEDBD4"/>` + T(752, y + 21.5, "t-ink", 12.5, x);
+  });
+  return v + `</svg>`;
+}
+
+// ---------- Connect data dialog + view tabs ----------
+function setChip() {
+  document.querySelector("#dataBtn .led").className = "led" + (dataMode === "live" ? " live" : dataMode === "file" ? " file" : "");
+  document.getElementById("dataLbl").textContent = dataMode === "live" ? "Live: Google Sheet" : dataMode === "file" ? "Your file: " + dataName : "Sample data";
+}
+function kNow() {
+  document.getElementById("know").innerHTML = "Now showing: <b>" + esc(dataMode === "live" ? "your Google Sheet, live" : dataMode === "file" ? dataName : "sample data built into this page") + "</b>";
+  document.getElementById("ksample").hidden = dataMode === "sample";
+  document.getElementById("krefresh").hidden = !GAS;
+}
+function kMsg(text, kind) { const m = document.getElementById("kmsg"); m.hidden = !text; m.textContent = text || ""; m.className = "kmsg " + (kind || ""); }
+function openData() { kLast = document.activeElement; kNow(); kMsg(""); document.getElementById("kov").hidden = false; document.getElementById("kclose").focus(); }
+function closeData() { const o = document.getElementById("kov"); if (o.hidden) return; o.hidden = true; if (kLast && kLast.focus) kLast.focus(); }
+/** Swap the data behind the page. APP.apply builds everything first, so a bad file changes nothing. */
+function useData(tabs, mode, name) {
+  const prev = [dataMode, dataName];
+  dataMode = mode; dataName = name || "";
+  try { APP.apply(tabs); } catch (e) { [dataMode, dataName] = prev; throw e; }
+  setChip(); kNow();
+  const how = document.getElementById("view-how"); if (how.dataset.ready) { how.innerHTML = APP.how(); wireHow(how); }
+}
+function connectLive() {
+  document.getElementById("dataLbl").textContent = "Connecting to Google Sheet…";
+  google.script.run
+    .withSuccessHandler(tabs => { try { useData(tabs, "live", ""); toast("Loaded live from the Google Sheet."); } catch (e) { setChip(); toast(e.message); } })
+    .withFailureHandler(e => { setChip(); toast("Couldn't read the Sheet: " + (e && e.message || e)); })
+    .getData();
+}
+async function onUpload(e) {
+  const f = e.target.files[0]; e.target.value = "";
+  if (!f) return;
+  kMsg("Reading " + f.name + "…");
+  try { useData(await readXlsx(f), "file", f.name); kMsg("Loaded " + f.name + ". The dashboard now runs on your file. Nothing left your browser.", "ok"); toast("Loaded " + f.name); }
+  catch (err) { kMsg(err.message || String(err), "err"); toast(err.message || String(err)); }
+}
+function showTab(k) {
+  document.querySelectorAll(".vtabs [role=tab]").forEach(b => {
+    const on = b.dataset.tab === k, v = document.getElementById("view-" + b.dataset.tab);
+    b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1; if (v) v.hidden = !on;
+  });
+  const h = document.getElementById("view-how");
+  if (k === "how" && !h.dataset.ready) { h.innerHTML = APP.how(); h.dataset.ready = "1"; wireHow(h); }
+  if (APP.onTab) APP.onTab(k);
+}
+function wireHow(root) {
+  root.querySelectorAll("[data-dl-template]").forEach(b => { b.onclick = dlTemplate; });
+  root.querySelectorAll("[data-upload]").forEach(b => { b.onclick = () => document.getElementById("kfile").click(); });
+  root.querySelectorAll("[data-copy-code]").forEach(b => { b.onclick = async () => toast(await copyText(document.getElementById("code-gs").textContent.trim() + "\n") ? "Code.gs copied. Paste it into Extensions > Apps Script." : "Select the code below and copy it."); });
+  root.querySelectorAll("[data-go-dash]").forEach(b => { b.onclick = () => { showTab("dash"); window.scrollTo(0, 0); }; });
+}
+// ---------- Quick tour: the page goes dark except the bubble and the part it points to; Skip any time ----------
+// steps: [{ el: () => Element, title: "…", text: () => "…" }]. Shown once per browser session (key), reopened by a button.
+let KT = null;
+function kTour(steps, key) { kTourEnd(); KT = { steps, key, i: -1, from: document.activeElement }; kTourGo(0); }
+function kTourSeen(key) { try { return !!sessionStorage.getItem(key); } catch (e) { return false; } }
+function kTourEnd() {
+  if (!KT) return;
+  try { sessionStorage.setItem(KT.key, "1"); } catch (e) {}
+  document.querySelectorAll(".kt-spot,.kt-block,.tour").forEach(x => x.remove());
+  document.querySelectorAll(".tour-on").forEach(x => x.classList.remove("tour-on"));
+  const from = KT.from; KT = null;
+  if (from && from.focus && document.body.contains(from)) from.focus({ preventScroll: true });
+}
+function kTourGo(i) {
+  if (!KT) return;
+  const n = KT.steps.length;
+  if (i >= n) { kTourEnd(); return; }
+  const st = KT.steps[i], el = st.el();
+  if (!el) { if (i + 1 < n) kTourGo(i + 1); else kTourEnd(); return; }
+  KT.i = i;
+  document.querySelectorAll(".tour-on").forEach(x => x.classList.remove("tour-on"));
+  el.classList.add("tour-on");
+  el.scrollIntoView({ block: "center", inline: "nearest" });
+  const mk = (cls, tag) => { let x = document.querySelector("." + cls); if (!x) { x = document.createElement(tag || "div"); x.className = cls; document.body.appendChild(x); } return x; };
+  const blk = mk("kt-block"), spot = mk("kt-spot"), c = mk("tour");
+  blk.setAttribute("aria-hidden", "true"); spot.setAttribute("aria-hidden", "true");
+  c.setAttribute("role", "dialog"); c.setAttribute("aria-label", "Quick tour"); c.setAttribute("aria-live", "polite");
+  const txt = typeof st.text === "function" ? st.text() : st.text;
+  c.innerHTML = `<span class="tn">Quick tour · ${i + 1} of ${n}</span>${st.title ? `<b class="tt">${esc(st.title)}</b>` : ""}<p>${esc(txt)}</p>` +
+    `<div class="tb"><button class="skip">Skip tour</button><span class="sp"></span>${i ? `<button class="back">Back</button>` : ""}<button class="go">${i === n - 1 ? "Done" : "Next"}</button></div>`;
+  c.querySelector(".skip").onclick = kTourEnd;
+  c.querySelector(".go").onclick = () => kTourGo(i + 1);
+  const bk = c.querySelector(".back"); if (bk) bk.onclick = () => kTourGo(i - 1);
+  kTourPlace();
+  c.querySelector(".go").focus({ preventScroll: true });
+}
+function kTourPlace() {
+  if (!KT) return;
+  const el = document.querySelector(".tour-on"), spot = document.querySelector(".kt-spot"), c = document.querySelector(".tour");
+  if (!el || !spot || !c) return;
+  const r = el.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = innerHeight, pad = 8, gap = 14, m = 12;
+  const L = Math.max(4, r.left - pad), T = Math.max(4, r.top - pad), R = Math.min(vw - 4, r.right + pad), B = Math.min(vh - 4, r.bottom + pad);
+  Object.assign(spot.style, { left: L + "px", top: T + "px", width: Math.max(0, R - L) + "px", height: Math.max(0, B - T) + "px" });
+  const w = c.offsetWidth, h = c.offsetHeight;
+  let x = Math.max(m, Math.min(vw - w - m, L)), y;
+  if (B + gap + h <= vh - m) y = B + gap;
+  else if (T - gap - h >= m) y = T - gap - h;
+  else if (R + gap + w <= vw - m) { x = R + gap; y = Math.max(m, Math.min(vh - h - m, T)); }
+  else if (L - gap - w >= m) { x = L - gap - w; y = Math.max(m, Math.min(vh - h - m, T)); }
+  else y = vh - h - m;
+  Object.assign(c.style, { left: x + "px", top: y + "px" });
+}
+addEventListener("resize", kTourPlace);
+addEventListener("scroll", kTourPlace, true);
+document.addEventListener("keydown", e => {
+  if (!KT) return;
+  if (e.key === "Escape") kTourEnd();
+  else if (e.key === "Tab") { const b = [...document.querySelectorAll(".tour button")]; const k = b.indexOf(document.activeElement); e.preventDefault(); (b[(k + (e.shiftKey ? b.length - 1 : 1)) % b.length] || b[0]).focus(); }
+});
+
+function initKit() {
+  document.getElementById("dataBtn").onclick = openData;
+  document.getElementById("kclose").onclick = closeData;
+  document.getElementById("kov").addEventListener("click", e => { if (e.target.id === "kov") closeData(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeData(); });
+  document.getElementById("kdl").onclick = dlTemplate;
+  document.getElementById("kfile").onchange = onUpload;
+  document.getElementById("kup").onclick = () => document.getElementById("kfile").click();
+  document.getElementById("ksample").onclick = () => { useData(SAMPLE, "sample", ""); kMsg("Back to the sample data.", "ok"); };
+  document.getElementById("krefresh").onclick = () => { closeData(); connectLive(); };
+  document.getElementById("kgo").onclick = () => { closeData(); showTab("how"); const p = document.getElementById("plug"); if (p) p.scrollIntoView({ block: "start" }); };
+  const tabs = [...document.querySelectorAll(".vtabs [role=tab]")];
+  tabs.forEach((b, i) => {
+    b.onclick = () => showTab(b.dataset.tab);
+    b.onkeydown = e => { if (e.key === "ArrowRight" || e.key === "ArrowLeft") { const n = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length]; n.focus(); showTab(n.dataset.tab); } };
+  });
+  setChip();
+  if (GAS) connectLive();
+}
+
+// ---------- Data: the Google Sheet's tabs, as rows ----------
+const SAMPLE={"Days":[{"date":"2026-11-16","onboarding_pct":30,"investor_pct":10},{"date":"2026-11-17","onboarding_pct":55,"investor_pct":45},{"date":"2026-11-18","onboarding_pct":75,"investor_pct":75},{"date":"2026-11-19","onboarding_pct":90,"investor_pct":90},{"date":"2026-11-20","onboarding_pct":100,"investor_pct":100}],"Inbox":[{"id":1,"item":"Compliance evidence","priority":"P1","due":"due Wed","resolution":"Sent Tue, a day early","status":"Done","closed_on":"2026-11-17"},{"id":2,"item":"2 engineers start tomorrow","priority":"P0","due":"Tue 9:30","resolution":"Full access Mon 3 PM","status":"Done","closed_on":"2026-11-16"},{"id":3,"item":"Vendor $8.5K overdue","priority":"P0","due":"now","resolution":"Paid Mon 10:15 AM","status":"Done","closed_on":"2026-11-16"},{"id":4,"item":"CEO NYC + team travel","priority":"P0/P1","due":"Thu","resolution":"CEO Mon, team Wed","status":"Done","closed_on":"2026-11-18"},{"id":5,"item":"3 silent follow-ups","priority":"P2","due":"this week","resolution":"All closed Thu","status":"Done","closed_on":"2026-11-19"},{"id":6,"item":"Insurance renewal info","priority":"P0","due":"due Tue","resolution":"Sent Mon 5 PM","status":"Done","closed_on":"2026-11-16"},{"id":7,"item":"Lunch canceled","priority":"P2","due":"today","resolution":"Fixed Mon 9:20 AM","status":"Done","closed_on":"2026-11-16"}],"Blocks":[{"block_id":"B01","date":"2026-11-16","start":"9:00","end":"9:15","workstream":"CEO + closing loops","inbox_ids":"","title":"Triage the inbox","steps":"Read all 7 items and both Friday projects\nRank by: hard date, cost if it slips, needs someone else's time\nOpen one ops tracker: owner, date, status","thinking":"Seven fires and two Friday projects. Anything with an outside party, a hard date or a real cost gets done before noon. Anything that needs someone else's time gets asked for in the first hour, so it runs in the background while I work.","short_note":"Ask early so others work in parallel","calendar_event_id":""},{"block_id":"B02","date":"2026-11-16","start":"9:15","end":"9:30","workstream":"Inbox fire","inbox_ids":"7, 2","title":"Lunch + new-hire access","steps":"Reorder today's lunch for 12:30\nBook Tuesday's welcome lunch for A + B\nCreate their Slack + Google accounts myself\nAsk the eng admin for GitHub + Linear","thinking":"Lunch is a 5-minute fix, so it goes first and stops taking headspace. Access is the only part of tomorrow I can't do myself, so I ask now with exact names, teams and a deadline.","short_note":"5-minute fixes first","calendar_event_id":""},{"block_id":"B03","date":"2026-11-16","start":"9:30","end":"9:45","workstream":"Inbox fire","inbox_ids":"1, 5","title":"Compliance + follow-up asks","steps":"Send each engineer an exact evidence list\nPre-fill everything I can\nHold 30 min Tue 11 AM to do it together\nNudge 3 teammates, deadlines first","thinking":"The engineers are heads-down on a release. Make the ask tiny: an exact list, pre-filled docs, a slot already booked. For follow-ups: ask, nudge once, then raise it with their manager. Nothing goes quiet for more than 24 hours.","short_note":"Make the ask tiny","calendar_event_id":""},{"block_id":"B04","date":"2026-11-16","start":"9:45","end":"10:00","workstream":"Inbox fire","inbox_ids":"3, 1","title":"Vendor $8.5K + compliance partner","steps":"Check Ramp / Bill.com and the AP inbox\nApproved: give the vendor a pay date\nNot submitted: CEO OK at 10:00, pay by ACH today\nGive the compliance partner a firm date","thinking":"A service cut could hit live customers, which means our customers' end users. $8.5K is small next to that. The real fix is a process: one AP inbox and a weekly payment run.","short_note":"Small bill, big customer risk","calendar_event_id":""},{"block_id":"B05","date":"2026-11-16","start":"10:00","end":"10:15","workstream":"CEO + closing loops","inbox_ids":"3, 4","title":"CEO sync: 4 decisions","steps":"Vendor payment: approve\nNYC Thursday: meeting time; fly Wed night?\n3 calendar overlaps: pick from my fixes\nInvestor update: anything in or out?","thinking":"Bring decisions, not updates. The CEO is prepping for investors, so 10 minutes and 4 yes/no questions.","short_note":"Decisions, not updates","calendar_event_id":""},{"block_id":"B06","date":"2026-11-16","start":"10:15","end":"11:30","workstream":"Onboarding project","inbox_ids":"2","title":"Day 1-2 plan for A + B","steps":"Build their Day 1-2 schedule\nAssign a buddy each\nLaptops: set up, enroll, test\nLoad both into the new tracker (pilot)","thinking":"Their manager is busy with a release, so I build the plan and ask for 30 minutes, not 3 hours. Tomorrow is also the first test of the new onboarding system.","short_note":"Manager gives 30 min, not 3 hrs","calendar_event_id":""},{"block_id":"B07","date":"2026-11-16","start":"11:30","end":"12:30","workstream":"Inbox fire","inbox_ids":"6","title":"Insurance renewal pack","steps":"Pull headcount, payroll, revenue, states, contracts\nOne folder + a one-page company-facts sheet\nCOO confirms 3 numbers","thinking":"The information exists, it's just scattered. A one-page company-facts sheet makes the next renewal 30 minutes, and I'll reuse it for the compliance review and the investor update.","short_note":"Build it once, use it 3 times","calendar_event_id":""},{"block_id":"B08","date":"2026-11-16","start":"12:30","end":"13:00","workstream":"Team","inbox_ids":"7","title":"Team lunch","steps":"Tell the team: A + B start tomorrow","thinking":"Lunch is the easiest all-hands of the week.","short_note":"Easiest all-hands","calendar_event_id":""},{"block_id":"B09","date":"2026-11-16","start":"13:00","end":"14:00","workstream":"Inbox fire","inbox_ids":"4","title":"CEO NYC trip + team travel","steps":"Book CEO: Wed 6 PM SFO-JFK, hotel near the meeting, Thu evening return\nFix 3 calendar overlaps\nDeployment team: one travel sheet for 5 states","thinking":"The CEO's trip is 3 days out and fares only go up, so book now. Team travel spans 5 states and 2 weeks: get every date in one sheet, then book once instead of 10 one-offs. I did this at Chimes, planning the CEO's site visits across 4 countries.","short_note":"Book once, not 10 times","calendar_event_id":""},{"block_id":"B10","date":"2026-11-16","start":"14:00","end":"16:00","workstream":"Onboarding project","inbox_ids":"","title":"Build onboarding system v1","steps":"Tracker: one row per hire, tasks dated from the start date\nChecklists by role: eng, product, deployment\nAccess-by-role table\n#onboarding Slack channel + reminders\n3:00 check: A + B access is live","thinking":"8 hires \u00d7 ~24 tasks = ~200 tasks across 7 owner roles in 3 weeks. Today's problem (no access the day before) is what happens without a system. Build it on what we already use, Google Sheets and Slack. No new tool.","short_note":"~200 tasks, 7 owner roles, 3 weeks","calendar_event_id":""},{"block_id":"B11","date":"2026-11-16","start":"16:00","end":"17:00","workstream":"Investor update","inbox_ids":"","title":"Investor update: outline + data asks","steps":"Outline: TL;DR, metrics, wins, challenges, next 90 days, asks\nAsk each owner for numbers by Tue 3 PM","thinking":"Investors want 5 things: numbers vs last time, wins, problems told early, what's next, and how they can help. Send the data asks today so Tuesday is writing, not chasing.","short_note":"Tuesday = writing, not chasing","calendar_event_id":""},{"block_id":"B12","date":"2026-11-16","start":"17:00","end":"17:30","workstream":"CEO + closing loops","inbox_ids":"6, 2, 1","title":"Close loops + EOD note","steps":"Access live? Evidence status? Replies in?\nSend the insurance pack\n3-line note to the CEO","thinking":"Close every loop before logging off. The CEO should read 3 lines and know nothing is on fire.","short_note":"Done \u00b7 at risk \u00b7 need","calendar_event_id":""},{"block_id":"B13","date":"2026-11-17","start":"9:00","end":"9:30","workstream":"Onboarding project","inbox_ids":"2","title":"Pre-flight: test every login","steps":"Log in as A + B: Slack, Google, GitHub, Linear\nDesks and laptops ready","thinking":"Find the gaps before they do.","short_note":"Find gaps before they do","calendar_event_id":""},{"block_id":"B14","date":"2026-11-17","start":"9:30","end":"10:30","workstream":"Onboarding project","inbox_ids":"2","title":"Welcome A + B (Day 1)","steps":"Laptop handoff; every login works by 10:30\nCompany story with the CEO (20 min)\nMeet their buddy","thinking":"The first hour sets the tone. The goal is a merged PR by Day 3, so remove every blocker today.","short_note":"Goal: first PR by Day 3","calendar_event_id":""},{"block_id":"B15","date":"2026-11-17","start":"10:30","end":"11:00","workstream":"CEO + closing loops","inbox_ids":"5","title":"Second nudges","steps":"Nudge anyone still silent\nConfirm the broker got the pack","thinking":"This is the last nudge. After this it goes to their manager, kindly.","short_note":"Last nudge, then manager","calendar_event_id":""},{"block_id":"B16","date":"2026-11-17","start":"11:00","end":"11:30","workstream":"Inbox fire","inbox_ids":"1","title":"Compliance session","steps":"30 min with the engineers: screenshots + exports\nCheck against the partner's list","thinking":"I did 80% of it. They only add what only they can.","short_note":"They add only what only they can","calendar_event_id":""},{"block_id":"B17","date":"2026-11-17","start":"12:30","end":"13:30","workstream":"Team","inbox_ids":"7","title":"Welcome lunch for A + B","steps":"Team lunch; everyone says name, role, one fun fact","thinking":"Cheap, and it's what they'll remember about week one.","short_note":"What they'll remember","calendar_event_id":""},{"block_id":"B18","date":"2026-11-17","start":"13:30","end":"16:30","workstream":"Investor update","inbox_ids":"","title":"Investor update: draft v1","steps":"Numbers in from owners\nMetrics table vs last update\nWins, challenges, next 90 days, asks","thinking":"Check the math before the words: ARR = customers \u00d7 revenue per customer; runway = cash \u00f7 burn. One page. Results against the July plan first, then Q4 priorities, each with its plan.","short_note":"Math first, then words","calendar_event_id":""},{"block_id":"B19","date":"2026-11-17","start":"16:30","end":"17:00","workstream":"Inbox fire","inbox_ids":"1","title":"Send compliance package","steps":"Index page mapping each item to their list\nSend","thinking":"I promised EOD Tuesday on Monday. Keep it.","short_note":"Promised EOD Tue. Keep it.","calendar_event_id":""},{"block_id":"B20","date":"2026-11-17","start":"17:00","end":"17:30","workstream":"Onboarding project","inbox_ids":"2","title":"Pilot debrief + EOD note","steps":"Ask A + B: what was missing today?\nFix those gaps in the tracker\n3-line note to the CEO","thinking":"Two real users just tested the system. Fix what they found before the next 6 start.","short_note":"Fix before the next 6 start","calendar_event_id":""},{"block_id":"B21","date":"2026-11-18","start":"9:00","end":"10:30","workstream":"Inbox fire","inbox_ids":"4","title":"Book deployment team travel","steps":"Book flights + customers from the sheet\nOne itinerary sheet; raise Ramp card limits","thinking":"One sheet everyone can see beats 10 confirmation emails.","short_note":"One sheet, not 10 emails","calendar_event_id":""},{"block_id":"B22","date":"2026-11-18","start":"10:30","end":"12:00","workstream":"Onboarding project","inbox_ids":"","title":"Plans for the next 6 hires","steps":"Checklists per hire (3 start Mon Nov 23)\nPre-fill 90% of each plan","thinking":"Managers own 3 things: goals, first task, buddy. Ops owns everything else.","short_note":"Managers own 3 things","calendar_event_id":""},{"block_id":"B23","date":"2026-11-18","start":"13:00","end":"14:00","workstream":"Investor update","inbox_ids":"","title":"Investor update v2 to CEO","steps":"Tighten to one page\nCover note with 3 things to check","thinking":"Get it to the CEO before the flight, so the update is also prep for Thursday.","short_note":"Also Thursday prep","calendar_event_id":""},{"block_id":"B24","date":"2026-11-18","start":"14:00","end":"15:00","workstream":"CEO + closing loops","inbox_ids":"4","title":"CEO NYC trip brief","steps":"One page: attendees, agenda, logistics\nKey numbers from the update","thinking":"The CEO should walk in with the same numbers investors will read on Friday.","short_note":"Same numbers as Friday","calendar_event_id":""},{"block_id":"B25","date":"2026-11-18","start":"15:00","end":"16:30","workstream":"Onboarding project","inbox_ids":"","title":"Onboarding automation","steps":"Slack reminders to task owners\nDay-5 pulse form (3 questions)\nGoogle groups per role = one-click access","thinking":"Access should mean adding someone to a group, not 5 separate requests.","short_note":"Access = one group, not 5 asks","calendar_event_id":""},{"block_id":"B26","date":"2026-11-18","start":"16:30","end":"17:00","workstream":"CEO + closing loops","inbox_ids":"","title":"Close loops + EOD note","steps":"Check tracker, inbox, follow-ups\n3-line note to the CEO","thinking":"Same 3 lines every day: done, at risk, need from you.","short_note":"Same 3 lines daily","calendar_event_id":""},{"block_id":"B27","date":"2026-11-19","start":"9:00","end":"9:30","workstream":"Onboarding project","inbox_ids":"2","title":"A + B Day 3 check-in","steps":"First PR merged?\nAnything still missing?","thinking":"A Day 3 PR is the one number that tells me onboarding worked.","short_note":"The one number","calendar_event_id":""},{"block_id":"B28","date":"2026-11-19","start":"9:30","end":"11:00","workstream":"Investor update","inbox_ids":"","title":"Apply CEO's edits","steps":"Edits from the flight\nFinal numbers check","thinking":"The CEO's voice, my structure.","short_note":"The CEO's voice, my structure","calendar_event_id":""},{"block_id":"B29","date":"2026-11-19","start":"11:00","end":"12:00","workstream":"Onboarding project","inbox_ids":"","title":"Hiring managers: 15 min each","steps":"Review goals, first task, buddy (3 managers)","thinking":"15 minutes now saves a lost first week later.","short_note":"15 min saves a week","calendar_event_id":""},{"block_id":"B30","date":"2026-11-19","start":"13:00","end":"14:00","workstream":"Inbox fire","inbox_ids":"5, 4","title":"Close follow-ups","steps":"All 3 tasks closed or escalated\nCheck team travel is on track","thinking":"Anything still open after 2 nudges goes to their manager today.","short_note":"2 nudges, then escalate","calendar_event_id":""},{"block_id":"B31","date":"2026-11-19","start":"14:00","end":"16:00","workstream":"Onboarding project","inbox_ids":"","title":"Onboarding playbook","steps":"One page: how onboarding works\nWho does what, when","thinking":"If I'm out, anyone can run it from the tracker and this page.","short_note":"Runs without me","calendar_event_id":""},{"block_id":"B32","date":"2026-11-19","start":"16:00","end":"16:30","workstream":"CEO + closing loops","inbox_ids":"4","title":"Debrief CEO from NYC","steps":"What did investors ask?\nAnswer it in Friday's update","thinking":"Anything asked in the room should be answered in writing on Friday.","short_note":"Answer it in writing","calendar_event_id":""},{"block_id":"B33","date":"2026-11-20","start":"9:00","end":"9:30","workstream":"Investor update","inbox_ids":"","title":"Final check; CEO sends","steps":"Last numbers check\nCEO sends at 9:30","thinking":"Send Friday morning so investors read it before the weekend.","short_note":"Read before the weekend","calendar_event_id":""},{"block_id":"B34","date":"2026-11-20","start":"10:00","end":"10:30","workstream":"Onboarding project","inbox_ids":"","title":"Hand off onboarding","steps":"15-min tracker walkthrough with managers\n3 hires starting Monday: all green","thinking":"Done means the next 6 hires are green on the dashboard, not that a doc exists.","short_note":"Done = all green","calendar_event_id":""},{"block_id":"B35","date":"2026-11-20","start":"11:00","end":"11:30","workstream":"Onboarding project","inbox_ids":"2","title":"Day-5 pulse with A + B","steps":"3 questions: what's unclear, what's blocked, rate week one 1-5","thinking":"Their answers are next week's fixes.","short_note":"Next week's fixes","calendar_event_id":""},{"block_id":"B36","date":"2026-11-20","start":"14:00","end":"14:30","workstream":"CEO + closing loops","inbox_ids":"3, 6, 1, 4","title":"Week retro: fix root causes","steps":"Vendor: one AP inbox + weekly pay run\nInsurance: company-facts sheet\nCompliance: evidence calendar\nTravel: one booking sheet","thinking":"Every fire this week becomes a system, so it doesn't come back.","short_note":"Every fire becomes a system","calendar_event_id":""},{"block_id":"B37","date":"2026-11-20","start":"14:30","end":"15:30","workstream":"CEO + closing loops","inbox_ids":"","title":"Plan next week","steps":"3 hires start Mon Nov 23\nDeployment travel check-ins","thinking":"Start Monday with the list already made.","short_note":"Monday list ready","calendar_event_id":""}],"Messages":[{"block_id":"B02","channel":"Slack DM","to":"CEO","send_to":"","subject":"","text":"Morning. 10 min at 10? I need 4 quick decisions: vendor payment, your NYC trip, 3 calendar overlaps, and the investor update. Everything else is handled.","status":"Draft","sent_at":""},{"block_id":"B02","channel":"Slack #general","to":"Team","send_to":"","subject":"","text":"Lunch is back on today, arriving 12:30. Tomorrow we welcome A and B to engineering with a team lunch at 12:30. Please keep it free.","status":"Draft","sent_at":""},{"block_id":"B02","channel":"Slack DM","to":"Eng admin","send_to":"","subject":"","text":"Hi [name], A and B start tomorrow. Slack and Google are done. Could you add them to GitHub (team: platform) and Linear (team: eng) by 3 PM today? Should take 10 minutes. If it's more, tell me and I'll work around the release.","status":"Draft","sent_at":""},{"block_id":"B03","channel":"Slack DM","to":"2 engineers","send_to":"","subject":"","text":"Hi [name], our compliance partner needs security evidence by Wednesday for [customer]'s review, and they've followed up twice. From you I only need: 1) access-review screenshot, 2) deploy log export. I've pre-filled the rest. Can you send by Tue noon? I've held 30 min Tue 11 AM if it's easier to do together.","status":"Draft","sent_at":""},{"block_id":"B03","channel":"Slack DM","to":"3 teammates","send_to":"","subject":"","text":"Hi [name], checking on [task]. It's due [date] and I need [specific thing] by [time] to stay on track. If something's blocking you, tell me and I'll help clear it.","status":"Draft","sent_at":""},{"block_id":"B04","channel":"Email","to":"Vendor","send_to":"","subject":"Invoice #[ ] for $8,500: payment by ACH today","text":"Hi [name],\n\nThank you for following up on invoice #[ ] for $8,500. Payment is approved and goes out by ACH today. You'll receive the remittance advice by email.\n\nGoing forward, please send invoices to ap@[company] so they go straight into our weekly payment run.\n\nBest regards,\nBasav","status":"Draft","sent_at":""},{"block_id":"B04","channel":"Email","to":"Compliance partner","send_to":"","subject":"Security evidence: full set by EOD Tuesday","text":"Hi [name],\n\nThank you for following up. You'll have the full evidence set by EOD Tuesday.\n\nI'm your single point of contact from here.\n\nThanks,\nBasav","status":"Draft","sent_at":""},{"block_id":"B06","channel":"Email","to":"A + B","send_to":"","subject":"Welcome to the team: your first two days","text":"Hi [name],\n\nWe're excited you start tomorrow! Please arrive at 9:30 at [address] and ask for me. Bring ID for your I-9.\n\nThe morning is laptop and logins, then time with the CEO and a product demo. Team lunch is at 12:30. Your buddy is [name].\n\nQuestions tonight? Text me at [number].\n\nSee you tomorrow,\nBasav","status":"Draft","sent_at":""},{"block_id":"B06","channel":"Slack DM","to":"Their manager","send_to":"","subject":"","text":"I've built A + B's Day 1-2 plan so you can stay on the release. I only need 30 min from you tomorrow at 2 PM for a 1:1 and their first ticket. Plan: [link]","status":"Draft","sent_at":""},{"block_id":"B07","channel":"Slack DM","to":"COO","send_to":"","subject":"","text":"Insurance renewal is due tomorrow. I've filled it from payroll, Ramp and our contracts. Can you confirm 3 numbers by 3 PM: headcount (23 by Dec), 2026 revenue estimate, and the states we operate in?","status":"Draft","sent_at":""},{"block_id":"B09","channel":"Slack DM","to":"CEO","send_to":"","subject":"","text":"Booked: SFO-JFK Wed 6:05 PM, customer 5 min from the meeting, back Thu 7:30 PM. Moved your 3 overlaps (details in the trip brief Wednesday).","status":"Draft","sent_at":""},{"block_id":"B09","channel":"Slack #deployment","to":"Deployment team","send_to":"","subject":"","text":"Travel for the next 2 weeks: please add your customer go-lives and dates to this sheet by Tue noon [link]. I'll book everything Wednesday and send one itinerary. Policy: up to $250/night, Ramp card for meals.","status":"Draft","sent_at":""},{"block_id":"B11","channel":"Slack #leads","to":"COO, CTO, Sales, Finance","send_to":"","subject":"","text":"For Friday's investor update I need by Tue 3 PM: customers live + signed-not-live, ARR, cash and burn, pipeline, and one product win. A number and one line each is perfect.","status":"Draft","sent_at":""},{"block_id":"B12","channel":"Email","to":"Insurance broker","send_to":"","subject":"Renewal information","text":"Hi [name],\n\nAttached is everything for the renewal: company facts, payroll, revenue, locations and contracts.\n\nHappy to jump on a call tomorrow if anything is missing.\n\nThanks,\nBasav","status":"Draft","sent_at":""},{"block_id":"B12","channel":"Slack DM","to":"CEO","send_to":"","subject":"","text":"Done: vendor paid, insurance sent, your NYC trip booked, A + B have full access and a Day 1-2 plan.\nAt risk: evidence from 1 of 2 engineers, due Tue noon.\nNeed from you: nothing today.","status":"Draft","sent_at":""},{"block_id":"B14","channel":"Slack #general","to":"Team","send_to":"","subject":"","text":"Please welcome A and B, who join engineering today! A was [one line]. B was [one line]. Say hi at lunch at 12:30.","status":"Draft","sent_at":""},{"block_id":"B15","channel":"Slack DM","to":"Silent teammate","send_to":"","subject":"","text":"Hi [name], quick nudge on [task], due [date]. Can you send [thing] by 3 PM? If you're stuck, let's take 10 minutes now.","status":"Draft","sent_at":""},{"block_id":"B19","channel":"Email","to":"Compliance partner","send_to":"","subject":"Security evidence: full set attached, a day early","text":"Hi [name],\n\nAs promised, the full evidence set is attached, a day early. Page 1 maps each item to your request list.\n\nI'm around tomorrow for any questions.\n\nThanks,\nBasav","status":"Draft","sent_at":""},{"block_id":"B20","channel":"Slack DM","to":"CEO","send_to":"","subject":"","text":"Done: A + B fully set up with first tickets; compliance evidence sent a day early; investor update v1 drafted.\nTomorrow: draft to you before your flight.","status":"Draft","sent_at":""},{"block_id":"B21","channel":"Slack #deployment","to":"Deployment team","send_to":"","subject":"","text":"All travel for the next 2 weeks is booked. Itinerary with flights, hotels and confirmation numbers: [link]. Ramp limits raised for the trip.","status":"Draft","sent_at":""},{"block_id":"B22","channel":"Slack DM","to":"Hiring managers","send_to":"","subject":"","text":"Your new hire starts Nov 23 / Nov 30. I've done 90% of their plan. I need 3 things from you by Friday: 30/60/90 goals, a first task, and a buddy. 15 min Thursday to review?","status":"Draft","sent_at":""},{"block_id":"B23","channel":"Slack DM","to":"CEO","send_to":"","subject":"","text":"Investor update draft: [link]. 3 things to check:\n1) confirm ARR, cash and runway\n2) OK to name the management-company deal?\n3) The tone is formal and on plan: results against July first, then Q4 priorities.\nIt doubles as your talking points tomorrow. Plan: send Fri 9:30 AM.","status":"Draft","sent_at":""},{"block_id":"B32","channel":"Slack DM","to":"CEO","send_to":"","subject":"","text":"How did it go? Send me any questions investors asked and I'll answer them in Friday's update.","status":"Draft","sent_at":""},{"block_id":"B33","channel":"Email (from CEO)","to":"Investors","send_to":"","subject":"Q3 2026 update: ahead of plan on customers and ARR","text":"Dear investors,\n\nPlease find our Q3 update below, with the full deck attached.\n\nThe company closed Q3 ahead of the plan we shared in July: 64 customers are live against a target of 62, and ARR is $2.1M against $2.0M, up 31% since July. A further 22 customers are under contract, and bringing them live is our Q4 priority.\n\nGo-lives averaged 31 days against our 21-day target, as brand-managed customers added an IT security review. SOC 2 Type I and a standard security pack now shorten that step, and with one deployment lead on board and two more starting November 23, we are on track for January.\n\nPriority introductions this quarter: customer groups with 10 to 50 properties, industry operators to lead go-lives, and Series A firms that back vertical AI, as preparation begins in Q1.\n\nThe deck has the detail, and the live dashboard [dashboard link] holds the same figures, updated continuously. Please sign in with the email address this update was sent to.\n\nBest regards,\nAlex","status":"Draft","sent_at":""}],"Background":[{"date":"2026-11-16","start":"9:30","end":"15:00","lane":1,"task":"Eng admin adds GitHub + Linear","inbox_ids":"2"},{"date":"2026-11-16","start":"17:00","end":"18:00","lane":1,"task":"Owners pull numbers","inbox_ids":""},{"date":"2026-11-16","start":"9:45","end":"18:00","lane":2,"task":"Engineers gather evidence","inbox_ids":"1"},{"date":"2026-11-16","start":"10:15","end":"12:15","lane":3,"task":"ACH payment clearing","inbox_ids":"3"},{"date":"2026-11-16","start":"12:30","end":"15:00","lane":3,"task":"COO confirms numbers","inbox_ids":"6"},{"date":"2026-11-16","start":"9:45","end":"13:45","lane":4,"task":"Waiting on 3 replies","inbox_ids":"5"},{"date":"2026-11-16","start":"14:00","end":"18:00","lane":4,"task":"Team fills travel sheet","inbox_ids":"4"},{"date":"2026-11-17","start":"9:00","end":"12:00","lane":1,"task":"Engineers gather evidence","inbox_ids":"1"},{"date":"2026-11-17","start":"13:30","end":"17:30","lane":1,"task":"Buddies pair with A + B","inbox_ids":"2"},{"date":"2026-11-17","start":"9:00","end":"12:00","lane":2,"task":"Team fills travel sheet","inbox_ids":"4"},{"date":"2026-11-17","start":"9:00","end":"15:00","lane":3,"task":"Owners send numbers","inbox_ids":""},{"date":"2026-11-18","start":"9:00","end":"17:30","lane":1,"task":"Buddies pair with A + B","inbox_ids":"2"},{"date":"2026-11-18","start":"9:00","end":"12:00","lane":2,"task":"Partner reviews evidence","inbox_ids":"1"},{"date":"2026-11-18","start":"14:00","end":"18:00","lane":2,"task":"CEO reviews draft","inbox_ids":""},{"date":"2026-11-19","start":"9:00","end":"18:00","lane":1,"task":"CEO in NYC","inbox_ids":"4"},{"date":"2026-11-19","start":"9:00","end":"18:00","lane":2,"task":"Deployment team on the road","inbox_ids":"4"},{"date":"2026-11-20","start":"9:30","end":"18:00","lane":1,"task":"Investors read update","inbox_ids":""},{"date":"2026-11-20","start":"9:00","end":"18:00","lane":2,"task":"Deployment team on the road","inbox_ids":"4"}],"Deadlines":[{"date":"2026-11-16","time":"9:00","label":"Inbox: 7 fires"},{"date":"2026-11-17","time":"9:30","label":"A + B start"},{"date":"2026-11-17","time":"12:00","label":"Evidence due from engineers"},{"date":"2026-11-18","time":"9:00","label":"Compliance due (sent Tue)"},{"date":"2026-11-18","time":"18:00","label":"CEO flies to NYC"},{"date":"2026-11-19","time":"9:00","label":"CEO investor mtg, NYC"},{"date":"2026-11-20","time":"9:30","label":"Investor update goes out"},{"date":"2026-11-20","time":"17:00","label":"Both projects due"}]};
+const SPEC={Days:["date","onboarding_pct","investor_pct"],Inbox:["id","item","priority","due","resolution","status"],Blocks:["block_id","date","start","end","workstream","inbox_ids","title","steps","thinking","short_note"],Messages:["block_id","channel","to","subject","text","status"]};
+const WSK={"Inbox fire":"inbox","Onboarding project":"onb","Investor update":"inv","CEO + closing loops":"ceo","Team":"team"};
+const CAT={inbox:"Inbox fire",onb:"Onboarding project",inv:"Investor update",ceo:"CEO + closing loops",team:"Team"};
+let DAYS=[], INBOX=[], MK=[], E=[], BK=[], START=9*60, END=18*60;
+const t=s=>{const[h,m]=s.split(":").map(Number);return h*60+m};
+
+/** Sheet rows -> what the page draws. Builds everything first, so a bad file changes nothing. */
+function build(tabs){
+ need(tabs,SPEC);
+ const dates=[...new Set([...tabs.Days.map(r=>isoDate(r.date)),...tabs.Blocks.map(r=>isoDate(r.date))].filter(Boolean))].sort().slice(0,7);
+ if(!dates.length)throw new Error("No dates found. Fill the date column in Days and Blocks.");
+ const prog={};tabs.Days.forEach(r=>{prog[isoDate(r.date)]=[Number(r.onboarding_pct)||0,Number(r.investor_pct)||0].map(v=>Math.max(0,Math.min(100,v<=1&&v>0?v*100:v)))});
+ const days=dates.map(d=>{const[y,m,dd]=d.split("-").map(Number),x=new Date(y,m-1,dd);
+  return{k:x.toLocaleDateString("en-US",{weekday:"short"}),long:x.toLocaleDateString("en-US",{weekday:"long"}),n:x.toLocaleDateString("en-US",{month:"short",day:"numeric"}),p:prog[d]||[0,0]}});
+ const di=v=>dates.indexOf(isoDate(v)), ids=s=>String(s||"").split(/[,;\s]+/).map(Number).filter(Boolean);
+ const msgs={};(tabs.Messages||[]).forEach(m=>{if(m.block_id===""||!m.text)return;
+  (msgs[m.block_id]=msgs[m.block_id]||[]).push({ch:String(m.channel||""),to:String(m.to||""),x:String(m.text),subj:String(m.subject||""),st:String(m.status||"Draft"),row:m._row||null})});
+ const e=tabs.Blocks.filter(b=>di(b.date)>=0&&hm(b.start)&&hm(b.end)).map(b=>({d:di(b.date),s:hm(b.start),e:hm(b.end),c:WSK[String(b.workstream).trim()]||"ceo",tags:ids(b.inbox_ids),
+  ti:String(b.title),do:String(b.steps||"").split(/\n+/).map(x=>x.trim()).filter(Boolean),msgs:msgs[b.block_id]||[],think:String(b.thinking||""),sh:String(b.short_note||"")}));
+ const bk=(tabs.Background||[]).filter(b=>di(b.date)>=0&&hm(b.start)&&hm(b.end)).map(b=>({d:di(b.date),s:hm(b.start),e:hm(b.end),l:Math.min(3,Math.max(0,(Number(b.lane)||1)-1)),x:String(b.task),tags:ids(b.inbox_ids)}));
+ const mk=(tabs.Deadlines||[]).filter(m=>di(m.date)>=0).map(m=>[di(m.date),hm(m.time)||"9:00",String(m.label)]);
+ // When each fire closes (for Play the week): a time in the resolution ("Paid Mon 10:15 AM"), else the end of its last block that day
+ const closeAt=r=>{if(!/done/i.test(String(r.status||"")))return Infinity;const d=di(r.closed_on);if(d<0)return -1;
+  const mt=String(r.resolution||"").match(/(\d{1,2})(?::(\d{2}))?\s*(AM|PM)/i);if(mt)return d*1440+(Number(mt[1])%12+(/pm/i.test(mt[3])?12:0))*60+(Number(mt[2])||0);
+  const ends=[...e,...bk].filter(x=>x.d===d&&x.tags.includes(Number(r.id))).map(x=>t(x.e));return d*1440+(ends.length?Math.max(...ends):17*60+30)};
+ const inbox=tabs.Inbox.filter(r=>r.id!==""&&r.item).map(r=>({id:Number(r.id),nm:String(r.item),p:String(r.priority||"P2").toUpperCase(),due:String(r.due||""),res:String(r.resolution||""),st:String(r.status||"Open"),cl:closeAt(r)}));
+ const all=[...e,...bk].flatMap(x=>[t(x.s),t(x.e)]);
+ return{days,e,bk,mk,inbox,start:Math.min(9*60,Math.floor(Math.min(...all)/60)*60),end:Math.max(18*60,Math.ceil(Math.max(...all)/60)*60)};
+}
+const APP={
+ tplName:"Week_Plan_Template.xlsx", tplB64:"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",
+ apply(tabs){const m=build(tabs);stopPlay();DAYS=m.days;E=m.e;BK=m.bk;MK=m.mk;INBOX=m.inbox;START=m.start;END=m.end;sel=null;filt=null;PT=null;render()},
+ how:()=>howHTML(),
+ onTab(k){if(k!=="dash")stopPlay();if(k==="msgs")msgsView()}
+};
+
+// ---------- Draw ----------
+const fmt=m=>{let h=Math.floor(m/60),mm=m%60,ap=h>=12?"PM":"AM";h=h>12?h-12:h;return h+(mm?":"+String(mm).padStart(2,"0"):"")+" "+ap};
+const fmtS=m=>{let h=Math.floor(m/60),mm=m%60;h=h>12?h-12:h;return h+":"+String(mm).padStart(2,"0")};
+const HOUR=104, px=m=>(m-START)/60*HOUR;
+const LANES=4, LW=17, BACKW=LANES*LW+2;
+let sel=null, filt=null, lastFocus=null;
+const L={do:true,msg:true,think:true,back:true};
+
+/** "P0/P1" -> two pills, coloured like the deck: P0 critical, P1 high, P2 low. */
+const PNAME={P0:"critical",P1:"high",P2:"low"};
+const pills=p=>String(p||"P2").split(/[\/,+ ]+/).filter(Boolean).map(q=>{q=q.toUpperCase();const k=/^P[012]$/.test(q)?q:"P2";return `<span class="pill ${k.toLowerCase()}" title="${k}: ${PNAME[k]}">${esc(q)}</span>`}).join("");
+const fireName=id=>{const f=INBOX.find(x=>x.id===id);return f?f.nm:""};
+const handles=tags=>{const n=tags.map(fireName).filter(Boolean);return n.length?`<p class="handles">From my inbox: <b>${n.map(esc).join("</b> · <b>")}</b></p>`:""};
+function inbox(){
+ document.getElementById("h1").textContent=`${DAYS[0].long}, ${fmt(START)}. Here's my week.`;
+ document.getElementById("hint").textContent=`My inbox at ${fmt(START)}: ${INBOX.length} fires. Tap one to see where it lands in the week. Tap any block for what I do, send and think.`;
+ document.querySelector(".inbox").style.gridTemplateColumns=INBOX.length===7?"":"repeat(auto-fill,minmax(150px,1fr))";
+ document.getElementById("inbox").innerHTML=INBOX.map(x=>{const so=stOf(x),rc=so==="done"?"":" "+so;
+  const res=so==="done"||!PT?x.res:so==="moving"?"In motion":"Not started";
+  return `<button class="ic${filt===x.id?" on":""}${PT&&so==="done"?" st-done":""}" data-id="${x.id}" aria-pressed="${filt===x.id}">
+  <span class="top">${pills(x.p)} ${esc(x.due)}</span>
+  <span class="nm">${esc(x.nm)}</span>${res?`<span class="res${rc}">${esc(res)}</span>`:""}</button>`}).join("");
+ document.querySelectorAll(".ic").forEach(b=>b.onclick=()=>{const id=+b.dataset.id;filt=filt===id?null:id;render()});
+}
+function cal(){
+ const H=px(END), c=document.getElementById("cal");let h=`<div class="corner"></div>`;
+ c.style.gridTemplateColumns=`52px repeat(${DAYS.length},minmax(0,1fr))`;c.style.minWidth=Math.max(1020,52+DAYS.length*194)+"px";
+ DAYS.forEach((d,di)=>{const mk=MK.filter(m=>m[0]===di),p0=pctAt(di,0),p1=pctAt(di,1);
+  h+=`<div class="dh${PT&&di>PT.d?" fut":""}"><div class="d"><b>${d.k}</b><span>${d.n}</span></div>
+   <div class="bars"><div class="bar" title="Onboarding project: ${p0}% done by end of ${d.k}">Onboarding<i><em style="width:${p0}%;background:var(--onb-s)"></em></i><span class="n">${p0}%</span></div>
+   <div class="bar" title="Investor update: ${p1}% done by end of ${d.k}">Investor<i><em style="width:${p1}%;background:var(--inv-s)"></em></i><span class="n">${p1}%</span></div></div>
+   <div class="dl">${mk.map(m=>`<div><span>${fmtS(t(m[1]))}</span>${esc(m[2])}</div>`).join("")}</div></div>`});
+ h+=`<div class="times" style="height:${H}px">`;for(let m=START;m<=END;m+=60)h+=`<div style="top:${px(m)}px">${fmt(m).replace(":00","")}</div>`;h+=`</div>`;
+ DAYS.forEach((d,di)=>{h+=`<div class="col" style="height:${H}px">`;
+  for(let m=START;m<END;m+=30)h+=`<div class="hl${m%60?" half":""}" style="top:${px(m)}px"></div>`;
+  MK.filter(m=>m[0]===di).forEach(m=>{const y=Math.max(0,Math.min(px(t(m[1])),H-2));h+=`<div class="mk" style="top:${y}px"></div>`});
+  if(PT&&PT.d===di)h+=`<div class="nowline" style="top:${px(PT.m)}px"></div>`;
+  h+=`<div class="lane-main" style="right:${L.back?BACKW+4:4}px">`;
+  E.forEach((e,i)=>{if(e.d!==di)return;const s=t(e.s),en=t(e.e),top=px(s),ht=Math.max(14,px(en)-top-2),short=ht<34;
+   const dim=filt&&!e.tags.includes(filt)?" dim":"",isSel=sel&&sel.type==="ev"&&sel.i===i?" sel":"",ps=pState(e);
+   const nm=e.msgs.length;
+   let inner=`<span class="t">${fmtS(s)}</span><span class="ti">${esc(e.ti)}</span>`;
+   if(!short){if(L.msg&&nm&&ht>=50)inner+=`<span class="ms">Sends ${nm} message${nm>1?"s":""}</span>`;
+    if(L.think&&e.sh&&ht>=64)inner+=`<span class="sh">${esc(e.sh)}</span>`;}
+   h+=`<button class="ev c-${e.c}${short?" short":""}${dim}${isSel}${ps}" style="top:${top+1}px;height:${ht}px" data-i="${i}" aria-label="${esc(DAYS[di].k+" "+fmt(s)+": "+e.ti)}">${inner}</button>`});
+  h+=`</div>`;
+  if(L.back){h+=`<div class="lane-back" style="width:${BACKW}px">`;
+   BK.forEach((b,i)=>{if(b.d!==di)return;const top=px(t(b.s)),ht=Math.max(14,px(t(b.e))-top-3);
+    const dim=filt&&!b.tags.includes(filt)?" dim":"",isSel=sel&&sel.type==="bk"&&sel.i===i?" sel":"";
+    h+=`<button class="bk${dim}${isSel}${pState(b)}" style="top:${top+1}px;height:${ht}px;right:${(LANES-1-b.l)*LW}px" data-b="${i}" aria-label="Background: ${esc(b.x)}" title="${esc(b.x)}"><span>${esc(b.x)}</span></button>`});
+   h+=`</div>`}
+  h+=`</div>`});
+ c.innerHTML=h;
+ c.querySelectorAll(".ev").forEach(b=>b.onclick=()=>openPop({type:"ev",i:+b.dataset.i},b));
+ c.querySelectorAll(".bk").forEach(b=>b.onclick=()=>openPop({type:"bk",i:+b.dataset.b},b));
+}
+function msgHTML(m,j){
+ const st=dataMode!=="sample"?` <span class="mst s-${esc(m.st.toLowerCase().replace(/[^a-z]/g,""))}">${esc(m.st)}</span>`:"";
+ const act=dataMode==="live"&&m.row&&(m.st==="Draft"||m.st==="Ready")
+  ?`<div class="mact"><button class="kbtn${m.st==="Ready"?" ghost":""}" data-row="${m.row}" data-j="${j}" data-to="${m.st==="Ready"?"Draft":"Ready"}">${m.st==="Ready"?"Pull back to Draft":"Approve: mark Ready"}</button><span class="hint">${m.st==="Ready"?(m.ch==="Email"?"Becomes a Gmail draft for me to send.":"Goes out when this block starts."):"Nothing goes out until I approve it."}</span></div>`:"";
+ return `<div class="m"><span class="to">${esc(m.ch)} → ${esc(m.to)}${st}<button class="mcopy" data-j="${j}" aria-label="Copy this message">Copy</button></span>${m.subj?`<p class="subj">Subject: ${esc(m.subj)}</p>`:""}<div class="mbody${isLong(m)?" long":""}">${paras(m.x)}</div>${act}</div>`}
+/** Message text -> paragraphs (blank line = new paragraph, line break kept). */
+const paras=s=>String(s||"").split(/\n\s*\n/).map(p=>`<p>${esc(p.trim()).replace(/\n/g,"<br>")}</p>`).join("");
+const isMail=m=>/mail/i.test(m.ch);
+const isLong=m=>isMail(m)||String(m.x).length>200||/\n\s*\n/.test(m.x);
+const byCEO=m=>/\n\s*Alex\s*$/.test(String(m.x));
+const msgText=m=>(m.subj?"Subject: "+m.subj+"\n\n":"")+m.x;
+/** One message in full, laid out like the email or Slack it becomes. */
+function fullMsgHTML(e,m,j){const mail=isMail(m);
+ const status=dataMode==="sample"?"Draft. Nothing goes out until I approve it.":m.st;
+ const how=mail?(byCEO(m)?"I draft it; Alex edits it and sends it from Alex's own inbox.":"Becomes a Gmail draft once I approve it. I read it and press Send."):"Goes out on Slack when its block starts, once I mark it Ready.";
+ return `<div class="when">${DAYS[e.d].k} ${DAYS[e.d].n} · ${fmt(t(e.s))} · ${esc(e.ti)} <span class="cat c-${e.c}">${CAT[e.c]}</span></div>
+ <h2 id="ptitle">${esc(mail?(m.subj||"Email to "+m.to):m.ch+" to "+m.to)}</h2>
+ <div class="email"><div class="eh">${mail?`<b>From</b><span>${byCEO(m)?"Alex Morgan, CEO":"Basav Sharma, Operations Lead"}</span>`:`<b>Channel</b><span>${esc(m.ch)}</span>`}<b>To</b><span>${esc(m.to)}</span>${m.subj?`<b>Subject</b><span class="sj">${esc(m.subj)}</span>`:""}<b>Status</b><span>${esc(status)}</span></div>
+ <div class="eb">${paras(m.x)}</div>
+ <div class="ef"><span>${esc(how)}</span><button class="mcopy" data-j="${j}" aria-label="Copy this message">Copy</button></div></div>
+ <button class="mgo" id="mgoFull">See it in the week →</button>`}
+function panel(){
+ const p=document.getElementById("panel"), ov=document.getElementById("overlay");
+ if(!sel){ov.hidden=true;p.innerHTML="";return}
+ ov.hidden=false;let h="";
+ if(sel.type==="msg"){const e=E[sel.ei];h+=fullMsgHTML(e,e.msgs[sel.j],sel.j)}
+ else if(sel.type==="ev"){const e=E[sel.i],s=t(e.s),en=t(e.e);
+  h+=`<div class="when">${DAYS[e.d].k} ${DAYS[e.d].n} · ${fmt(s)} to ${fmt(en)} <span class="cat c-${e.c}">${CAT[e.c]}</span></div><h2 id="ptitle">${esc(e.ti)}</h2>${handles(e.tags)}`;
+  if(L.do&&e.do.length)h+=`<div class="sec do"><h3>What I do</h3><ul>${e.do.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`;
+  if(L.msg)h+=`<div class="sec msg"><h3>What I send</h3>${e.msgs.length?e.msgs.map(msgHTML).join(""):`<span class="empty">Nothing to send in this block.</span>`}</div>`;
+  if(L.think&&e.think)h+=`<div class="sec think"><h3>My thinking</h3><p>${esc(e.think)}</p></div>`;
+  if(L.back){const bs=BK.filter(b=>b.d===e.d&&t(b.s)<en&&t(b.e)>s);
+   h+=`<div class="sec back"><h3>Running in the background</h3>${bs.length?`<ul>${bs.map(b=>`<li><b>${fmtS(t(b.s))}-${fmtS(t(b.e))}</b>${esc(b.x)}</li>`).join("")}</ul>`:`<span class="empty">Nothing else running.</span>`}</div>`}
+ }else{const b=BK[sel.i];
+  h+=`<div class="when">${DAYS[b.d].k} ${DAYS[b.d].n} · ${fmt(t(b.s))} to ${fmt(t(b.e))}</div><h2 id="ptitle">${esc(b.x)}</h2>${handles(b.tags)}
+  <div class="sec back"><h3>Running in the background</h3><p style="margin:0;color:var(--back)">Someone else is working on this while I do other things. I asked for it earlier with a clear deadline, and I check it at the end.</p></div>`;
+  const from=E.filter(e=>e.d<=b.d&&b.tags.some(x=>e.tags.includes(x))).slice(-1)[0];
+  if(from)h+=`<div class="sec do"><h3>Related block</h3><ul><li>${DAYS[from.d].k} ${fmt(t(from.s))}: ${esc(from.ti)}</li></ul></div>`;
+ }
+ p.innerHTML=h;
+ if(sel.type==="ev"||sel.type==="msg"){const e=E[sel.type==="ev"?sel.i:sel.ei];
+  p.querySelectorAll(".mcopy").forEach(b=>b.onclick=async()=>{const m=e.msgs[+b.dataset.j];const ok=await copyText(msgText(m));b.textContent=ok?"Copied":"Select to copy";setTimeout(()=>{b.textContent="Copy"},1600)});
+  p.querySelectorAll("[data-row]").forEach(b=>b.onclick=()=>setStatus(e.msgs[+b.dataset.j],b.dataset.to,b))}
+ if(sel.type==="msg"){const i=sel.ei;p.querySelector("#mgoFull").onclick=()=>goBlock(i)}
+}
+/** Messages tab -> the block in the week, popup open. */
+function goBlock(i){sel=null;showTab("dash");render();const el=document.querySelector(`.ev[data-i="${i}"]`);if(el)el.scrollIntoView({block:"center"});openPop({type:"ev",i},el)}
+/** Live only: Approve / Pull back writes the status to the Messages tab. The script does the sending. */
+function setStatus(m,to,btn){btn.disabled=true;
+ google.script.run.withSuccessHandler(()=>{m.st=to;render();toast(to==="Ready"?"Approved. It goes out on schedule.":"Pulled back to Draft.")})
+  .withFailureHandler(err=>{btn.disabled=false;toast("Couldn't update the Sheet: "+(err&&err.message||err))}).setMessageStatus(m.row,to)}
+function render(){inbox();cal();panel();playbar();msgsView();
+ document.getElementById("msgN").textContent=E.reduce((n,e)=>n+e.msgs.length,0)}
+function openPop(s,from){sel=s;lastFocus=from;render();document.getElementById("close").focus()}
+function closePop(){if(!sel)return;const was=sel;sel=null;render();const b=document.querySelector(was.type==="msg"?`.mopen[data-ei="${was.ei}"][data-j="${was.j}"]`:was.type==="ev"?`.ev[data-i="${was.i}"]`:`.bk[data-b="${was.i}"]`);if(b)b.focus()}
+document.getElementById("close").onclick=closePop;
+document.getElementById("overlay").addEventListener("click",ev=>{if(ev.target.id==="overlay")closePop()});
+document.addEventListener("keydown",ev=>{if(ev.key==="Escape")closePop()});
+["do","msg","think","back"].forEach(k=>{const el=document.getElementById("L-"+k);el.onchange=()=>{L[k]=el.checked;render()}});
+
+// ---------- Play the week: scrub or play Mon 9 AM to Fri 6 PM, 15 minutes at a time ----------
+let PT=null, playT=null;
+const SPAN=()=>END-START, MAXP=()=>DAYS.length*SPAN(), absOf=(d,m)=>d*1440+m;
+const curAbs=()=>PT?absOf(PT.d,PT.m):Infinity;
+const posOf=()=>PT?PT.d*SPAN()+PT.m-START:MAXP();
+function pState(x){if(!PT)return"";const c=curAbs(),a=absOf(x.d,t(x.s)),b=absOf(x.d,t(x.e));return a>c?" fut":c<b?" now":""}
+function stOf(x){if(!PT)return x.st==="Done"?"done":/risk/i.test(x.st)?"risk":"open";
+ const c=curAbs();if(c>=x.cl)return"done";return [...E,...BK].some(e=>e.tags.includes(x.id)&&absOf(e.d,t(e.s))<=c)?"moving":"open"}
+function pctAt(di,k){const v=DAYS[di].p[k];if(!PT||di!==PT.d)return v;
+ const pv=di?DAYS[di-1].p[k]:0,f=Math.max(0,Math.min(1,(PT.m-START)/SPAN()));return Math.round(pv+(v-pv)*f)}
+function setPos(p){p=Math.max(0,Math.min(MAXP(),p));if(p>=MAXP())PT=null;else{const d=Math.floor(p/SPAN());PT={d,m:START+p-d*SPAN()}}render()}
+function stopPlay(){if(playT){clearInterval(playT);playT=null}}
+function togglePlay(){
+ if(playT){stopPlay();playbar();return}
+ let p=PT?posOf():0;if(!PT)setPos(0);
+ playT=setInterval(()=>{p+=15;if(p>=MAXP()){stopPlay();setPos(MAXP());
+   toast(`That's the week: ${INBOX.filter(x=>x.st==="Done").length} of ${INBOX.length} fires closed, both Friday projects done.`);return}setPos(p)},150);
+ playbar()}
+function playbar(){
+ const r=document.getElementById("pRange"),c=curAbs(),last=DAYS.length-1;
+ r.max=MAXP();r.value=posOf();
+ document.getElementById("pDays").style.gridTemplateColumns=`repeat(${DAYS.length},1fr)`;
+ document.getElementById("pDays").innerHTML=DAYS.map(d=>`<span>${d.k}</span>`).join("");
+ document.getElementById("playBtn").innerHTML=playT?`<svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="1" width="3" height="10"/><rect x="7" y="1" width="3" height="10"/></svg>Pause`:`<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1l9 5-9 5z"/></svg>${PT?"Play":"Play the week"}`;
+ document.getElementById("pTime").textContent=PT?`${DAYS[PT.d].k} ${fmt(PT.m)}`:"Whole week";
+ const total=E.reduce((n,e)=>n+e.msgs.length,0),sent=E.filter(e=>absOf(e.d,t(e.s))<=c).reduce((n,e)=>n+e.msgs.length,0);
+ const closed=INBOX.filter(x=>stOf(x)==="done").length,pd=PT?PT.d:last;
+ const me=E.find(e=>PT&&pState(e)===" now"),bk=PT?BK.filter(b=>pState(b)===" now").map(b=>b.x):[];
+ let h=`<span>Fires closed <b>${closed}/${INBOX.length}</b></span><span>Messages out <b>${sent}/${total}</b></span><span>Onboarding <b>${pctAt(pd,0)}%</b></span><span>Investor update <b>${pctAt(pd,1)}%</b></span>`;
+ if(PT)h+=`<span class="meNow">Me: <b>${me?esc(me.ti):"between blocks"}</b></span>${bk.length?`<span class="bkNow">Others working: ${bk.map(esc).join(" · ")}</span>`:""}`;
+ else h+=`<span>Press Play to watch the week unfold, or drag the slider.</span>`;
+ document.getElementById("pStats").innerHTML=h}
+document.getElementById("playBtn").onclick=togglePlay;
+document.getElementById("pRange").oninput=ev=>{stopPlay();setPos(Number(ev.target.value))};
+
+// ---------- Messages: every message of the week in one list ----------
+const MF={ch:"all",fire:0};
+const WS={inbox:"var(--inbox-s)",onb:"var(--onb-s)",inv:"var(--inv-s)",ceo:"var(--ceo-s)",team:"var(--team-s)"};
+const chOf=m=>/slack/i.test(m.ch)?"slack":/mail/i.test(m.ch)?"email":"other";
+function msgsView(){
+ const v=document.getElementById("view-msgs");if(v.hidden)return;
+ const all=[];E.forEach((e,ei)=>e.msgs.forEach((m,j)=>all.push({e,ei,m,j})));
+ all.sort((a,b)=>absOf(a.e.d,t(a.e.s))-absOf(b.e.d,t(b.e.s)));
+ const n={slack:all.filter(x=>chOf(x.m)==="slack").length,email:all.filter(x=>chOf(x.m)==="email").length};
+ const list=all.filter(x=>(MF.ch==="all"||chOf(x.m)===MF.ch)&&(!MF.fire||x.e.tags.includes(MF.fire)));
+ let h=`<div class="mvhead"><div><div class="eyebrow">Part 1 · What I send</div><h1>Every message, Monday to Friday</h1>
+  <p>${all.length} messages, each tied to a block in the week. Open any email to read the full draft. ${dataMode==="live"?"Nothing goes out until I mark it Ready.":"All drafts: nothing goes out until I approve it."}</p></div>
+  <div class="mvf" role="group" aria-label="Filter messages">
+   ${[["all","All",all.length],["slack","Slack",n.slack],["email","Email",n.email]].map(c=>`<button class="fchip" data-ch="${c[0]}" aria-pressed="${MF.ch===c[0]}">${c[1]} ${c[2]}</button>`).join("")}
+   <select id="mfFire" aria-label="Filter by inbox fire"><option value="0">All inbox fires</option>${INBOX.map(x=>`<option value="${x.id}"${MF.fire===x.id?" selected":""}>${esc(x.nm)}</option>`).join("")}</select>
+   <button class="fchip" id="mfCopy">Copy all</button></div></div>`;
+ if(!list.length)h+=`<p class="mempty">No messages match. Try All.</p>`;
+ DAYS.forEach((d,di)=>{const ms=list.filter(x=>x.e.d===di);if(!ms.length)return;
+  h+=`<section class="mday"><h3>${d.long} <span>${d.n} · ${ms.length} message${ms.length>1?"s":""}</span></h3><div class="mlist">`+ms.map(x=>
+   `<article class="mcard" data-ei="${x.ei}" data-j="${x.j}" style="border-left-color:${WS[x.e.c]}"><div class="mwhen"><b>${fmt(t(x.e.s))}</b><span>${esc(x.e.ti)}</span></div>${msgHTML(x.m,x.j)}<div class="mfoot">${isLong(x.m)?`<button class="mopen" data-ei="${x.ei}" data-j="${x.j}">${isMail(x.m)?"Open full email":"Read full message"}</button>`:""}<button class="mgo" data-ei="${x.ei}">See it in the week →</button></div></article>`).join("")+`</div></section>`});
+ v.innerHTML=h;
+ v.querySelectorAll("[data-ch]").forEach(b=>b.onclick=()=>{MF.ch=b.dataset.ch;msgsView()});
+ v.querySelector("#mfFire").onchange=ev=>{MF.fire=Number(ev.target.value);msgsView()};
+ v.querySelector("#mfCopy").onclick=async ev=>{const txt=list.map(x=>`${DAYS[x.e.d].k} ${fmt(t(x.e.s))} · ${x.m.ch} → ${x.m.to}\n${msgText(x.m)}`).join("\n\n---\n\n");
+  ev.target.textContent=await copyText(txt)?"Copied":"Select to copy";setTimeout(()=>{ev.target.textContent="Copy all"},1600)};
+ v.querySelectorAll(".mcard").forEach(card=>{const ei=+card.dataset.ei,j=+card.dataset.j,e=E[ei];
+  card.querySelectorAll(".mcopy").forEach(b=>b.onclick=async()=>{const m=e.msgs[+b.dataset.j];const ok=await copyText(msgText(m));b.textContent=ok?"Copied":"Select to copy";setTimeout(()=>{b.textContent="Copy"},1600)});
+  card.querySelectorAll("[data-row]").forEach(b=>b.onclick=()=>setStatus(e.msgs[+b.dataset.j],b.dataset.to,b));
+  const open=card.querySelector(".mopen");if(open){open.onclick=()=>openPop({type:"msg",ei,j},open);card.querySelector(".mbody").onclick=()=>openPop({type:"msg",ei,j},open)}
+  card.querySelector(".mgo").onclick=()=>goBlock(ei)})}
+
+// ---------- Quick tour: 5 steps, page dark except what each step points to ----------
+const TOUR_KEY="app-tour-week";
+const TOUR=[
+ {el:()=>document.getElementById("inbox"),title:"My inbox, Monday 9 AM",text:()=>`${INBOX.length} fires, each with a priority (P0 critical, P1 high, P2 low) and a due time. Tap one to light up every block that handles it.`},
+ {el:()=>{const i=E.findIndex(e=>e.msgs.length>1);return document.querySelector(`.ev[data-i="${Math.max(0,i)}"]`)},title:"Each block of my week",text:"Tap any block to see what I do, the exact message I send, and my thinking."},
+ {el:()=>document.querySelector(".layers"),title:"Layers",text:"Turn each layer on or off: what I do, what I send, my thinking, and what others are doing in the background."},
+ {el:()=>document.getElementById("playbar"),title:"Play the week",text:"Press Play to run the clock from Monday 9 AM. Fires turn green as they close."},
+ {el:()=>document.querySelector(".vtabs"),title:"Messages and How it works",text:()=>`Messages has all ${E.reduce((n,e)=>n+e.msgs.length,0)} drafts; open any email to read it in full. How it works shows the Google Sheet and script behind this page.`}];
+function endTour(){kTourEnd()}
+function startTour(){showTab("dash");closePop();kTour(TOUR,TOUR_KEY)}
+document.getElementById("tourBtn").onclick=startTour;
+document.getElementById("howLink").onclick=ev=>{ev.preventDefault();showTab("how");window.scrollTo(0,0)};
+
+// ---------- How it works ----------
+function howHTML(){
+ const code=document.getElementById("code-gs").textContent.trim(), lines=code.split("\n").length;
+ const flow=hwFlow({aria:"Asks, plans and messages flow through the Google Sheet and Apps Script to Calendar, Gmail, Slack and this dashboard",
+  labels:["WHERE IT STARTS","GOOGLE SHEET + APPS SCRIPT","WHAT HAPPENS"],
+  srcs:[["Inbox","Email, Slack and CEO asks: one row each","#B42318"],["My plan","One row per calendar block","#0F7A55"],["Messages I write","Under each block, start as Draft","#1C5BD0"],["Team's work in flight","Background bars, with owners","#0E7C78"],["Hard dates","Deadlines: red lines on the week","#8A6A1F"]],
+  hub:"Google Sheet + Apps Script",
+  steps:[["Capture","Every ask is one Inbox row: priority, due, status"],["Plan","Each block: day, time, workstream, which asks it closes"],["Draft","Messages sit under their block as Draft"],["Approve","I set Ready. Nothing goes out without it."],["Send","Ready Slack goes out at block start; email becomes a draft"],["Close","5:15 PM: Done, At risk, Need from you, to the CEO"]],
+  outs:["Blocks on Google Calendar","Gmail drafts, I press Send","Slack DMs and channels","5:15 PM note to the CEO","This dashboard, private to the company"]});
+ return `<div class="hw">
+ <div><p class="eyebrow">How it works</p><h3>One Google Sheet runs my week</h3>
+ <p class="lede">The Sheet is the plan. A short script turns it into calendar blocks, Gmail drafts and Slack messages, and this page reads the same Sheet. Nothing goes out until I approve it.</p></div>
+ <div class="facts"><span class="fact">Database <b>1 Google Sheet</b></span><span class="fact">Connects <b>Calendar · Gmail · Slack</b></span><span class="fact">Sends <b>only what I approve</b></span><span class="fact">Setup <b>15 min, $0</b></span><span class="fact">Tested <b>25 checks</b></span></div>
+ <div class="flowbox">${flow}</div>
+ <div id="plug"><p class="eyebrow">Plug it in, in 5 steps (about 15 minutes)</p><div class="steps">
+  <div class="step"><b>Make the Sheet</b><p>Upload the template to Google Drive, then File › Save as Google Sheets.</p></div>
+  <div class="step"><b>Add the code</b><p>Extensions › Apps Script. Paste <code>Code.gs</code> (below). Add an HTML file named <code>Dashboard</code> with this page.</p></div>
+  <div class="step"><b>Connect Slack</b><p>Create a Slack app with <code>chat:write</code>. In Project Settings › Script properties add <code>SLACK_TOKEN</code> and <code>CEO_SLACK_ID</code>.</p></div>
+  <div class="step"><b>Turn it on</b><p>Reload the Sheet. Week plan › Put my blocks on Google Calendar, then Turn on automation. Approve Google's prompt once.</p></div>
+  <div class="step"><b>Put it behind sign-in</b><p>Deploy › Web app, execute as me, access limited to the company accounts. Only people signed in with a the company email can open it.</p></div>
+ </div></div>
+ <div class="try"><p><b>Try it first.</b> Download the template, move a block or add a message, then load it here. Nothing leaves your browser.</p>
+  <div class="row2"><button class="hbtn" data-dl-template>Download template (.xlsx)</button><button class="hbtn dark" data-upload>Load my file</button></div></div>
+ <details class="more"><summary><span>More detail: the logic, the tabs and the safety rails</span></summary><div class="more-in">
+ <div><p class="eyebrow">The logic, in order</p><div class="steps">
+  <div class="step"><b>Capture</b><p>Every ask or fire becomes one row in <code>Inbox</code>: priority (P0 critical, done today; P1 high, done this week; P2 low, fits into gaps), due, status. If it isn't in the Sheet, it isn't on my plate.</p></div>
+  <div class="step"><b>Rank</b><p>Hard date first, then cost if it slips, then whether someone else needs time to do their part. Their part gets asked for first, so it runs in the background.</p></div>
+  <div class="step"><b>Plan</b><p>Each block in <code>Blocks</code> has a day, time, workstream and the inbox items it closes (<code>inbox_ids</code>). Tap an inbox item above to see its blocks light up.</p></div>
+  <div class="step"><b>Draft, then approve</b><p>Each message sits in <code>Messages</code> under its block as Draft. I read it and set Ready, here or in the Sheet.</p></div>
+  <div class="step"><b>Send on time</b><p>Every 15 minutes the script sends Ready Slack messages whose block has started. Ready emails become Gmail drafts; I press Send.</p></div>
+  <div class="step"><b>Close the day</b><p>5:15 PM: the CEO gets one Slack note built from <code>Inbox</code>: done today, at risk, and what I need from them.</p></div>
+ </div></div>
+ <div class="two">
+  <div><p class="eyebrow">What each tab holds</p><table><tr><th>Tab</th><th>One row is</th><th>Feeds</th></tr>
+   <tr><td><b>Inbox</b></td><td>an ask or fire, with status</td><td>The chips on top, the CEO note</td></tr>
+   <tr><td><b>Blocks</b></td><td>a block of my time</td><td>The calendar, Google Calendar</td></tr>
+   <tr><td><b>Messages</b></td><td>one message under a block</td><td>The popups, Slack, Gmail drafts</td></tr>
+   <tr><td><b>Background</b></td><td>work someone else is doing</td><td>The dashed bars</td></tr>
+   <tr><td><b>Deadlines</b></td><td>a hard date</td><td>The red lines</td></tr>
+   <tr><td><b>Days</b></td><td>a day and project progress</td><td>The two bars on each day</td></tr></table></div>
+  <div><p class="eyebrow">In this demo vs. plugged in</p><table><tr><th></th><th>This demo</th><th>Plugged in</th></tr>
+   <tr><td><b>Data</b></td><td>Sample rows built into the page, or your .xlsx</td><td>The Google Sheet, read live</td></tr>
+   <tr><td><b>Calendar</b></td><td>Drawn here</td><td>Also on my Google Calendar, colored by workstream</td></tr>
+   <tr><td><b>Messages</b></td><td>Shown in the popup, with Copy</td><td>Approve in the popup; sent on schedule</td></tr>
+   <tr><td><b>Emails</b></td><td>Not sent</td><td>Gmail drafts I review and send</td></tr>
+   <tr><td><b>CEO note</b></td><td>Not sent</td><td>Slack DM at 5:15 PM on weekdays</td></tr>
+   <tr><td><b>Who can see it</b></td><td>Sample data only, nothing private</td><td>Hosted on the company's own domain. Only the company emails on its access list can sign in</td></tr></table></div>
+ </div>
+ <div><p class="eyebrow">Safety rails</p><ul class="rails">
+  <li><b>Nothing sends by itself.</b> Only rows I set to Ready go out, and only once their block has started.</li>
+  <li><b>Emails stay drafts.</b> The script never sends email; I read and press Send in Gmail.</li>
+  <li><b>No secrets in the Sheet.</b> The Slack token lives in Script properties, which only editors of the script can see.</li>
+  <li><b>Safe to re-run.</b> Calendar events are updated, not duplicated; sent messages are never sent twice.</li>
+  <li><b>A paper trail.</b> Every send or draft stamps the time on its row; a Slack error is written on the row, not lost.</li></ul></div>
+ </div></details>
+ <div><div class="row2" style="justify-content:space-between;margin-bottom:8px"><p class="eyebrow" style="margin:0">The code</p><button class="hbtn dark" data-copy-code>Copy Code.gs</button></div>
+  <details><summary><span>Code.gs</span><span class="sm">${lines} lines · Google Apps Script · tested against mocks of Sheets, Calendar, Gmail and Slack</span></summary><pre><code>${hl(code)}</code></pre></details></div>
+ <p class="note">Sample data. The Sheet layout, logic and script are real, tested against mocks of Google and Slack, not a live the company account.</p>
+</div>`}
+
+useData(SAMPLE,"sample","");
+initKit();
+if(!kTourSeen(TOUR_KEY)&&!GAS)setTimeout(()=>{if(!KT&&!sel&&!document.getElementById("view-dash").hidden)kTour(TOUR,TOUR_KEY)},600);
+</script>
+
+</body></html>

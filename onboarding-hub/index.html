@@ -1,0 +1,1163 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Onboarding Hub</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap">
+<style>
+body{margin:0}
+/* Layout: header + before/after switch, KPI row, 3-week start strip, hires list beside a checklist panel, then owners / access / flow */
+:root{
+  --bg:#F7F6F3; --surface:#FDFCFA; --ink:#121210; --muted:#5E5A53; --line:#DEDBD4; --grid:#EDEBE6;
+  --good:#0F7A55; --good-f:#E3F1EA; --warn:#8A6A1F; --warn-f:#F1EAD8; --bad:#B42318; --bad-f:#F6E3E0;
+  --accent:#0F7A55; --accent-f:#E3F1EA; --accent-t:#FFFFFF; --mint:#2BCA95; --forest:#09281E;
+  --eng:#0F7A55; --prod:#4A4740; --dep:#8A6A1F; --ops:#557A6E;
+  --font-d:"Newsreader", Georgia, "Times New Roman", serif; --font-b:"Hanken Grotesk", "Segoe UI", system-ui, sans-serif; --font-m:"Hanken Grotesk", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0C0D0B; --surface:#161714; --ink:#F2F0EB; --muted:#A19D95; --line:#2C2B28; --grid:#1E1F1C;
+  --good:#2BCA95; --good-f:#09281E; --warn:#CDB57A; --warn-f:#2E2614; --bad:#F49B8F; --bad-f:#3A2220; --accent:#2BCA95; --accent-f:#09281E; --accent-t:#09281E; --mint:#2BCA95; --forest:#09281E;
+  --eng:#2BCA95; --prod:#C9C5BC; --dep:#CDB57A; --ops:#8FB8A9; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0C0D0B; --surface:#161714; --ink:#F2F0EB; --muted:#A19D95; --line:#2C2B28; --grid:#1E1F1C;
+  --good:#2BCA95; --good-f:#09281E; --warn:#CDB57A; --warn-f:#2E2614; --bad:#F49B8F; --bad-f:#3A2220; --accent:#2BCA95; --accent-f:#09281E; --accent-t:#09281E; --mint:#2BCA95; --forest:#09281E;
+  --eng:#2BCA95; --prod:#C9C5BC; --dep:#CDB57A; --ops:#8FB8A9; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-b);font-size:14px;line-height:1.45;font-variant-numeric:tabular-nums}
+.wrap{max-width:1400px;margin:0 auto;padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;gap:12px 32px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font-family:var(--font-m);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--font-d);font-size:clamp(26px,3.2vw,38px);line-height:1.1;margin:4px 0 0;text-wrap:balance;font-weight:400;letter-spacing:-.01em}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px}
+.seg button{all:unset;cursor:pointer;padding:7px 14px;border-radius:999px;font-size:13px;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.card h2{font-family:var(--font-d);font-size:16px;margin:0 0 10px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.card h2 small{font-family:var(--font-m);font-size:11px;color:var(--muted);font-weight:400}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:820px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{display:flex;flex-direction:column;gap:2px}
+.kpi .l{font-size:12px;color:var(--muted);font-weight:600}
+.kpi .v{font-family:var(--font-d);font-size:34px;font-weight:400;font-variant-numeric:lining-nums tabular-nums;line-height:1.1}
+.kpi .s{font-size:12px;color:var(--muted)}
+.v.good{color:var(--good)} .v.bad{color:var(--bad)} .v.warn{color:var(--warn)}
+.strip{display:grid;grid-template-columns:repeat(15,minmax(54px,1fr));gap:4px;min-width:860px}
+.stripbox{overflow-x:auto}
+.wk{grid-column:span 5;font-family:var(--font-m);font-size:11px;color:var(--muted);padding:0 2px 2px;border-bottom:1px solid var(--line)}
+.day{border-radius:8px;background:var(--grid);min-height:86px;padding:6px;display:flex;flex-direction:column;gap:5px}
+.day.today{box-shadow:inset 0 0 0 2px var(--mint)}
+.day .dn{font-family:var(--font-m);font-size:10.5px;color:var(--muted);display:flex;justify-content:space-between}
+.av{all:unset;cursor:pointer;display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;line-height:1.1}
+.av i{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:10px;color:var(--surface);font-weight:700;border:2px solid var(--surface)}
+.av:focus-visible{outline:2px solid var(--accent)}
+.av .st{display:block;font-size:10px;font-weight:600}
+.cols{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:1000px){.cols{grid-template-columns:minmax(0,1fr)}}
+.hires{display:flex;flex-direction:column}
+.hr{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:44px minmax(0,1.4fr) 90px 92px minmax(0,1fr);gap:12px;align-items:center;padding:9px 8px;border-radius:8px;border-bottom:1px solid var(--grid)}
+.hr:hover{background:var(--grid)} .hr.sel{background:var(--accent-f)} .hr:focus-visible{outline:2px solid var(--accent)}
+@media (max-width:640px){.hr{grid-template-columns:44px minmax(0,1fr) 88px}.hr .nx,.hr .sd{display:none}}
+.hr .nm{font-weight:600} .hr .rl{font-size:12px;color:var(--muted)}
+.hr .sd{font-family:var(--font-m);font-size:12px;color:var(--muted)}
+.hr .nx{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.pill.ready{background:var(--good-f);color:var(--good)} .pill.ok{background:var(--grid);color:var(--ink)} .pill.behind{background:var(--warn-f);color:var(--warn)} .pill.risk{background:var(--bad-f);color:var(--bad)}
+.role{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.ph{margin-top:10px}
+.ph h3{font-family:var(--font-m);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;font-weight:500;display:flex;justify-content:space-between}
+.tk{display:grid;grid-template-columns:20px minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:5px 2px;border-bottom:1px solid var(--grid);font-size:13px}
+.tk input{margin:0;width:15px;height:15px;accent-color:var(--good)}
+.tk.done .tx{color:var(--muted);text-decoration:line-through}
+.tk .ow{font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:999px;background:var(--grid);color:var(--muted);white-space:nowrap}
+.tk .du{font-family:var(--font-m);font-size:11px;color:var(--muted);white-space:nowrap;min-width:64px;text-align:right}
+.tk.over .du{color:var(--bad);font-weight:500}
+.tk.over .tx::after{content:" overdue";font-size:10.5px;color:var(--bad);font-weight:700}
+.ring{width:40px;height:40px}
+.ring circle{fill:none;stroke-width:5}
+.ring .bgc{stroke:var(--grid)}
+.ring text{font-family:var(--font-m);font-size:11px;fill:var(--ink);text-anchor:middle;dominant-baseline:central}
+.pnlhead{display:flex;gap:12px;align-items:center}
+.pnlhead h2{margin:0}
+.meta{font-size:12px;color:var(--muted)}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:1000px){.three{grid-template-columns:minmax(0,1fr)}}
+.ob{display:grid;grid-template-columns:110px minmax(0,1fr) 28px;gap:8px;align-items:center;font-size:13px;padding:4px 0}
+.ob i{display:block;height:10px;border-radius:5px;background:var(--grid);overflow:hidden;position:relative}
+.ob i em{position:absolute;inset:0 auto 0 0;border-radius:5px;background:var(--forest)}
+.ob i em.r{background:var(--bad)}
+.ob b{font-family:var(--font-m);font-weight:500;text-align:right;font-variant-numeric:tabular-nums}
+.mx{width:100%;border-collapse:collapse;font-size:12.5px}
+.mx th,.mx td{padding:5px 4px;border-bottom:1px solid var(--grid);text-align:center}
+.mx th:first-child,.mx td:first-child{text-align:left}
+.mx th{font-size:11px;color:var(--muted);font-weight:600}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--good)}
+.dot.rd{background:transparent;border:2px solid var(--good)}
+.mx td.gr{font-size:11px;color:var(--muted)}
+.flow{display:flex;flex-direction:column;gap:0}
+.fs{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:start;position:relative;padding-bottom:12px}
+.fs:not(:last-child)::before{content:"";position:absolute;left:14px;top:28px;bottom:0;border-left:2px dashed var(--line)}
+.fs .n{width:30px;height:30px;border-radius:50%;background:var(--forest);color:var(--mint);display:grid;place-items:center;font-family:var(--font-m);font-size:11px;font-weight:600}
+.fs b{display:block;font-size:13px} .fs span{font-size:12px;color:var(--muted)}
+.foot{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 24px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px}
+
+.brandmark{flex:1 0 100%;display:flex;align-items:center;gap:12px;padding:2px 0 6px;border-bottom:1px solid var(--line);margin-bottom:4px}.brandmark img{height:18px;width:auto;display:block}.brandmark .lg-d{display:none}.brandmark span{font-size:12px;color:var(--muted);letter-spacing:.02em}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .brandmark .lg-l{display:none}:root:not([data-theme="light"]) .brandmark .lg-d{display:block}}:root[data-theme="dark"] .brandmark .lg-l{display:none}:root[data-theme="dark"] .brandmark .lg-d{display:block}
+:root{--kit-focus:var(--accent);--kit-scrim:rgba(12,14,18,.5);--kit-good:var(--good);--kit-good-f:var(--good-f);--kit-bad:var(--bad);--kit-bad-f:var(--bad-f)}
+.asof{font-family:var(--font-m);font-size:12px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 14px}
+/* ---------- Shared: view tabs, data chip, Connect data dialog, toast ---------- */
+.topbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.vtabs{display:inline-flex;gap:2px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px}
+.vtabs button{all:unset;cursor:pointer;white-space:nowrap;padding:7px 12px;border-radius:999px;font-size:13px;font-weight:600;color:var(--muted);display:inline-flex;gap:7px;align-items:center}
+.vtabs button[aria-selected="true"]{background:var(--ink);color:var(--surface)}
+.vtabs button:focus-visible{outline:2px solid var(--kit-focus);outline-offset:2px}
+.vtabs .yl{width:9px;height:9px;border-radius:50%;background:#2BCA95;box-shadow:0 0 0 1px rgba(0,0,0,.15)}
+.datachip{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 4px 4px 12px;max-width:100%}
+.datachip .led{flex:none;width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.datachip .led.live{background:var(--kit-good);box-shadow:0 0 0 3px var(--kit-good-f)}
+.datachip .led.file{background:var(--kit-focus)}
+.datachip #dataLbl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.datachip b{flex:none;font-weight:600;color:var(--ink);background:var(--grid);padding:5px 11px;border-radius:999px}
+.datachip:hover b{background:var(--line)}
+.datachip:focus-visible{outline:2px solid var(--kit-focus);outline-offset:2px}
+.kov{position:fixed;inset:0;z-index:30;background:var(--kit-scrim);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.kpanel{position:relative;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:22px;width:min(640px,100%);max-height:min(88vh,100%);overflow:auto;box-shadow:0 24px 60px rgba(0,0,0,.28);display:flex;flex-direction:column;gap:14px;animation:kpop .16s ease-out}
+@keyframes kpop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+.kpanel h2{font-family:var(--font-d);font-size:21px;line-height:1.15;margin:0;padding-right:44px}
+.kpanel .now{font-size:13px;color:var(--muted);margin:0}
+.kpanel .now b{color:var(--ink)}
+.kx{all:unset;cursor:pointer;position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--muted);font-size:20px;line-height:1;background:var(--grid)}
+.kx:hover{color:var(--ink)} .kx:focus-visible{outline:2px solid var(--kit-focus);outline-offset:2px}
+.kopts{display:grid;gap:10px}
+.kopt{border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 14px;align-items:center}
+.kopt b{font-size:14px;grid-column:1}
+.kopt span{grid-column:1;font-size:12.5px;color:var(--muted)}
+.kopt .kbtn{grid-column:2;grid-row:1/span 2}
+@media (max-width:560px){.kopt{grid-template-columns:minmax(0,1fr)}.kopt .kbtn{grid-column:1;grid-row:auto;justify-self:start;margin-top:6px}}
+.kbtn{all:unset;box-sizing:border-box;cursor:pointer;font-size:13px;font-weight:600;padding:8px 14px;border-radius:8px;background:var(--ink);color:var(--surface);white-space:nowrap;text-align:center;font-family:var(--font-b)}
+.kbtn.ghost{background:var(--grid);color:var(--ink)}
+.kbtn[disabled]{opacity:.5;cursor:default}
+.kbtn:focus-visible,.klink:focus-visible{outline:2px solid var(--kit-focus);outline-offset:2px}
+.klink{all:unset;cursor:pointer;font-size:12.5px;color:var(--kit-focus);font-weight:600;text-decoration:underline;align-self:flex-start}
+.kmsg{font-size:13px;border-radius:8px;padding:9px 12px;margin:0}
+.kmsg.err{background:var(--kit-bad-f);color:var(--kit-bad)} .kmsg.ok{background:var(--kit-good-f);color:var(--kit-good)}
+.ktoast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:40;background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:10px;font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion: reduce){.kpanel{animation:none}}
+
+/* ---------- Quick tour: spotlight + bubble (shared by every app) ---------- */
+.kt-block{position:fixed;inset:0;z-index:58;background:transparent}
+.kt-spot{position:fixed;z-index:59;border-radius:12px;pointer-events:none;box-shadow:0 0 0 200vmax rgba(10,10,8,.74);outline:2px solid #2BCA95;outline-offset:0;transition:left .25s ease,top .25s ease,width .25s ease,height .25s ease}
+.tour{position:fixed;z-index:60;width:min(340px,calc(100vw - 24px));background:#FDFCFA;color:#121210;border:1px solid #DEDBD4;border-radius:14px;padding:14px 16px 12px;box-shadow:0 18px 50px rgba(0,0,0,.35);font:14px/1.45 var(--font-b,system-ui),sans-serif;color-scheme:light}
+.tour .tn{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#0F7A55;font-weight:700}
+.tour .tt{display:block;font-family:var(--font-d,Georgia),serif;font-size:19px;font-weight:500;line-height:1.2;margin-top:6px}
+.tour p{margin:6px 0 12px;color:#3D3A35}
+.tour .tb{display:flex;gap:6px;align-items:center}
+.tour .sp{flex:1}
+.tour button{all:unset;cursor:pointer;font-weight:600;font-size:13px;padding:7px 13px;border-radius:999px;font-family:var(--font-b,system-ui),sans-serif}
+.tour button:focus-visible{outline:2px solid #0F7A55;outline-offset:2px}
+.tour .go{background:#121210;color:#F7F6F3}
+.tour .back{background:#EDEBE6;color:#121210}
+.tour .skip{color:#67635C;padding-left:2px;text-decoration:underline;text-underline-offset:3px}
+@media (prefers-reduced-motion: reduce){.kt-spot{transition:none}}
+
+/* ---------- How it works (stone + green) ---------- */
+.hw{--hw-ink:#121210;--hw-mut:#5E5A53;--hw-line:#DEDBD4;--hw-card:#FDFCFA;--hw-soft:#E3F1EA;--hw-bg:#EDEBE6;
+ color:var(--hw-ink);background:var(--hw-bg);border:1px solid #DEDBD4;border-top:4px solid #0F7A55;border-radius:16px;padding:22px 22px 28px;
+ font:14px/1.5 var(--font-b,system-ui),sans-serif;display:grid;gap:22px;color-scheme:light;min-width:0;overflow-wrap:anywhere}
+.hw *{box-sizing:border-box}
+.hw h3{margin:0;font-size:20px;letter-spacing:-.01em}
+.hw .lede{margin:4px 0 0;color:var(--hw-mut);max-width:80ch}
+.hw .eyebrow{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--hw-mut);font-weight:600;margin:0 0 8px;font-family:var(--font-b,system-ui),sans-serif}
+.hw .flowbox{background:var(--hw-card);border:1px solid var(--hw-line);border-radius:12px;padding:14px;overflow-x:auto}
+.hw .flowbox svg{display:block;width:100%;min-width:760px;height:auto}
+.hw .flowbox text{font-family:var(--font-b,system-ui),sans-serif}
+.hw .t-ink{fill:var(--hw-ink)} .hw .t-mut{fill:var(--hw-mut)}
+.hw .node{fill:var(--hw-card)} .hw .hub{fill:var(--hw-soft);stroke:var(--hw-line)}
+.hw .wire{fill:none;stroke-width:1.6;stroke-dasharray:5 6;animation:hwflow 1.6s linear infinite;opacity:.85}
+@keyframes hwflow{to{stroke-dashoffset:-22}}
+@media (prefers-reduced-motion:reduce){.hw .wire{animation:none;stroke-dasharray:none}}
+.hw .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;counter-reset:hw}
+.hw .step{border:1px solid var(--hw-line);border-radius:10px;padding:12px 14px;background:var(--hw-card);min-width:0}
+.hw .step b{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.hw .step b::before{counter-increment:hw;content:counter(hw);display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--hw-ink);color:var(--hw-card);font-size:12px;flex:none}
+.hw .step p{margin:0;color:var(--hw-mut);font-size:13px}
+.hw .step code,.hw td code{font:12px ui-monospace,Consolas,monospace;background:var(--hw-soft);padding:1px 5px;border-radius:4px;color:var(--hw-ink)}
+.hw .facts{display:flex;flex-wrap:wrap;gap:8px}
+.hw .fact{border:1px solid var(--hw-line);border-radius:999px;padding:5px 12px;font-size:12.5px;background:var(--hw-card)}
+.hw .fact b{font-variant-numeric:tabular-nums}
+.hw table{width:100%;border-collapse:collapse;font-size:13px;background:var(--hw-card);border:1px solid var(--hw-line);border-radius:10px;overflow:hidden}
+.hw th,.hw td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--hw-line);vertical-align:top}
+.hw th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--hw-mut)}
+.hw td{color:var(--hw-mut)} .hw td b{color:var(--hw-ink)}
+.hw .note{font-size:12px;color:var(--hw-mut);margin:0}
+.hw .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;align-items:start}
+.hw .try{border:2px dashed #8FC9AE;border-radius:12px;padding:14px 16px;background:var(--hw-card);display:flex;gap:12px 18px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.hw .try p{margin:0;color:var(--hw-mut);font-size:13px;max-width:64ch}
+.hw .try b{color:var(--hw-ink)}
+.hw .row2{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.hw .hbtn{all:unset;box-sizing:border-box;cursor:pointer;border:1px solid var(--hw-ink);border-radius:8px;padding:7px 12px;font-size:12.5px;font-weight:600;background:var(--hw-card);color:var(--hw-ink);white-space:nowrap}
+.hw .hbtn.dark{background:var(--hw-ink);color:var(--hw-card)}
+.hw .hbtn:focus-visible{outline:2px solid var(--hw-ink);outline-offset:2px}
+.hw .rails{margin:0;padding-left:18px;color:var(--hw-mut);font-size:13px;display:grid;gap:5px}
+.hw .rails b{color:var(--hw-ink)}
+.hw details{background:var(--hw-card);border:1px solid var(--hw-line);border-radius:10px;min-width:0}
+.hw summary{cursor:pointer;padding:12px 14px;font-weight:600;list-style:none;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.hw summary::-webkit-details-marker{display:none}
+.hw summary .sm{font-weight:400;font-size:12.5px;color:var(--hw-mut)}
+.hw summary::before{content:"▸";font-size:12px;color:var(--hw-mut);margin-right:-4px}
+.hw details[open] summary::before{content:"▾"}
+.hw summary span:first-of-type{margin-right:auto}
+.hw pre{margin:0;padding:14px 16px;overflow:auto;max-height:560px;border-top:1px solid var(--hw-line);font:12px/1.6 "JetBrains Mono",ui-monospace,Consolas,monospace;background:#FDFCFA;color:#121210;tab-size:2;white-space:pre;overflow-wrap:normal}
+.hw pre .c{color:#67635C;font-style:italic} .hw pre .s{color:#0F7A55}
+@media (max-width:620px){.hw{padding:16px}.hw table{display:block;overflow-x:auto}}
+.hw details.more .more-in{padding:14px;display:grid;gap:18px;border-top:1px solid var(--hw-line)}
+/* ---------- v4: Add a hire, Slack digest preview ---------- */
+.h2r{display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.kbtn.sm{font-size:12.5px;padding:6px 12px}
+.kbtn.accent{background:var(--accent);color:var(--accent-t)}
+.starthere{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;background:var(--ink);color:var(--bg)}
+.starthere:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hdr-r{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.tk.today .du{color:var(--warn);font-weight:600}
+.tk .at{display:block;font-size:10.5px;color:var(--muted);font-weight:400;text-decoration:none}
+.hr.new{animation:flash 2s ease-out}
+@keyframes flash{0%,30%{background:var(--good-f);box-shadow:0 0 0 2px var(--good)}100%{background:transparent;box-shadow:none}}
+.hform{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.hform label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--muted)}
+.hform input,.hform select{font:inherit;font-size:14px;font-weight:400;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0}
+.hform input:focus,.hform select:focus{outline:2px solid var(--accent);outline-offset:1px}
+.hform .full{grid-column:1/-1}
+@media (max-width:520px){.hform{grid-template-columns:1fr}}
+.hprev{border-radius:10px;background:var(--accent-f);color:var(--ink);padding:10px 12px;font-size:13px;display:flex;flex-wrap:wrap;gap:4px 16px}
+.hprev b{font-variant-numeric:tabular-nums}
+.hprev.warn{background:var(--warn-f)}
+.slack{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.slack .sh{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;border-bottom:1px solid var(--line);font-weight:700;font-size:13px}
+.slack .sh span:last-child{font-weight:400;color:var(--muted);font-size:12px}
+.slack .sm{display:grid;grid-template-columns:36px minmax(0,1fr);gap:10px;padding:12px}
+.slack .av{width:36px;height:36px;border-radius:8px;background:var(--ops);color:#fff;display:grid;place-items:center;font-weight:700;font-size:12px}
+.slack .who{display:flex;gap:6px;align-items:baseline;font-size:14px;margin-bottom:2px}
+.slack .app{font-size:10px;background:var(--grid);color:var(--muted);padding:0 4px;border-radius:3px;font-weight:700}
+.slack .t{font-size:12px;color:var(--muted)}
+.slack .body{font-size:14px;line-height:1.5}
+.slack .body p{margin:0}
+.slack .body .grp{margin-top:10px}
+.slack .men{background:var(--accent-f);color:var(--accent);border-radius:4px;padding:0 3px;font-weight:600}
+.slack .more{color:var(--muted);font-size:13px}
+</style>
+
+</head><body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brandmark"><img class="lg-d" src="data:image/png;base64,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" alt="" width="98" height="18" aria-hidden="true"><span>Basav Sharma</span></div>
+    <div class="vtabs" role="tablist" aria-label="View">
+      <button role="tab" data-tab="dash" aria-selected="true">Dashboard</button>
+      <button role="tab" data-tab="how" aria-selected="false" tabindex="-1"><i class="yl" aria-hidden="true"></i>How it works</button>
+    </div>
+    <button class="datachip" id="dataBtn" aria-haspopup="dialog"><i class="led" aria-hidden="true"></i><span id="dataLbl">Sample data</span><b>Connect data</b></button>
+  </div>
+
+  <div id="view-dash" style="display:contents">
+  <header>
+    <div>
+      <div class="eyebrow">Part 2A: onboarding the next 8 hires</div>
+      <h1 id="h1">Onboarding Hub</h1>
+    </div>
+    <div class="hdr-r"><button class="starthere" id="tourBtn">Quick tour</button>
+    <div class="seg" role="group" aria-label="Snapshot" id="seg">
+      <button id="S-before" aria-pressed="false">Mon 9 AM: what I found</button>
+      <button id="S-after" aria-pressed="true">Mon 5:30 PM: after day one</button>
+    </div>
+    <span class="asof" id="asof2" hidden></span></div>
+  </header>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="card" id="startcard">
+    <h2>Start dates <small>Tap a person to open their checklist</small></h2>
+    <div class="stripbox"><div class="strip" id="strip"></div></div>
+    <div class="legend"><span><span class="role" style="background:var(--eng)"></span>Engineering</span><span><span class="role" style="background:var(--prod)"></span>Product</span><span><span class="role" style="background:var(--dep)"></span>Deployment</span><span><span class="role" style="background:var(--ops)"></span>Operations</span></div>
+  </div>
+
+  <div class="cols">
+    <div class="card">
+      <h2>New hires <span class="h2r"><small id="asof"></small><button class="kbtn sm accent" id="addBtn">+ Add a hire</button></span></h2>
+      <div class="hires" id="hires"></div>
+    </div>
+    <div class="card" id="panel"></div>
+  </div>
+
+  <div class="three">
+    <div class="card"><h2>Who owes what <small>open tasks due in 7 days</small></h2><div id="owners"></div>
+      <button class="kbtn ghost sm" id="slackBtn" style="margin-top:12px">Preview the 8 AM Slack nudge</button></div>
+    <div class="card"><h2>Access by role <small>one group = all access</small></h2>
+      <div style="overflow-x:auto"><table class="mx" id="mx"></table></div>
+      <div class="legend"><span><span class="dot"></span> Full</span><span><span class="dot rd"></span> Read only</span></div>
+    </div>
+    <div class="card"><h2>How it runs</h2><div class="flow" id="flow"></div></div>
+  </div>
+
+  <div class="foot">
+    <span>Runs on one Google Sheet and a short Apps Script: Slack digest at 8 AM, welcome emails as Gmail drafts, Week 1 on the calendar. See How it works. At ~20+ people, Rippling takes over account creation and removal.</span>
+    <span id="footnote"></span>
+  </div>
+  </div>
+
+  <div id="view-how" hidden></div>
+</div>
+<div class="kov" id="kov" hidden>
+  <div class="kpanel" role="dialog" aria-modal="true" aria-labelledby="ktitle">
+    <button class="kx" id="kclose" aria-label="Close">&#x2715;</button>
+    <h2 id="ktitle">Connect your data</h2>
+    <p class="now" id="know"></p>
+    <div class="kopts">
+      <div class="kopt"><b>1. Get the template</b><span>Seven tabs (Hires, Checklist, Tasks, Owners, Access, Week1, Settings), the same columns as the Google Sheet. Opens in Excel or Google Sheets.</span><button class="kbtn ghost" id="kdl">Download .xlsx</button></div>
+      <div class="kopt"><b>2. Try it with your file</b><span>Change a start date, add a hire, mark a task Done. Save as .xlsx and load it here. It stays in your browser.</span><button class="kbtn" id="kup">Load .xlsx</button><input type="file" id="kfile" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden></div>
+      <div class="kopt"><b>3. Go live</b><span>The Sheet becomes the database, a short Apps Script posts to Slack, Gmail and Calendar, and this page runs privately inside Google.</span><button class="kbtn ghost" id="kgo">Show me how</button></div>
+    </div>
+    <p class="kmsg" id="kmsg" role="status" hidden></p>
+    <div style="display:flex;gap:18px;flex-wrap:wrap"><button class="klink" id="krefresh" hidden>Refresh from the Sheet</button><button class="klink" id="ksample" hidden>Back to sample data</button></div>
+  </div>
+</div>
+<div class="kov" id="mov" hidden><div class="kpanel" role="dialog" aria-modal="true" aria-labelledby="mtitle"><button class="kx" id="mclose" aria-label="Close">&#x2715;</button><div id="mbody" style="display:flex;flex-direction:column;gap:14px"></div></div></div>
+<script type="text/plain" id="code-gs">/**
+ * Onboarding Hub: Google Sheet + Apps Script
+ * Built by Basav Sharma.
+ *
+ * The Sheet is the database. This script does the repeat work:
+ *   1. Every new hire row becomes a full checklist (Tasks tab), due dates set from the start date.
+ *   2. 8 AM on weekdays: one Slack message to #onboarding with what is overdue or due by tomorrow, by owner.
+ *   3. 3 days before a start date: a welcome email waits in Gmail drafts. A person presses Send.
+ *   4. The week before a start date: Week 1 meetings go on the calendar.
+ *   5. The dashboard (HTML file "Dashboard") is served from here, private to the company's Google domain.
+ *
+ * Setup, about 15 minutes:
+ *   - Upload Onboarding_Template.xlsx to Google Drive and save it as a Google Sheet.
+ *   - Extensions > Apps Script: paste this file as Code.gs, add an HTML file named Dashboard (the dashboard page).
+ *   - Project Settings > Script properties: SLACK_WEBHOOK_URL = incoming webhook for #onboarding.
+ *   - Reload the Sheet, then Onboarding > Turn on daily automation (approve Google's prompt once).
+ *   - Deploy > New deployment > Web app (execute as me, access: anyone at the company) for the dashboard link.
+ */
+
+const TABS = ['Settings', 'Hires', 'Checklist', 'Tasks', 'Owners', 'Access', 'Week1'];
+
+function onOpen() {
+  SpreadsheetApp.getUi().createMenu('Onboarding')
+    .addItem('Create tasks for new hires', 'createTasks')
+    .addItem('Send Slack digest now', 'sendSlackDigest')
+    .addItem('Draft welcome emails', 'draftWelcomeEmails')
+    .addItem('Add Week 1 to calendars', 'addWeekOneEvents')
+    .addSeparator()
+    .addItem('Turn on daily automation', 'installTriggers')
+    .addToUi();
+}
+
+/** Runs at 8 AM every day once automation is on; does nothing on weekends. */
+function dailyRun() {
+  const day = asOf_().getDay();
+  if (day === 0 || day === 6) return;
+  createTasks();
+  sendSlackDigest();
+  draftWelcomeEmails();
+  addWeekOneEvents();
+}
+
+// ---------- 1. Hires x Checklist = Tasks ----------
+/** Adds missing tasks for every hire, and moves due dates if a start date changed. Safe to run any time. */
+function createTasks() {
+  const tasks = readTab_('Tasks'), list = readTab_('Checklist');
+  const have = {};
+  tasks.forEach(t => { have[t.hire_id + '|' + t.task_id] = t; });
+  const rows = [];
+  let moved = 0;
+  readTab_('Hires').forEach(h => {
+    if (!h.hire_id || !h.start_date) return;
+    list.filter(c => appliesTo_(c, h)).forEach(c => {
+      const due = dueDate_(h.start_date, c.days_from_start), t = have[h.hire_id + '|' + c.task_id];
+      if (!t) { rows.push([h.hire_id, c.task_id, due, 'Open', '', '']); return; }
+      if (!t.due_date || startOfDay_(asDate_(t.due_date)).getTime() !== due.getTime()) { setCell_('Tasks', t._row, 'due_date', due); moved++; }
+    });
+  });
+  appendRows_('Tasks', rows);
+  toast_(rows.length + ' tasks created, ' + moved + ' due dates moved.');
+  return rows.length;
+}
+
+// ---------- 2. Daily Slack digest ----------
+function sendSlackDigest() {
+  const now = asOf_(), today = startOfDay_(now), tomorrow = addDays_(today, 1);
+  const hires = byKey_(readTab_('Hires'), 'hire_id');
+  const list = byKey_(readTab_('Checklist'), 'task_id');
+  const owners = byKey_(readTab_('Owners'), 'owner');
+  const tasks = readTab_('Tasks');
+  const groups = {};
+  tasks.forEach(t => {
+    const h = hires[t.hire_id], c = list[t.task_id];
+    if (!h || !c || t.status === 'Done') return;
+    const due = dueDate_(h.start_date, c.days_from_start); // always from today's start date
+    if (due > tomorrow) return;
+    const who = ownerName_(c.owner, h);
+    const late = due < today ? ':red_circle: overdue · ' : '';
+    (groups[who] = groups[who] || []).push(`• ${late}${c.task} for ${h.name} (${fmt_(due, 'EEE MMM d')})`);
+  });
+  const lines = [`*Onboarding, ${fmt_(now, 'EEE MMM d')}*`];
+  Object.keys(groups).sort().forEach(who => {
+    const o = owners[who];
+    lines.push((o && o.slack_id ? `<@${o.slack_id}>` : `*${who}*`) + '\n' + groups[who].join('\n'));
+  });
+  if (lines.length === 1) lines.push('Nothing overdue or due by tomorrow. :white_check_mark:');
+  // who starts in the next 2 days, and are they ready?
+  Object.keys(hires).forEach(id => {
+    const h = hires[id], days = Math.round((startOfDay_(asDate_(h.start_date)) - today) / 864e5);
+    if (days < 0 || days > 2) return;
+    const open = tasks.filter(t => t.hire_id === id && t.status !== 'Done' && Number((list[t.task_id] || {}).days_from_start) < 0).length;
+    lines.push(`${h.name} starts ${fmt_(asDate_(h.start_date), 'EEE')}: ` + (open ? `:warning: ${open} prep tasks open` : 'ready for Day 1 :white_check_mark:'));
+  });
+  const text = lines.join('\n\n');
+  const url = prop_('SLACK_WEBHOOK_URL');
+  if (!url) { Logger.log(text); toast_('No SLACK_WEBHOOK_URL yet. Digest written to the log.'); return text; }
+  UrlFetchApp.fetch(url, { method: 'post', contentType: 'application/json', payload: JSON.stringify({ text: text }) });
+  return text;
+}
+
+// ---------- 3. Welcome emails (drafts only) ----------
+function draftWelcomeEmails() {
+  const s = settings_(), before = Number(s.welcome_days_before || 3), today = startOfDay_(asOf_());
+  const welcome = readTab_('Checklist').filter(c => /welcome email/i.test(c.task))[0];
+  const tasks = readTab_('Tasks');
+  let n = 0;
+  readTab_('Hires').forEach(h => {
+    const start = startOfDay_(asDate_(h.start_date)), days = Math.round((start - today) / 864e5);
+    if (!h.email || days < 0 || days > before) return;
+    const t = welcome && tasks.filter(r => r.hire_id === h.hire_id && r.task_id === welcome.task_id)[0];
+    if (t && (t.status === 'Done' || /draft/i.test(t.note))) return;
+    const first = String(h.name).split(' ')[0];
+    const body = [
+      `Hi ${first},`, '',
+      `We're excited you start on ${fmt_(start, 'EEEE, MMMM d')}! A few things before Day 1:`,
+      `1. Arrive at 9:30 AM at ${s.office_address || '[office address]'} and ask for ${h.buddy}, your onboarding buddy.`,
+      '2. Your laptop will be ready, with your accounts set up. Sign in to Google first.',
+      '3. Your first week is on your calendar, starting with lunch with the team.', '',
+      'If anything comes up before then, just reply here.', '',
+      'See you soon,', s.sender_name || '',
+    ].join('\n');
+    GmailApp.createDraft(h.email, 'Welcome to the team: your first day', body);
+    if (t) setCell_('Tasks', t._row, 'note', 'Draft in Gmail ' + fmt_(new Date(), 'MMM d'));
+    n++;
+  });
+  toast_(n + ' welcome emails waiting in Gmail drafts.');
+  return n;
+}
+
+// ---------- 4. Week 1 on the calendar ----------
+function addWeekOneEvents() {
+  const s = settings_(), cal = CalendarApp.getDefaultCalendar(), today = startOfDay_(asOf_());
+  const invites = readTab_('Checklist').filter(c => /invites/i.test(c.task))[0];
+  const tasks = readTab_('Tasks'), week1 = readTab_('Week1');
+  let n = 0;
+  readTab_('Hires').forEach(h => {
+    const start = startOfDay_(asDate_(h.start_date)), days = Math.round((start - today) / 864e5);
+    if (!h.email || days < 0 || days > 7) return;
+    const t = invites && tasks.filter(r => r.hire_id === h.hire_id && r.task_id === invites.task_id)[0];
+    if (t && /invites created/i.test(t.note)) return;
+    week1.forEach(w => {
+      const st = atTime_(addWorkdays_(start, Number(w.day) - 1), w.time);
+      const en = new Date(st.getTime() + Number(w.minutes) * 60000);
+      cal.createEvent(`${w.title} · ${h.name}`, st, en, { end users: h.email, sendInvites: s.send_invites === 'Yes' });
+      n++;
+    });
+    if (t) setCell_('Tasks', t._row, 'note', 'Invites created ' + fmt_(new Date(), 'MMM d'));
+  });
+  toast_(n + ' Week 1 events added.');
+  return n;
+}
+
+// ---------- Automation ----------
+function installTriggers() {
+  ScriptApp.getProjectTriggers().forEach(t => { if (t.getHandlerFunction() === 'dailyRun') ScriptApp.deleteTrigger(t); });
+  ScriptApp.newTrigger('dailyRun').timeBased().everyDays(1).atHour(8).create();
+  toast_('Daily automation is on: 8 AM on weekdays.');
+}
+
+/** Stamps done_on when someone sets a task to Done in the Sheet. */
+function onEdit(e) {
+  const sh = e.range.getSheet();
+  if (sh.getName() !== 'Tasks' || e.range.getRow() === 1) return;
+  const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  if (head[e.range.getColumn() - 1] !== 'status') return;
+  sh.getRange(e.range.getRow(), head.indexOf('done_on') + 1).setValue(e.value === 'Done' ? new Date() : '');
+}
+
+// ---------- Dashboard (web app) ----------
+function doGet() {
+  return HtmlService.createHtmlOutputFromFile('Dashboard')
+    .setTitle('Onboarding Hub')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
+/** Called by the dashboard: every tab as plain rows (dates become text). */
+function getData() {
+  const out = {};
+  TABS.forEach(n => { out[n] = readTab_(n).map(plain_); });
+  return out;
+}
+
+/** Called by the dashboard when someone ticks a task. */
+function setTaskStatus(hireId, taskId, done) {
+  const t = readTab_('Tasks').filter(r => r.hire_id === hireId && r.task_id === taskId)[0];
+  if (!t) throw new Error(`No task ${taskId} for ${hireId}. Run "Create tasks for new hires" first.`);
+  setCell_('Tasks', t._row, 'status', done ? 'Done' : 'Open');
+  setCell_('Tasks', t._row, 'done_on', done ? startOfDay_(new Date()) : '');
+  return true;
+}
+
+// ---------- Helpers ----------
+function sheet_(name) {
+  const sh = SpreadsheetApp.getActive().getSheetByName(name);
+  if (!sh) throw new Error('Missing tab: ' + name);
+  return sh;
+}
+/** A tab as objects keyed by the header row; _row is the Sheet row number. */
+function readTab_(name) {
+  const values = sheet_(name).getDataRange().getValues();
+  const head = values.shift().map(h => String(h).trim());
+  return values.map((r, i) => {
+    const o = { _row: i + 2 };
+    head.forEach((h, j) => { if (h) o[h] = r[j]; });
+    return o;
+  }).filter(o => head.some(h => h && o[h] !== ''));
+}
+function appendRows_(name, rows) {
+  if (!rows.length) return;
+  const sh = sheet_(name);
+  sh.getRange(sh.getLastRow() + 1, 1, rows.length, rows[0].length).setValues(rows);
+}
+function setCell_(name, row, col, value) {
+  const sh = sheet_(name);
+  const j = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].indexOf(col);
+  if (j < 0) throw new Error(`Tab ${name} has no column ${col}`);
+  sh.getRange(row, j + 1).setValue(value);
+}
+function byKey_(rows, key) { const o = {}; rows.forEach(r => { o[r[key]] = r; }); return o; }
+function settings_() { const o = {}; readTab_('Settings').forEach(r => { o[r.key] = r.value; }); return o; }
+function prop_(key) { return PropertiesService.getScriptProperties().getProperty(key); }
+function toast_(msg) { try { SpreadsheetApp.getActive().toast(msg); } catch (e) { Logger.log(msg); } }
+function tz_() { return SpreadsheetApp.getActive().getSpreadsheetTimeZone(); }
+function fmt_(d, pattern) { return Utilities.formatDate(d, tz_(), pattern); }
+
+function appliesTo_(c, h) {
+  const a = String(c.applies_to || 'All');
+  return a === 'All' || a.split(',').map(x => x.trim()).indexOf(h.team) >= 0;
+}
+/** Start date + offset; never on a weekend (prep moves back to Friday, follow-ups forward to Monday). */
+function dueDate_(start, offset) {
+  const d = startOfDay_(asDate_(start)), n = Number(offset);
+  d.setDate(d.getDate() + n);
+  while (d.getDay() === 0 || d.getDay() === 6) d.setDate(d.getDate() + (n < 0 ? -1 : 1));
+  return d;
+}
+/** Manager and Buddy are per hire; everyone else is a named owner. */
+function ownerName_(owner, h) { return owner === 'Manager' ? h.manager : owner === 'Buddy' ? h.buddy : owner; }
+/** The demo pins "now" in Settings > as_of; blank means the real time. */
+function asOf_() { const v = settings_().as_of; return v ? asDate_(v) : new Date(); }
+function asDate_(v) {
+  if (v instanceof Date) return new Date(v.getTime());
+  const m = String(v).match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{2}))?/);
+  if (m) return new Date(+m[1], m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0));
+  const d = new Date(v);
+  if (isNaN(d.getTime())) throw new Error('Not a date: ' + v);
+  return d;
+}
+function startOfDay_(d) { const x = new Date(d.getTime()); x.setHours(0, 0, 0, 0); return x; }
+function addDays_(d, n) { const x = new Date(d.getTime()); x.setDate(x.getDate() + n); return x; }
+function addWorkdays_(d, n) {
+  const x = new Date(d.getTime());
+  while (n > 0) { x.setDate(x.getDate() + 1); if (x.getDay() !== 0 && x.getDay() !== 6) n--; }
+  return x;
+}
+/** "9:30", "14:00" or a Sheets time cell, on a given day. */
+function atTime_(day, t) {
+  const s = t instanceof Date ? fmt_(t, 'H:mm') : String(t);
+  const m = s.match(/(\d{1,2}):(\d{2})\s*(am|pm)?/i);
+  if (!m) throw new Error('Not a time: ' + t);
+  let h = +m[1];
+  if (m[3] && /pm/i.test(m[3]) && h < 12) h += 12;
+  if (m[3] && /am/i.test(m[3]) && h === 12) h = 0;
+  const x = new Date(day.getTime());
+  x.setHours(h, +m[2], 0, 0);
+  return x;
+}
+/** Dates can't travel to the browser, so turn them into text first. */
+function plain_(row) {
+  const o = {};
+  Object.keys(row).forEach(k => {
+    const v = row[k];
+    if (!(v instanceof Date)) { o[k] = v; return; }
+    if (v.getFullYear() < 1900) o[k] = fmt_(v, 'H:mm');
+    else o[k] = fmt_(v, 'HH:mm') === '00:00' ? fmt_(v, 'yyyy-MM-dd') : fmt_(v, 'yyyy-MM-dd HH:mm');
+  });
+  return o;
+}</script>
+<script>
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+// ---------- Shared: data in and out, the Connect data dialog, How it works helpers ----------
+// The page runs three ways with the same code:
+//   sample = the rows built into this page;  file = an .xlsx someone uploads (read in the browser, never sent anywhere);
+//   live   = served by Apps Script from the Google Sheet (google.script.run exists), reads and writes the Sheet.
+const SHEETJS = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+const GAS = !!(window.google && google.script && google.script.run);
+let dataMode = "sample", dataName = "", xlsxP = null, toastT = null, kLast = null;
+const pad2 = n => String(n).padStart(2, "0");
+
+function loadXLSX() {
+  return xlsxP || (xlsxP = new Promise((res, rej) => {
+    if (window.XLSX) return res(window.XLSX);
+    const s = document.createElement("script");
+    s.src = SHEETJS;
+    s.onload = () => res(window.XLSX);
+    s.onerror = () => { xlsxP = null; rej(new Error("Couldn't load the Excel reader. Check the connection and try again.")); };
+    document.head.appendChild(s);
+  }));
+}
+/** Every tab of an .xlsx as rows keyed by the header row. */
+async function readXlsx(file) {
+  const X = await loadXLSX();
+  const wb = X.read(await file.arrayBuffer(), { type: "array" });
+  const tabs = {};
+  wb.SheetNames.forEach(n => {
+    tabs[n.trim()] = X.utils.sheet_to_json(wb.Sheets[n], { defval: "", raw: true }).map(r => {
+      const o = {};
+      Object.keys(r).forEach(k => { const v = r[k]; o[String(k).trim()] = typeof v === "string" ? v.trim() : v; });
+      return o;
+    });
+  });
+  return tabs;
+}
+// Excel stores dates as day counts from 1899-12-30; read them as wall-clock values, whatever the time zone.
+function serialParts(n) { const d = new Date(Math.round((n - 25569) * 864e5 / 6e4) * 6e4); return { y: d.getUTCFullYear(), m: d.getUTCMonth() + 1, d: d.getUTCDate(), h: d.getUTCHours(), mi: d.getUTCMinutes() }; }
+function isoDate(v) {
+  if (v instanceof Date && !isNaN(v)) return v.getFullYear() + "-" + pad2(v.getMonth() + 1) + "-" + pad2(v.getDate());
+  if (typeof v === "number") { const p = serialParts(v); return p.y + "-" + pad2(p.m) + "-" + pad2(p.d); }
+  const s = String(v || "").trim();
+  let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m) return m[1] + "-" + pad2(m[2]) + "-" + pad2(m[3]);
+  m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+  if (m) return (m[3].length === 2 ? "20" + m[3] : m[3]) + "-" + pad2(m[1]) + "-" + pad2(m[2]);
+  return "";
+}
+function parseDT(v) {
+  if (typeof v === "number") { const p = serialParts(v); return new Date(p.y, p.m - 1, p.d, p.h, p.mi); }
+  const s = String(v || "").trim(), d = isoDate(s);
+  if (!d) return null;
+  const t = s.match(/[ T](\d{1,2}):(\d{2})/), [y, m, dd] = d.split("-").map(Number);
+  return new Date(y, m - 1, dd, t ? +t[1] : 0, t ? +t[2] : 0);
+}
+/** "9:15", "2:30 PM" or an Excel time cell -> "H:MM" (24-hour). */
+function hm(v) {
+  if (typeof v === "number") { const mins = Math.round((v % 1) * 1440); return Math.floor(mins / 60) + ":" + pad2(mins % 60); }
+  const m = String(v || "").match(/(\d{1,2}):(\d{2})\s*(am|pm)?/i);
+  if (!m) return "";
+  let h = +m[1];
+  if (m[3] && /pm/i.test(m[3]) && h < 12) h += 12;
+  if (m[3] && /am/i.test(m[3]) && h === 12) h = 0;
+  return h + ":" + m[2];
+}
+/** Checks that the tabs and columns the page needs are there; says exactly what is missing. */
+function need(tabs, spec) {
+  const miss = [];
+  Object.entries(spec).forEach(([t, cols]) => {
+    if (!tabs[t]) { miss.push(`the "${t}" tab`); return; }
+    const have = new Set(Object.keys(tabs[t][0] || {}));
+    cols.forEach(c => { if (!have.has(c)) miss.push(`column "${c}" in "${t}"`); });
+  });
+  if (miss.length) throw new Error("This file is missing " + miss.join(", ") + ". Start from the template so the tabs match.");
+}
+function b64Blob(b64, type) { const bin = atob(b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new Blob([u], { type }); }
+async function saveFile(name, blob) {
+  if (window.claude && typeof window.claude.use === "function") {
+    try { const dl = await window.claude.use("downloads"); if (dl) { await dl.save({ filename: name, data: blob }); return true; } }
+    catch (e) { if (e && e.code === "declined") return false; if (e && e.code === "rate_limited") { toast("A save prompt is already open."); return false; } }
+  }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  return true;
+}
+function dlTemplate() { saveFile(APP.tplName, b64Blob(APP.tplB64, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")); }
+async function copyText(s) {
+  try { await navigator.clipboard.writeText(s); return true; }
+  catch (e) {
+    const ta = document.createElement("textarea");
+    ta.value = s; ta.setAttribute("readonly", ""); ta.style.cssText = "position:fixed;opacity:0;top:0;left:0";
+    document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand("copy"); } catch (_) { ok = false; }
+    ta.remove(); return ok;
+  }
+}
+function toast(msg) {
+  let t = document.getElementById("ktoast");
+  if (!t) { t = document.createElement("div"); t.id = "ktoast"; t.className = "ktoast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 3400);
+}
+/** Light code colouring: comments and strings only. */
+function hl(src) {
+  let o = "", i = 0; const n = src.length, e = s => s.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+  while (i < n) {
+    const c = src[i], d = src[i + 1];
+    if (c === "/" && d === "/") { let j = src.indexOf("\n", i); if (j < 0) j = n; o += `<span class="c">${e(src.slice(i, j))}</span>`; i = j; continue; }
+    if (c === "/" && d === "*") { let j = src.indexOf("*/", i + 2); j = j < 0 ? n : j + 2; o += `<span class="c">${e(src.slice(i, j))}</span>`; i = j; continue; }
+    if (c === "'" || c === '"' || c === "`") { let j = i + 1; while (j < n && src[j] !== c) { if (src[j] === "\\") j++; j++; } j++; o += `<span class="s">${e(src.slice(i, j))}</span>`; i = j; continue; }
+    o += e(c); i++;
+  }
+  return o;
+}
+function wrap2(s, n) { const w = s.split(" "); let a = "", b = ""; w.forEach(x => { if (!b && (a + " " + x).trim().length <= n) a = (a + " " + x).trim(); else b = (b + " " + x).trim(); }); return [a, b]; }
+/** The animated sources -> Sheet + script -> outputs picture, same drawing as my portfolio. */
+function hwFlow(o) {
+  const W = 1000, s = o.steps.length, hubX = 300, hubW = 300, hubY = 24, hubH = 50 + s * 62, H = hubY + hubH + 10, cy = hubY + hubH / 2;
+  const T = (x, y, cls, size, txt, extra) => `<text x="${x}" y="${y}" class="${cls}" font-size="${size}" ${extra || ""}>${esc(txt)}</text>`;
+  let v = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.aria)}"><defs><marker id="hwArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="context-stroke"/></marker></defs>`;
+  v += T(10, 14, "t-mut", 11, o.labels[0], 'font-weight="600" letter-spacing="1.2"') + T(hubX, 14, "t-mut", 11, o.labels[1], 'font-weight="600" letter-spacing="1.2"') + T(740, 14, "t-mut", 11, o.labels[2], 'font-weight="600" letter-spacing="1.2"');
+  const n = o.srcs.length, sg = (hubH - 40) / Math.max(1, n - 1);
+  o.srcs.forEach((x, i) => {
+    const y = hubY + i * sg, ty = cy - (n - 1) * 5 + i * 10;
+    v += `<path class="wire" stroke="${x[2]}" d="M240 ${y + 20} C 275 ${y + 20}, 265 ${ty}, ${hubX - 2} ${ty}" marker-end="url(#hwArr)"/>` +
+      `<rect class="node" x="10" y="${y}" width="230" height="40" rx="8" stroke="${x[2]}" stroke-width="1.5"/><rect x="10" y="${y}" width="6" height="40" rx="3" fill="${x[2]}"/>` +
+      T(26, y + 17, "t-ink", 12.5, x[0], 'font-weight="650"') + T(26, y + 32, "t-mut", 10.5, x[1]);
+  });
+  v += `<rect class="hub" x="${hubX}" y="${hubY}" width="${hubW}" height="${hubH}" rx="14" stroke-width="1"/>` + T(hubX + 18, hubY + 28, "t-ink", 15, o.hub, 'font-weight="700"');
+  o.steps.forEach((x, i) => {
+    const y = hubY + 62 + i * 62, [l1, l2] = wrap2(x[1], 41);
+    v += `<circle cx="${hubX + 27}" cy="${y}" r="9" class="t-ink"/><text x="${hubX + 27}" y="${y + 4}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--hw-card)">${i + 1}</text>` +
+      T(hubX + 44, y + 4, "t-ink", 12.5, x[0], 'font-weight="650"') + T(hubX + 44, y + 20, "t-mut", 11.5, l1) + T(hubX + 44, y + 35, "t-mut", 11.5, l2);
+  });
+  const m = o.outs.length, og = (hubH - 34) / Math.max(1, m - 1);
+  o.outs.forEach((x, i) => {
+    const y = hubY + i * og;
+    v += `<path class="wire" stroke="#8C887F" d="M${hubX + hubW + 2} ${cy - (m - 1) * 3 + i * 6} C 650 ${cy}, 690 ${y + 17}, 738 ${y + 17}" marker-end="url(#hwArr)"/>` +
+      `<rect class="node" x="740" y="${y}" width="250" height="34" rx="7" stroke="#DEDBD4"/>` + T(752, y + 21.5, "t-ink", 12.5, x);
+  });
+  return v + `</svg>`;
+}
+
+// ---------- Connect data dialog + view tabs ----------
+function setChip() {
+  document.querySelector("#dataBtn .led").className = "led" + (dataMode === "live" ? " live" : dataMode === "file" ? " file" : "");
+  document.getElementById("dataLbl").textContent = dataMode === "live" ? "Live: Google Sheet" : dataMode === "file" ? "Your file: " + dataName : "Sample data";
+}
+function kNow() {
+  document.getElementById("know").innerHTML = "Now showing: <b>" + esc(dataMode === "live" ? "your Google Sheet, live" : dataMode === "file" ? dataName : "sample data built into this page") + "</b>";
+  document.getElementById("ksample").hidden = dataMode === "sample";
+  document.getElementById("krefresh").hidden = !GAS;
+}
+function kMsg(text, kind) { const m = document.getElementById("kmsg"); m.hidden = !text; m.textContent = text || ""; m.className = "kmsg " + (kind || ""); }
+function openData() { kLast = document.activeElement; kNow(); kMsg(""); document.getElementById("kov").hidden = false; document.getElementById("kclose").focus(); }
+function closeData() { const o = document.getElementById("kov"); if (o.hidden) return; o.hidden = true; if (kLast && kLast.focus) kLast.focus(); }
+/** Swap the data behind the page. APP.apply builds everything first, so a bad file changes nothing. */
+function useData(tabs, mode, name) {
+  const prev = [dataMode, dataName];
+  dataMode = mode; dataName = name || "";
+  try { APP.apply(tabs); } catch (e) { [dataMode, dataName] = prev; throw e; }
+  setChip(); kNow();
+  const how = document.getElementById("view-how"); if (how.dataset.ready) { how.innerHTML = APP.how(); wireHow(how); }
+}
+function connectLive() {
+  document.getElementById("dataLbl").textContent = "Connecting to Google Sheet…";
+  google.script.run
+    .withSuccessHandler(tabs => { try { useData(tabs, "live", ""); toast("Loaded live from the Google Sheet."); } catch (e) { setChip(); toast(e.message); } })
+    .withFailureHandler(e => { setChip(); toast("Couldn't read the Sheet: " + (e && e.message || e)); })
+    .getData();
+}
+async function onUpload(e) {
+  const f = e.target.files[0]; e.target.value = "";
+  if (!f) return;
+  kMsg("Reading " + f.name + "…");
+  try { useData(await readXlsx(f), "file", f.name); kMsg("Loaded " + f.name + ". The dashboard now runs on your file. Nothing left your browser.", "ok"); toast("Loaded " + f.name); }
+  catch (err) { kMsg(err.message || String(err), "err"); toast(err.message || String(err)); }
+}
+function showTab(k) {
+  document.querySelectorAll(".vtabs [role=tab]").forEach(b => {
+    const on = b.dataset.tab === k, v = document.getElementById("view-" + b.dataset.tab);
+    b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1; if (v) v.hidden = !on;
+  });
+  const h = document.getElementById("view-how");
+  if (k === "how" && !h.dataset.ready) { h.innerHTML = APP.how(); h.dataset.ready = "1"; wireHow(h); }
+  if (APP.onTab) APP.onTab(k);
+}
+function wireHow(root) {
+  root.querySelectorAll("[data-dl-template]").forEach(b => { b.onclick = dlTemplate; });
+  root.querySelectorAll("[data-upload]").forEach(b => { b.onclick = () => document.getElementById("kfile").click(); });
+  root.querySelectorAll("[data-copy-code]").forEach(b => { b.onclick = async () => toast(await copyText(document.getElementById("code-gs").textContent.trim() + "\n") ? "Code.gs copied. Paste it into Extensions > Apps Script." : "Select the code below and copy it."); });
+  root.querySelectorAll("[data-go-dash]").forEach(b => { b.onclick = () => { showTab("dash"); window.scrollTo(0, 0); }; });
+}
+// ---------- Quick tour: the page goes dark except the bubble and the part it points to; Skip any time ----------
+// steps: [{ el: () => Element, title: "…", text: () => "…" }]. Shown once per browser session (key), reopened by a button.
+let KT = null;
+function kTour(steps, key) { kTourEnd(); KT = { steps, key, i: -1, from: document.activeElement }; kTourGo(0); }
+function kTourSeen(key) { try { return !!sessionStorage.getItem(key); } catch (e) { return false; } }
+function kTourEnd() {
+  if (!KT) return;
+  try { sessionStorage.setItem(KT.key, "1"); } catch (e) {}
+  document.querySelectorAll(".kt-spot,.kt-block,.tour").forEach(x => x.remove());
+  document.querySelectorAll(".tour-on").forEach(x => x.classList.remove("tour-on"));
+  const from = KT.from; KT = null;
+  if (from && from.focus && document.body.contains(from)) from.focus({ preventScroll: true });
+}
+function kTourGo(i) {
+  if (!KT) return;
+  const n = KT.steps.length;
+  if (i >= n) { kTourEnd(); return; }
+  const st = KT.steps[i], el = st.el();
+  if (!el) { if (i + 1 < n) kTourGo(i + 1); else kTourEnd(); return; }
+  KT.i = i;
+  document.querySelectorAll(".tour-on").forEach(x => x.classList.remove("tour-on"));
+  el.classList.add("tour-on");
+  el.scrollIntoView({ block: "center", inline: "nearest" });
+  const mk = (cls, tag) => { let x = document.querySelector("." + cls); if (!x) { x = document.createElement(tag || "div"); x.className = cls; document.body.appendChild(x); } return x; };
+  const blk = mk("kt-block"), spot = mk("kt-spot"), c = mk("tour");
+  blk.setAttribute("aria-hidden", "true"); spot.setAttribute("aria-hidden", "true");
+  c.setAttribute("role", "dialog"); c.setAttribute("aria-label", "Quick tour"); c.setAttribute("aria-live", "polite");
+  const txt = typeof st.text === "function" ? st.text() : st.text;
+  c.innerHTML = `<span class="tn">Quick tour · ${i + 1} of ${n}</span>${st.title ? `<b class="tt">${esc(st.title)}</b>` : ""}<p>${esc(txt)}</p>` +
+    `<div class="tb"><button class="skip">Skip tour</button><span class="sp"></span>${i ? `<button class="back">Back</button>` : ""}<button class="go">${i === n - 1 ? "Done" : "Next"}</button></div>`;
+  c.querySelector(".skip").onclick = kTourEnd;
+  c.querySelector(".go").onclick = () => kTourGo(i + 1);
+  const bk = c.querySelector(".back"); if (bk) bk.onclick = () => kTourGo(i - 1);
+  kTourPlace();
+  c.querySelector(".go").focus({ preventScroll: true });
+}
+function kTourPlace() {
+  if (!KT) return;
+  const el = document.querySelector(".tour-on"), spot = document.querySelector(".kt-spot"), c = document.querySelector(".tour");
+  if (!el || !spot || !c) return;
+  const r = el.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = innerHeight, pad = 8, gap = 14, m = 12;
+  const L = Math.max(4, r.left - pad), T = Math.max(4, r.top - pad), R = Math.min(vw - 4, r.right + pad), B = Math.min(vh - 4, r.bottom + pad);
+  Object.assign(spot.style, { left: L + "px", top: T + "px", width: Math.max(0, R - L) + "px", height: Math.max(0, B - T) + "px" });
+  const w = c.offsetWidth, h = c.offsetHeight;
+  let x = Math.max(m, Math.min(vw - w - m, L)), y;
+  if (B + gap + h <= vh - m) y = B + gap;
+  else if (T - gap - h >= m) y = T - gap - h;
+  else if (R + gap + w <= vw - m) { x = R + gap; y = Math.max(m, Math.min(vh - h - m, T)); }
+  else if (L - gap - w >= m) { x = L - gap - w; y = Math.max(m, Math.min(vh - h - m, T)); }
+  else y = vh - h - m;
+  Object.assign(c.style, { left: x + "px", top: y + "px" });
+}
+addEventListener("resize", kTourPlace);
+addEventListener("scroll", kTourPlace, true);
+document.addEventListener("keydown", e => {
+  if (!KT) return;
+  if (e.key === "Escape") kTourEnd();
+  else if (e.key === "Tab") { const b = [...document.querySelectorAll(".tour button")]; const k = b.indexOf(document.activeElement); e.preventDefault(); (b[(k + (e.shiftKey ? b.length - 1 : 1)) % b.length] || b[0]).focus(); }
+});
+
+function initKit() {
+  document.getElementById("dataBtn").onclick = openData;
+  document.getElementById("kclose").onclick = closeData;
+  document.getElementById("kov").addEventListener("click", e => { if (e.target.id === "kov") closeData(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeData(); });
+  document.getElementById("kdl").onclick = dlTemplate;
+  document.getElementById("kfile").onchange = onUpload;
+  document.getElementById("kup").onclick = () => document.getElementById("kfile").click();
+  document.getElementById("ksample").onclick = () => { useData(SAMPLE, "sample", ""); kMsg("Back to the sample data.", "ok"); };
+  document.getElementById("krefresh").onclick = () => { closeData(); connectLive(); };
+  document.getElementById("kgo").onclick = () => { closeData(); showTab("how"); const p = document.getElementById("plug"); if (p) p.scrollIntoView({ block: "start" }); };
+  const tabs = [...document.querySelectorAll(".vtabs [role=tab]")];
+  tabs.forEach((b, i) => {
+    b.onclick = () => showTab(b.dataset.tab);
+    b.onkeydown = e => { if (e.key === "ArrowRight" || e.key === "ArrowLeft") { const n = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length]; n.focus(); showTab(n.dataset.tab); } };
+  });
+  setChip();
+  if (GAS) connectLive();
+}
+
+// ---------- Data: the Google Sheet's tabs, as rows ----------
+const SAMPLE={"Settings":[{"key":"as_of","value":"2026-11-16 17:30","note":"Demo only: the time the dashboard and script measure against. Clear it to go live (uses now)."},{"key":"welcome_days_before","value":3,"note":"Welcome email draft is made this many days before the start date."},{"key":"send_invites","value":"No","note":"Yes = Week 1 calendar invites email the new hire. No = events only."},{"key":"sender_name","value":"Basav","note":"Signs the welcome email."},{"key":"office_address","value":"[office address]","note":"Goes into the welcome email."}],"Hires":[{"hire_id":"A","name":"Engineer A","short_name":"Eng A","role":"Software Engineer","team":"Engineering","manager":"CTO","buddy":"Priya","start_date":"2026-11-17","email":"engineer.a@example.com"},{"hire_id":"B","name":"Engineer B","short_name":"Eng B","role":"Software Engineer","team":"Engineering","manager":"CTO","buddy":"Marco","start_date":"2026-11-17","email":"engineer.b@example.com"},{"hire_id":"C","name":"PM C","short_name":"PM C","role":"Product Manager","team":"Product","manager":"CEO","buddy":"Dana","start_date":"2026-11-23","email":"pm.c@example.com"},{"hire_id":"D","name":"Deployment D","short_name":"Deploy D","role":"Deployment Lead","team":"Deployment","manager":"COO","buddy":"Luis","start_date":"2026-11-23","email":"deployment.d@example.com"},{"hire_id":"E","name":"Deployment E","short_name":"Deploy E","role":"Deployment Lead","team":"Deployment","manager":"COO","buddy":"Ana","start_date":"2026-11-23","email":"deployment.e@example.com"},{"hire_id":"F","name":"Engineer F","short_name":"Eng F","role":"Software Engineer","team":"Engineering","manager":"CTO","buddy":"Priya","start_date":"2026-11-30","email":"engineer.f@example.com"},{"hire_id":"G","name":"Engineer G","short_name":"Eng G","role":"Software Engineer","team":"Engineering","manager":"CTO","buddy":"Marco","start_date":"2026-11-30","email":"engineer.g@example.com"},{"hire_id":"H","name":"Ops H","short_name":"Ops H","role":"Operations Associate","team":"Operations","manager":"COO","buddy":"Sam","start_date":"2026-11-30","email":"ops.h@example.com"}],"Checklist":[{"task_id":"T01","phase":"Paperwork","days_from_start":-14,"task":"Offer signed; added to tracker","owner":"Ops","applies_to":"All"},{"task_id":"T02","phase":"Paperwork","days_from_start":-10,"task":"HR packet sent (I-9, W-4, PIIA, handbook)","owner":"Ops","applies_to":"All"},{"task_id":"T03","phase":"Paperwork","days_from_start":-7,"task":"Background check cleared","owner":"Ops","applies_to":"All"},{"task_id":"T04","phase":"Paperwork","days_from_start":-7,"task":"Benefits enrollment link sent","owner":"Ops","applies_to":"All"},{"task_id":"T05","phase":"Equipment","days_from_start":-10,"task":"Laptop ordered","owner":"Ops","applies_to":"All"},{"task_id":"T06","phase":"Equipment","days_from_start":-5,"task":"Welcome kit shipped","owner":"Ops","applies_to":"All"},{"task_id":"T07","phase":"Equipment","days_from_start":-2,"task":"Laptop set up, enrolled, tested","owner":"Ops","applies_to":"All"},{"task_id":"T08","phase":"Equipment","days_from_start":-2,"task":"Travel card + travel policy","owner":"Ops","applies_to":"Deployment, Operations"},{"task_id":"T09","phase":"Access","days_from_start":-3,"task":"Google Workspace + groups","owner":"Ops","applies_to":"All"},{"task_id":"T10","phase":"Access","days_from_start":-3,"task":"Slack + role channels","owner":"Ops","applies_to":"All"},{"task_id":"T11","phase":"Access","days_from_start":-2,"task":"Linear","owner":"Eng admin","applies_to":"All"},{"task_id":"T12","phase":"Access","days_from_start":-2,"task":"GitHub","owner":"Eng admin","applies_to":"Engineering"},{"task_id":"T13","phase":"Access","days_from_start":-1,"task":"Cloud / staging (least privilege)","owner":"Eng admin","applies_to":"Engineering"},{"task_id":"T14","phase":"Access","days_from_start":-2,"task":"Product + customer system sandbox","owner":"Deploy lead","applies_to":"Deployment, Operations, Product"},{"task_id":"T15","phase":"Schedule","days_from_start":-5,"task":"Buddy assigned","owner":"Manager","applies_to":"All"},{"task_id":"T16","phase":"Schedule","days_from_start":-3,"task":"30/60/90 goals + first task","owner":"Manager","applies_to":"All"},{"task_id":"T17","phase":"Schedule","days_from_start":-3,"task":"Welcome email sent","owner":"Ops","applies_to":"All"},{"task_id":"T18","phase":"Schedule","days_from_start":-2,"task":"Day 1-5 invites sent","owner":"Ops","applies_to":"All"},{"task_id":"T19","phase":"Schedule","days_from_start":-2,"task":"Welcome lunch booked","owner":"Ops","applies_to":"All"},{"task_id":"T20","phase":"Day 1","days_from_start":0,"task":"Announced in #general","owner":"Ops","applies_to":"All"},{"task_id":"T21","phase":"Week 1","days_from_start":1,"task":"Security training (SOC 2 evidence)","owner":"Ops","applies_to":"All"},{"task_id":"T22","phase":"Week 1","days_from_start":1,"task":"Product demo + customer story","owner":"Product","applies_to":"All"},{"task_id":"T23","phase":"Week 1","days_from_start":2,"task":"CEO 1:1: company story","owner":"CEO","applies_to":"All"},{"task_id":"T24","phase":"Week 1","days_from_start":3,"task":"First PR merged","owner":"Buddy","applies_to":"Engineering"},{"task_id":"T25","phase":"Week 1","days_from_start":4,"task":"Day-5 pulse (3 questions)","owner":"Ops","applies_to":"All"},{"task_id":"T26","phase":"Month 1","days_from_start":10,"task":"Shadow a customer go-live","owner":"Deploy lead","applies_to":"Deployment, Operations, Product"},{"task_id":"T27","phase":"Month 1","days_from_start":30,"task":"30-day check-in","owner":"Manager","applies_to":"All"}],"Tasks":[{"hire_id":"A","task_id":"T01","due_date":"2026-11-03","status":"Done","done_on":"","note":""},{"hire_id":"A","task_id":"T02","due_date":"2026-11-06","status":"Done","done_on":"","note":""},{"hire_id":"A","task_id":"T03","due_date":"2026-11-10","status":"Done","done_on":"","note":""},{"hire_id":"A","task_id":"T04","due_date":"2026-11-10","status":"Done","done_on":"","note":""},{"hire_id":"A","task_id":"T05","due_date":"2026-11-06","status":"Done","done_on":"","note":""},{"hire_id":"A","task_id":"T06","due_date":"2026-11-12","status":"Done","done_on":"","note":""},{"hire_id":"A","task_id":"T07","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"A","task_id":"T09","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"A","task_id":"T10","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"A","task_id":"T11","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"A","task_id":"T12","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"A","task_id":"T13","due_date":"2026-11-16","status":"Done","done_on":"","note":""},{"hire_id":"A","task_id":"T15","due_date":"2026-11-12","status":"Done","done_on":"","note":""},{"hire_id":"A","task_id":"T16","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"A","task_id":"T17","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"A","task_id":"T18","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"A","task_id":"T19","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"A","task_id":"T20","due_date":"2026-11-17","status":"Open","done_on":"","note":""},{"hire_id":"A","task_id":"T21","due_date":"2026-11-18","status":"Open","done_on":"","note":""},{"hire_id":"A","task_id":"T22","due_date":"2026-11-18","status":"Open","done_on":"","note":""},{"hire_id":"A","task_id":"T23","due_date":"2026-11-19","status":"Open","done_on":"","note":""},{"hire_id":"A","task_id":"T24","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"A","task_id":"T25","due_date":"2026-11-23","status":"Open","done_on":"","note":""},{"hire_id":"A","task_id":"T27","due_date":"2026-12-17","status":"Open","done_on":"","note":""},{"hire_id":"B","task_id":"T01","due_date":"2026-11-03","status":"Done","done_on":"","note":""},{"hire_id":"B","task_id":"T02","due_date":"2026-11-06","status":"Done","done_on":"","note":""},{"hire_id":"B","task_id":"T03","due_date":"2026-11-10","status":"Done","done_on":"","note":""},{"hire_id":"B","task_id":"T04","due_date":"2026-11-10","status":"Done","done_on":"","note":""},{"hire_id":"B","task_id":"T05","due_date":"2026-11-06","status":"Done","done_on":"","note":""},{"hire_id":"B","task_id":"T06","due_date":"2026-11-12","status":"Done","done_on":"","note":""},{"hire_id":"B","task_id":"T07","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"B","task_id":"T09","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"B","task_id":"T10","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"B","task_id":"T11","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"B","task_id":"T12","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"B","task_id":"T13","due_date":"2026-11-16","status":"Done","done_on":"","note":""},{"hire_id":"B","task_id":"T15","due_date":"2026-11-12","status":"Done","done_on":"","note":""},{"hire_id":"B","task_id":"T16","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"B","task_id":"T17","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"B","task_id":"T18","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"B","task_id":"T19","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"B","task_id":"T20","due_date":"2026-11-17","status":"Open","done_on":"","note":""},{"hire_id":"B","task_id":"T21","due_date":"2026-11-18","status":"Open","done_on":"","note":""},{"hire_id":"B","task_id":"T22","due_date":"2026-11-18","status":"Open","done_on":"","note":""},{"hire_id":"B","task_id":"T23","due_date":"2026-11-19","status":"Open","done_on":"","note":""},{"hire_id":"B","task_id":"T24","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"B","task_id":"T25","due_date":"2026-11-23","status":"Open","done_on":"","note":""},{"hire_id":"B","task_id":"T27","due_date":"2026-12-17","status":"Open","done_on":"","note":""},{"hire_id":"C","task_id":"T01","due_date":"2026-11-09","status":"Done","done_on":"","note":""},{"hire_id":"C","task_id":"T02","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"C","task_id":"T03","due_date":"2026-11-16","status":"Done","done_on":"","note":""},{"hire_id":"C","task_id":"T04","due_date":"2026-11-16","status":"Done","done_on":"","note":""},{"hire_id":"C","task_id":"T05","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"C","task_id":"T06","due_date":"2026-11-18","status":"Open","done_on":"","note":""},{"hire_id":"C","task_id":"T07","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"C","task_id":"T09","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"C","task_id":"T10","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"C","task_id":"T11","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"C","task_id":"T14","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"C","task_id":"T15","due_date":"2026-11-18","status":"Open","done_on":"","note":""},{"hire_id":"C","task_id":"T16","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"C","task_id":"T17","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"C","task_id":"T18","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"C","task_id":"T19","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"C","task_id":"T20","due_date":"2026-11-23","status":"Open","done_on":"","note":""},{"hire_id":"C","task_id":"T21","due_date":"2026-11-24","status":"Open","done_on":"","note":""},{"hire_id":"C","task_id":"T22","due_date":"2026-11-24","status":"Open","done_on":"","note":""},{"hire_id":"C","task_id":"T23","due_date":"2026-11-25","status":"Open","done_on":"","note":""},{"hire_id":"C","task_id":"T25","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"C","task_id":"T26","due_date":"2026-12-03","status":"Open","done_on":"","note":""},{"hire_id":"C","task_id":"T27","due_date":"2026-12-23","status":"Open","done_on":"","note":""},{"hire_id":"D","task_id":"T01","due_date":"2026-11-09","status":"Done","done_on":"","note":""},{"hire_id":"D","task_id":"T02","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"D","task_id":"T03","due_date":"2026-11-16","status":"Done","done_on":"","note":""},{"hire_id":"D","task_id":"T04","due_date":"2026-11-16","status":"Done","done_on":"","note":""},{"hire_id":"D","task_id":"T05","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"D","task_id":"T06","due_date":"2026-11-18","status":"Open","done_on":"","note":""},{"hire_id":"D","task_id":"T07","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"D","task_id":"T08","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"D","task_id":"T09","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"D","task_id":"T10","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"D","task_id":"T11","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"D","task_id":"T14","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"D","task_id":"T15","due_date":"2026-11-18","status":"Open","done_on":"","note":""},{"hire_id":"D","task_id":"T16","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"D","task_id":"T17","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"D","task_id":"T18","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"D","task_id":"T19","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"D","task_id":"T20","due_date":"2026-11-23","status":"Open","done_on":"","note":""},{"hire_id":"D","task_id":"T21","due_date":"2026-11-24","status":"Open","done_on":"","note":""},{"hire_id":"D","task_id":"T22","due_date":"2026-11-24","status":"Open","done_on":"","note":""},{"hire_id":"D","task_id":"T23","due_date":"2026-11-25","status":"Open","done_on":"","note":""},{"hire_id":"D","task_id":"T25","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"D","task_id":"T26","due_date":"2026-12-03","status":"Open","done_on":"","note":""},{"hire_id":"D","task_id":"T27","due_date":"2026-12-23","status":"Open","done_on":"","note":""},{"hire_id":"E","task_id":"T01","due_date":"2026-11-09","status":"Done","done_on":"","note":""},{"hire_id":"E","task_id":"T02","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"E","task_id":"T03","due_date":"2026-11-16","status":"Done","done_on":"","note":""},{"hire_id":"E","task_id":"T04","due_date":"2026-11-16","status":"Done","done_on":"","note":""},{"hire_id":"E","task_id":"T05","due_date":"2026-11-13","status":"Done","done_on":"","note":""},{"hire_id":"E","task_id":"T06","due_date":"2026-11-18","status":"Open","done_on":"","note":""},{"hire_id":"E","task_id":"T07","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"E","task_id":"T08","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"E","task_id":"T09","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"E","task_id":"T10","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"E","task_id":"T11","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"E","task_id":"T14","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"E","task_id":"T15","due_date":"2026-11-18","status":"Open","done_on":"","note":""},{"hire_id":"E","task_id":"T16","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"E","task_id":"T17","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"E","task_id":"T18","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"E","task_id":"T19","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"E","task_id":"T20","due_date":"2026-11-23","status":"Open","done_on":"","note":""},{"hire_id":"E","task_id":"T21","due_date":"2026-11-24","status":"Open","done_on":"","note":""},{"hire_id":"E","task_id":"T22","due_date":"2026-11-24","status":"Open","done_on":"","note":""},{"hire_id":"E","task_id":"T23","due_date":"2026-11-25","status":"Open","done_on":"","note":""},{"hire_id":"E","task_id":"T25","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"E","task_id":"T26","due_date":"2026-12-03","status":"Open","done_on":"","note":""},{"hire_id":"E","task_id":"T27","due_date":"2026-12-23","status":"Open","done_on":"","note":""},{"hire_id":"F","task_id":"T01","due_date":"2026-11-16","status":"Done","done_on":"","note":""},{"hire_id":"F","task_id":"T02","due_date":"2026-11-20","status":"Done","done_on":"","note":""},{"hire_id":"F","task_id":"T03","due_date":"2026-11-23","status":"Done","done_on":"","note":""},{"hire_id":"F","task_id":"T04","due_date":"2026-11-23","status":"Done","done_on":"","note":""},{"hire_id":"F","task_id":"T05","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"F","task_id":"T06","due_date":"2026-11-25","status":"Open","done_on":"","note":""},{"hire_id":"F","task_id":"T07","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"F","task_id":"T09","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"F","task_id":"T10","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"F","task_id":"T11","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"F","task_id":"T12","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"F","task_id":"T13","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"F","task_id":"T15","due_date":"2026-11-25","status":"Open","done_on":"","note":""},{"hire_id":"F","task_id":"T16","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"F","task_id":"T17","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"F","task_id":"T18","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"F","task_id":"T19","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"F","task_id":"T20","due_date":"2026-11-30","status":"Open","done_on":"","note":""},{"hire_id":"F","task_id":"T21","due_date":"2026-12-01","status":"Open","done_on":"","note":""},{"hire_id":"F","task_id":"T22","due_date":"2026-12-01","status":"Open","done_on":"","note":""},{"hire_id":"F","task_id":"T23","due_date":"2026-12-02","status":"Open","done_on":"","note":""},{"hire_id":"F","task_id":"T24","due_date":"2026-12-03","status":"Open","done_on":"","note":""},{"hire_id":"F","task_id":"T25","due_date":"2026-12-04","status":"Open","done_on":"","note":""},{"hire_id":"F","task_id":"T27","due_date":"2026-12-30","status":"Open","done_on":"","note":""},{"hire_id":"G","task_id":"T01","due_date":"2026-11-16","status":"Done","done_on":"","note":""},{"hire_id":"G","task_id":"T02","due_date":"2026-11-20","status":"Done","done_on":"","note":""},{"hire_id":"G","task_id":"T03","due_date":"2026-11-23","status":"Done","done_on":"","note":""},{"hire_id":"G","task_id":"T04","due_date":"2026-11-23","status":"Done","done_on":"","note":""},{"hire_id":"G","task_id":"T05","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"G","task_id":"T06","due_date":"2026-11-25","status":"Open","done_on":"","note":""},{"hire_id":"G","task_id":"T07","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"G","task_id":"T09","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"G","task_id":"T10","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"G","task_id":"T11","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"G","task_id":"T12","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"G","task_id":"T13","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"G","task_id":"T15","due_date":"2026-11-25","status":"Open","done_on":"","note":""},{"hire_id":"G","task_id":"T16","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"G","task_id":"T17","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"G","task_id":"T18","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"G","task_id":"T19","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"G","task_id":"T20","due_date":"2026-11-30","status":"Open","done_on":"","note":""},{"hire_id":"G","task_id":"T21","due_date":"2026-12-01","status":"Open","done_on":"","note":""},{"hire_id":"G","task_id":"T22","due_date":"2026-12-01","status":"Open","done_on":"","note":""},{"hire_id":"G","task_id":"T23","due_date":"2026-12-02","status":"Open","done_on":"","note":""},{"hire_id":"G","task_id":"T24","due_date":"2026-12-03","status":"Open","done_on":"","note":""},{"hire_id":"G","task_id":"T25","due_date":"2026-12-04","status":"Open","done_on":"","note":""},{"hire_id":"G","task_id":"T27","due_date":"2026-12-30","status":"Open","done_on":"","note":""},{"hire_id":"H","task_id":"T01","due_date":"2026-11-16","status":"Done","done_on":"","note":""},{"hire_id":"H","task_id":"T02","due_date":"2026-11-20","status":"Done","done_on":"","note":""},{"hire_id":"H","task_id":"T03","due_date":"2026-11-23","status":"Done","done_on":"","note":""},{"hire_id":"H","task_id":"T04","due_date":"2026-11-23","status":"Done","done_on":"","note":""},{"hire_id":"H","task_id":"T05","due_date":"2026-11-20","status":"Open","done_on":"","note":""},{"hire_id":"H","task_id":"T06","due_date":"2026-11-25","status":"Open","done_on":"","note":""},{"hire_id":"H","task_id":"T07","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"H","task_id":"T08","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"H","task_id":"T09","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"H","task_id":"T10","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"H","task_id":"T11","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"H","task_id":"T14","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"H","task_id":"T15","due_date":"2026-11-25","status":"Open","done_on":"","note":""},{"hire_id":"H","task_id":"T16","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"H","task_id":"T17","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"H","task_id":"T18","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"H","task_id":"T19","due_date":"2026-11-27","status":"Open","done_on":"","note":""},{"hire_id":"H","task_id":"T20","due_date":"2026-11-30","status":"Open","done_on":"","note":""},{"hire_id":"H","task_id":"T21","due_date":"2026-12-01","status":"Open","done_on":"","note":""},{"hire_id":"H","task_id":"T22","due_date":"2026-12-01","status":"Open","done_on":"","note":""},{"hire_id":"H","task_id":"T23","due_date":"2026-12-02","status":"Open","done_on":"","note":""},{"hire_id":"H","task_id":"T25","due_date":"2026-12-04","status":"Open","done_on":"","note":""},{"hire_id":"H","task_id":"T26","due_date":"2026-12-10","status":"Open","done_on":"","note":""},{"hire_id":"H","task_id":"T27","due_date":"2026-12-30","status":"Open","done_on":"","note":""}],"Owners":[{"owner":"Ops","name":"Basav (Operations Lead)","email":"","slack_id":""},{"owner":"Eng admin","name":"Eng admin","email":"","slack_id":""},{"owner":"Deploy lead","name":"Deployment lead","email":"","slack_id":""},{"owner":"Product","name":"Head of Product","email":"","slack_id":""},{"owner":"CEO","name":"CEO","email":"","slack_id":""},{"owner":"CTO","name":"CTO","email":"","slack_id":""},{"owner":"COO","name":"COO","email":"","slack_id":""},{"owner":"Priya","name":"Priya","email":"","slack_id":""},{"owner":"Marco","name":"Marco","email":"","slack_id":""},{"owner":"Dana","name":"Dana","email":"","slack_id":""},{"owner":"Luis","name":"Luis","email":"","slack_id":""},{"owner":"Ana","name":"Ana","email":"","slack_id":""},{"owner":"Sam","name":"Sam","email":"","slack_id":""}],"Access":[{"system":"Google + Slack","engineering":"Full","product":"Full","deployment":"Full","operations":"Full","granted_by":"Ops"},{"system":"Linear","engineering":"Full","product":"Full","deployment":"Full","operations":"Full","granted_by":"Eng admin"},{"system":"GitHub","engineering":"Full","product":"Read","deployment":"","operations":"","granted_by":"Eng admin"},{"system":"Cloud / staging","engineering":"Full","product":"","deployment":"","operations":"","granted_by":"Eng admin"},{"system":"Product + customer system","engineering":"Read","product":"Full","deployment":"Full","operations":"Full","granted_by":"Deploy lead"},{"system":"CRM","engineering":"","product":"Read","deployment":"Full","operations":"Full","granted_by":"COO"},{"system":"Ramp card","engineering":"","product":"","deployment":"Full","operations":"Full","granted_by":"Ops"}],"Week1":[{"day":1,"time":"9:30","minutes":30,"title":"Welcome + laptop check","with":"Ops"},{"day":1,"time":"10:30","minutes":60,"title":"Accounts + security training","with":"Ops"},{"day":1,"time":"12:30","minutes":60,"title":"Team welcome lunch","with":"Team"},{"day":2,"time":"10:00","minutes":60,"title":"Product demo + customer story","with":"Product"},{"day":3,"time":"16:00","minutes":30,"title":"CEO 1:1: company story","with":"CEO"},{"day":5,"time":"16:00","minutes":15,"title":"Day-5 pulse (3 questions)","with":"Ops"}]};
+const SPEC={Hires:["hire_id","name","role","team","manager","buddy","start_date"],Checklist:["task_id","phase","days_from_start","task","owner","applies_to"]};
+const TEAM={Engineering:"Eng",Product:"Product",Deployment:"Deploy",Operations:"Ops",Eng:"Eng",Deploy:"Deploy",Ops:"Ops"};
+const ROLE={Eng:{c:"var(--eng)",n:"Engineering"},Product:{c:"var(--prod)",n:"Product"},Deploy:{c:"var(--dep)",n:"Deployment"},Ops:{c:"var(--ops)",n:"Operations"}};
+const SNAP={before:new Date(2026,10,16,9,0),after:new Date(2026,10,16,17,30)};
+let HIRES=[], T=[], TASKS={}, MX=[], AS_OF=null, snap="after", selH=null, local={}, flashH=null;
+const NEW=new Set(); // hires added on this page (Add a hire): nothing done until ticked
+
+/** Sheet rows -> what the page draws. Builds everything first, so a bad file changes nothing. */
+function build(tabs){
+ need(tabs,SPEC);
+ const hires=tabs.Hires.filter(r=>r.hire_id!==""&&isoDate(r.start_date)).map(r=>({id:String(r.hire_id),nm:String(r.name),sh:String(r.short_name||r.name),role:String(r.role||""),
+   g:TEAM[String(r.team).trim()]||"Ops",mgr:String(r.manager||""),buddy:String(r.buddy||""),start:isoDate(r.start_date)})).sort((a,b)=>a.start<b.start?-1:a.start>b.start?1:0);
+ if(!hires.length)throw new Error("No hires with a start date. Add a row to the Hires tab.");
+ const t=tabs.Checklist.filter(r=>r.task_id!==""&&r.task).map(r=>({id:String(r.task_id),ph:String(r.phase||"Other"),off:Number(r.days_from_start)||0,tx:String(r.task),ow:String(r.owner||""),
+   app:String(r.applies_to||"All").split(",").map(x=>TEAM[x.trim()]||x.trim())}));
+ const tasks={};(tabs.Tasks||[]).forEach(r=>{if(r.hire_id!==""&&r.task_id!=="")tasks[r.hire_id+"|"+r.task_id]={status:String(r.status||"Open"),done_at:r.done_on?(isoDate(r.done_on)?md(D(isoDate(r.done_on))):String(r.done_on)):""}});
+ const mx=(tabs.Access||[]).filter(r=>r.system).map(r=>[String(r.system),...["engineering","product","deployment","operations"].map(k=>/^full/i.test(r[k])?"f":/^read/i.test(r[k])?"r":""),String(r.granted_by||"")]);
+ const set={};(tabs.Settings||[]).forEach(r=>{if(r.key)set[r.key]=r.value});
+ return {hires,t,tasks,mx,asOf:set.as_of?parseDT(set.as_of):null};
+}
+const APP={
+ tplName:"Onboarding_Template.xlsx", tplB64:"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",
+ apply(tabs){const m=build(tabs);NEW.clear();HIRES=m.hires;T=m.t;TASKS=m.tasks;MX=m.mx;AS_OF=m.asOf;
+  local={};if(dataMode==="sample"){try{local=JSON.parse(localStorage.getItem("app-onb-v4")||"{}")}catch(e){local={}}}
+  if(!HIRES.some(h=>h.id===selH))selH=HIRES[0].id;render()},
+ how:()=>howHTML()
+};
+const save=()=>{if(dataMode!=="sample")return;try{localStorage.setItem("app-onb-v4",JSON.stringify(local))}catch(e){}};
+
+// ---------- Dates ----------
+const D=s=>{const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d,9,0)};
+const add=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const md=d=>d.toLocaleDateString("en-US",{month:"short",day:"numeric"});
+const wd=d=>d.toLocaleDateString("en-US",{weekday:"short"});
+const tm=d=>d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"});
+const now=()=>dataMode==="sample"?SNAP[snap]:(AS_OF||new Date());
+/** Overdue = due on an earlier day than today, the same rule as the script. A task due today is "due today", not late. */
+const sod=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime();
+const late=(due,N)=>sod(due)<sod(N), dueToday=(due,N)=>sod(due)===sod(N);
+/** Same rule as the script: today's start date + offset, never on a weekend (so a moved start date moves every task). */
+function dueOf(h,t){const d=add(D(h.start),t.off);while(d.getDay()===0||d.getDay()===6)d.setDate(d.getDate()+(t.off<0?-1:1));return d}
+
+// ---------- Status ----------
+function tasksFor(h){return T.filter(t=>t.app.includes("All")||t.app.includes(h.g))}
+function isDone(h,t){const k=h.id+"|"+t.id;
+ if(NEW.has(h.id))return !!local[(dataMode==="sample"?snap+":":"")+k];
+ if(dataMode==="sample"){const lk=snap+":"+k;if(lk in local)return local[lk];
+  if(snap==="before")return (h.id==="A"||h.id==="B")?(t.ph==="Paperwork"||t.tx==="Laptop ordered"||t.tx==="Welcome kit shipped"):(t.ph==="Paperwork"&&t.off<=-10)}
+ else if(k in local)return local[k];
+ return !!TASKS[k]&&TASKS[k].status==="Done"}
+function stat(h){
+ const N=now(), ts=tasksFor(h), start=D(h.start);
+ let done=0,over=0,pre=0,preOpen=0,next=null;
+ ts.forEach(t=>{const d=isDone(h,t),due=dueOf(h,t);if(d)done++;
+  if(t.off<0){pre++;if(!d)preOpen++}
+  if(!d&&late(due,N))over++;
+  if(!d&&(!next||due<next.due))next={...t,due}});
+ const days=Math.round((start-N)/864e5);
+ const s=preOpen===0?"ready":(days<=1?"risk":(over>0?"behind":"ok"));
+ return {n:ts.length,done,over,pre,preOpen,next,days,s,pct:ts.length?Math.round(done/ts.length*100):100};
+}
+const SL={ready:"Ready for Day 1",ok:"On track",behind:"Behind",risk:"At risk"};
+const SC={ready:"var(--good)",risk:"var(--bad)",behind:"var(--warn)",ok:"var(--muted)"};
+function ring(p,s){const r=16,c=2*Math.PI*r;
+ return `<svg class="ring" viewBox="0 0 40 40" aria-hidden="true"><circle class="bgc" cx="20" cy="20" r="${r}"/><circle cx="20" cy="20" r="${r}" stroke="${SC[s]}" stroke-dasharray="${c*p/100} ${c}" transform="rotate(-90 20 20)" stroke-linecap="round"/><text x="20" y="20">${p}</text></svg>`}
+
+// ---------- Draw ----------
+function render(){
+ const N=now(), sample=dataMode==="sample";
+ document.getElementById("seg").hidden=!sample;
+ const a2=document.getElementById("asof2");a2.hidden=sample;a2.textContent="As of "+wd(N)+" "+md(N)+", "+tm(N);
+ document.getElementById("S-before").setAttribute("aria-pressed",snap==="before");
+ document.getElementById("S-after").setAttribute("aria-pressed",snap==="after");
+ document.getElementById("asof").textContent="as of "+wd(N)+" "+md(N)+", "+tm(N);
+ document.getElementById("footnote").textContent=dataMode==="live"?"Ticking a task writes Done to the Sheet with the date, so everyone sees it live.":dataMode==="file"?"Running on your file. Ticks stay in this browser tab.":"Names are placeholders. In this demo your ticks save in this browser. Plugged in, a tick writes Done to the Google Sheet, so the whole team sees it live.";
+ const S=HIRES.map(h=>({h,st:stat(h)}));
+ const tot=S.reduce((a,x)=>a+x.st.n,0), dn=S.reduce((a,x)=>a+x.st.done,0), ov=S.reduce((a,x)=>a+x.st.over,0);
+ const wk=S.filter(x=>x.st.days>=0&&x.st.days<=1), wkReady=wk.filter(x=>x.st.s==="ready").length, good=S.filter(x=>x.st.s==="ready"||x.st.s==="ok").length;
+ // strip: weekdays from this Monday until the last start date (3 to 6 weeks)
+ const mon=add(new Date(N.getFullYear(),N.getMonth(),N.getDate(),9),-((N.getDay()+6)%7));
+ const last=HIRES.reduce((m,h)=>D(h.start)>m?D(h.start):m,mon), weeks=Math.min(6,Math.max(3,Math.floor((last-mon)/(7*864e5))+1));
+ document.getElementById("h1").textContent=`Onboarding: ${HIRES.length} hires in ${weeks} weeks, each ready on Day 1`;
+ document.getElementById("kpis").innerHTML=[
+  ["Starting tomorrow: ready for Day 1",wk.length?`${wkReady}/${wk.length}`:"–",!wk.length||wkReady===wk.length?"good":"bad",wk.length?"Target: 100%, every hire":"Nobody starts tomorrow"],
+  ["Overdue tasks",ov,ov?"bad":"good",ov?"Things that should already be done":"Nothing late"],
+  ["Tasks done",`${dn}/${tot}`,"",`Across all ${HIRES.length} hires`],
+  ["Hires on track or ready",`${good}/${HIRES.length}`,good===HIRES.length?"good":"warn","Nobody behind on their prep"]
+ ].map(k=>`<div class="card kpi"><span class="l">${k[0]}</span><span class="v ${k[2]}">${k[1]}</span><span class="s">${k[3]}</span></div>`).join("");
+ const strip=document.getElementById("strip");strip.style.gridTemplateColumns=`repeat(${weeks*5},minmax(54px,1fr))`;strip.style.minWidth=weeks*5*58+"px";
+ let h="";for(let w=0;w<weeks;w++)h+=`<div class="wk">Week of ${md(add(mon,w*7))}</div>`;
+ const today=isoDate(N);
+ for(let w=0;w<weeks;w++)for(let i=0;i<5;i++){const d=add(mon,w*7+i),ds=isoDate(d),who=S.filter(x=>x.h.start===ds),isT=ds===today;
+  h+=`<div class="day${isT?" today":""}"><div class="dn"><span>${wd(d)} ${d.getDate()}</span>${isT?"<span>today</span>":""}</div>${who.map(x=>`<button class="av" data-h="${esc(x.h.id)}"><i style="background:${ROLE[x.h.g].c}">${esc(x.h.id.slice(0,2))}</i><span>${esc(x.h.sh)}<span class="st" style="color:${SC[x.st.s]}">${SL[x.st.s]}</span></span></button>`).join("")}</div>`}
+ strip.innerHTML=h;
+ document.getElementById("hires").innerHTML=S.map(({h,st})=>`<button class="hr${h.id===selH?" sel":""}" data-h="${esc(h.id)}">${ring(st.pct,st.s)}
+  <span><span class="nm"><span class="role" style="background:${ROLE[h.g].c}"></span>${esc(h.nm)}</span><br><span class="rl">${esc(h.role)} · mgr ${esc(h.mgr)}</span></span>
+  <span class="sd">${wd(D(h.start))} ${md(D(h.start))}</span><span><span class="pill ${st.s}">${SL[st.s]}</span></span>
+  <span class="nx">${st.next?"Next: "+esc(st.next.tx):"All done"}</span></button>`).join("");
+ document.querySelectorAll("[data-h]").forEach(b=>b.onclick=()=>{selH=b.dataset.h;render()});
+ document.getElementById("addBtn").hidden=dataMode==="live";
+ if(flashH){const r=document.querySelector(`.hr[data-h="${CSS.escape(flashH)}"]`);if(r)r.classList.add("new");flashH=null}
+ // checklist panel
+ const H=HIRES.find(x=>x.id===selH), st=stat(H), start=D(H.start);
+ let p=`<div class="pnlhead">${ring(st.pct,st.s)}<div><h2 style="font-family:var(--font-d);font-size:20px">${esc(H.nm)}</h2><div class="meta">${esc(H.role)} · starts ${wd(start)} ${md(start)} · buddy ${esc(H.buddy)} · <span class="pill ${st.s}">${SL[st.s]}</span></div></div></div>`;
+ [...new Set(T.map(t=>t.ph))].forEach(g=>{const ts=tasksFor(H).filter(t=>t.ph===g);if(!ts.length)return;
+  const dn=ts.filter(t=>isDone(H,t)).length;
+  p+=`<div class="ph"><h3><span>${esc(g)}</span><span>${dn}/${ts.length}</span></h3>`+ts.map(t=>{const done=isDone(H,t),due=dueOf(H,t),over=!done&&late(due,N),tdy=!done&&!over&&dueToday(due,N),at=done?tickedAt(H,t):"";
+   return `<label class="tk${done?" done":""}${over?" over":""}${tdy?" today":""}"><input type="checkbox" data-t="${esc(t.id)}" ${done?"checked":""}><span class="tx">${esc(t.tx)}</span><span class="ow">${esc(t.ow)}</span><span class="du">${t.off<0?"T"+t.off:t.off===0?"Day 1":"+"+t.off+"d"} · ${tdy?"today":md(due)}${at?`<span class="at">done ${esc(at)}</span>`:""}</span></label>`}).join("")+`</div>`});
+ const pn=document.getElementById("panel");pn.innerHTML=p;
+ pn.querySelectorAll("input[data-t]").forEach(c=>c.onchange=()=>tick(selH,c.dataset.t,c.checked));
+ // owners
+ const own={};S.forEach(({h})=>tasksFor(h).forEach(t=>{const due=dueOf(h,t);if(!isDone(h,t)&&due<=add(N,7)){own[t.ow]=own[t.ow]||{n:0,o:0};own[t.ow].n++;if(late(due,N))own[t.ow].o++}}));
+ const ow=Object.entries(own).sort((a,b)=>b[1].n-a[1].n), mx=Math.max(1,...ow.map(x=>x[1].n));
+ document.getElementById("owners").innerHTML=ow.length?ow.map(([k,v])=>`<div class="ob"><span>${esc(k)}</span><i><em style="width:${v.n/mx*100}%"></em>${v.o?`<em class="r" style="width:${v.o/mx*100}%"></em>`:""}</i><b>${v.n}</b></div>`).join("")+`<div class="legend"><span style="color:var(--bad)">Red = overdue</span><span>Dark = due in the next 7 days</span></div>`:`<p class="meta">Nothing due this week.</p>`;
+ document.getElementById("mx").innerHTML=`<tr><th>System</th><th>Eng</th><th>Prod</th><th>Deploy</th><th>Ops</th><th>Grants</th></tr>`+MX.map(r=>`<tr><td>${esc(r[0])}</td>${r.slice(1,5).map(v=>`<td>${v==="f"?'<span class="dot"></span>':v==="r"?'<span class="dot rd"></span>':""}</td>`).join("")}<td class="gr">${esc(r[5])}</td></tr>`).join("");
+}
+/** A tick: sample = this browser; file = this tab; live = written to the Sheet (undone if the write fails). */
+function tickedAt(h,t){const k=h.id+"|"+t.id,v=local["@"+(dataMode==="sample"?snap+":":"")+k];if(v)return v;const r=TASKS[k];return r&&r.done_at?r.done_at:""}
+function stamp(){const d=new Date();return wd(d)+" "+md(d)+", "+tm(d)}
+function tick(hid,tid,val){const k=hid+"|"+tid;
+ if(val)local["@"+(dataMode==="sample"?snap+":":"")+k]=stamp();else delete local["@"+(dataMode==="sample"?snap+":":"")+k];
+ if(dataMode==="sample"){local[snap+":"+k]=val;save();render();return}
+ local[k]=val;render();
+ if(dataMode!=="live")return;
+ google.script.run
+  .withSuccessHandler(()=>{TASKS[k]=Object.assign(TASKS[k]||{},{status:val?"Done":"Open"});delete local[k];render()})
+  .withFailureHandler(e=>{delete local[k];render();toast("Couldn't save to the Sheet: "+(e&&e.message||e))})
+  .setTaskStatus(hid,tid,val)}
+document.getElementById("flow").innerHTML=[
+ ["T-14","Offer signed","I add one row. Start date sets every due date."],
+ ["T-10","Paperwork + laptop","Rippling packet, laptop ordered, kit shipped."],
+ ["T-3","Access in one step","Add to the role's Google group; eng admin does GitHub + Linear."],
+ ["T-2","Schedule locked","Day 1-5 invites, buddy, first task, welcome lunch."],
+ ["D1","Logins work by 10:30","I test every login before they arrive."],
+ ["D5","Pulse + check-in","3 questions; fixes go into the template."]
+].map(s=>`<div class="fs"><span class="n">${s[0]}</span><div><b>${s[1]}</b><span>${s[2]}</span></div></div>`).join("");
+document.getElementById("S-before").onclick=()=>{snap="before";render()};
+document.getElementById("S-after").onclick=()=>{snap="after";render()};
+
+// ---------- Pop-up (Add a hire, Slack preview) ----------
+let mLast=null;
+function openM(html,focusSel){mLast=document.activeElement;document.getElementById("mbody").innerHTML=html;document.getElementById("mov").hidden=false;
+ const f=document.querySelector(focusSel||"#mclose");if(f)f.focus()}
+function closeM(){const o=document.getElementById("mov");if(o.hidden)return;o.hidden=true;if(mLast&&mLast.focus)mLast.focus()}
+document.getElementById("mclose").onclick=closeM;
+document.getElementById("mov").addEventListener("click",e=>{if(e.target.id==="mov")closeM()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeM()});
+
+// ---------- Add a hire: one row in, a full checklist out ----------
+const TEAMS={Eng:["Engineer","Software Engineer","CTO"],Product:["PM","Product Manager","CEO"],Deploy:["Deployment","Deployment Lead","COO"],Ops:["Ops","Operations Associate","COO"]};
+const iso=d=>d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate());
+function nextId(){for(let i=0;i<26;i++){const c=String.fromCharCode(65+i);if(!HIRES.some(h=>h.id===c))return c}return "N"+(HIRES.length+1)}
+function stripEnd(){const N=now();return add(new Date(N.getFullYear(),N.getMonth(),N.getDate(),9),-((N.getDay()+6)%7)+39)}
+function hirePreview(f){
+ const g=f.g.value,start=f.start.value,box=document.getElementById("hprev");
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(start)){box.className="hprev";box.textContent="Pick a start date.";return}
+ const h={id:"?",g,start},ts=tasksFor(h),N=now(),dues=ts.map(t=>dueOf(h,t)),late=dues.filter(d=>sod(d)<sod(N)).length,owners=new Set(ts.map(t=>t.ow)).size;
+ const first=dues.reduce((a,b)=>a<b?a:b),wkend=[0,6].includes(D(start).getDay());
+ box.className="hprev"+(late||wkend?" warn":"");
+ box.innerHTML=wkend?"That's a weekend. Pick a weekday start.":`<span>Builds <b>${ts.length} tasks</b> for <b>${owners} owners</b></span><span>First due <b>${wd(first)} ${md(first)}</b></span><span>Day 1 <b>${wd(D(start))} ${md(D(start))}</b></span>`+(late?`<span>Heads up: <b>${late}</b> would already be overdue</span>`:"")}
+function openAdd(){
+ const N=now(),last=HIRES.reduce((m,h)=>h.start>m?h.start:m,iso(N));let d=add(D(last),7);while(d.getDay()!==1)d=add(d,1);if(d>stripEnd())d=add(stripEnd(),-4);
+ const id=nextId();
+ openM(`<h2 id="mtitle">Add a hire</h2><p class="now">In the real Sheet this is <b>one row in Hires</b>. The checklist, owners and every due date come from the start date.</p>
+ <form class="hform" id="hform" novalidate>
+  <label>Team<select name="g">${Object.keys(TEAMS).map(k=>`<option value="${k}">${ROLE[k].n}</option>`).join("")}</select></label>
+  <label>Name<input name="nm" required value="${esc(TEAMS.Eng[0]+" "+id)}" autocomplete="off"></label>
+  <label>Role<input name="role" value="${esc(TEAMS.Eng[1])}" autocomplete="off"></label>
+  <label>Start date<input name="start" type="date" required min="${iso(add(N,1))}" max="${iso(stripEnd())}" value="${iso(d)}"></label>
+  <label>Manager<input name="mgr" value="${esc(TEAMS.Eng[2])}" autocomplete="off"></label>
+  <label>Buddy<input name="buddy" placeholder="Who shows them around" autocomplete="off"></label>
+  <div class="hprev full" id="hprev" aria-live="polite"></div>
+  <div class="full" style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="kbtn ghost" id="hcancel">Cancel</button><button type="submit" class="kbtn">Add hire and build checklist</button></div>
+ </form>`,'#hform [name=nm]');
+ const f=document.getElementById("hform");let touched={};
+ ["nm","role","mgr"].forEach(k=>f[k].oninput=()=>{touched[k]=1});
+ f.g.onchange=()=>{const T0=TEAMS[f.g.value];if(!touched.nm)f.nm.value=T0[0]+" "+id;if(!touched.role)f.role.value=T0[1];if(!touched.mgr)f.mgr.value=T0[2];hirePreview(f)};
+ f.start.oninput=()=>hirePreview(f);hirePreview(f);
+ document.getElementById("hcancel").onclick=closeM;
+ f.onsubmit=ev=>{ev.preventDefault();
+  const nm=f.nm.value.trim(),start=f.start.value;
+  if(!nm){f.nm.focus();return}
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(start)||[0,6].includes(D(start).getDay())||D(start)>add(stripEnd(),1)||start<=iso(N)){f.start.focus();hirePreview(f);toast("Pick a weekday start date within the next 6 weeks.");return}
+  const h={id,nm,sh:nm.replace("Engineer","Eng").replace("Deployment","Deploy"),role:f.role.value.trim()||TEAMS[f.g.value][1],g:f.g.value,mgr:f.mgr.value.trim()||"Manager",buddy:f.buddy.value.trim()||"TBD",start};
+  NEW.add(id);HIRES.push(h);HIRES.sort((a,b)=>a.start<b.start?-1:a.start>b.start?1:0);selH=id;flashH=id;closeM();render();
+  const n=tasksFor(h).length;toast(`Added ${nm}: ${n} tasks built, each with an owner and a due date.`);
+  document.getElementById("panel").scrollIntoView({block:"nearest",behavior:"smooth"})}}
+document.getElementById("addBtn").onclick=openAdd;
+
+// ---------- Slack preview: the same rules as sendSlackDigest() in Code.gs ----------
+function slackPreview(){
+ const N=now();let run=new Date(N.getFullYear(),N.getMonth(),N.getDate(),8,0);if(N.getHours()>=12)run=add(run,1);while(run.getDay()===0||run.getDay()===6)run=add(run,1);
+ const day=x=>new Date(x.getFullYear(),x.getMonth(),x.getDate()).getTime(),today=day(run),tmr=day(add(run,1));
+ const who=(ow,h)=>ow==="Manager"?h.mgr:ow==="Buddy"?h.buddy:ow;
+ const groups={};HIRES.forEach(h=>tasksFor(h).forEach(t=>{if(isDone(h,t))return;const due=dueOf(h,t);if(day(due)>tmr)return;
+  const k=who(t.ow,h);(groups[k]=groups[k]||[]).push({late:day(due)<today,tx:t.tx,nm:h.nm,due})}));
+ const keys=Object.keys(groups).sort();let body=`<p><b>Onboarding, ${wd(run)} ${md(run)}</b></p>`;
+ if(!keys.length)body+=`<p class="grp">Nothing overdue or due by tomorrow. ✅</p>`;
+ keys.forEach(k=>{const g=groups[k].sort((a,b)=>a.due-b.due),show=g.slice(0,5);
+  body+=`<div class="grp"><p><span class="men">@${esc(k)}</span></p>`+show.map(x=>`<p>• ${x.late?"🔴 overdue · ":""}${esc(x.tx)} for ${esc(x.nm)} (${wd(x.due)} ${md(x.due)})</p>`).join("")+(g.length>5?`<p class="more">…and ${g.length-5} more</p>`:"")+`</div>`});
+ HIRES.forEach(h=>{const dd=Math.round((day(D(h.start))-today)/864e5);if(dd<0||dd>2)return;const open=tasksFor(h).filter(t=>t.off<0&&!isDone(h,t)).length;
+  body+=`<p class="grp">${esc(h.nm)} starts ${wd(D(h.start))}: ${open?`⚠️ ${open} prep tasks open`:"ready for Day 1 ✅"}</p>`});
+ openM(`<h2 id="mtitle">The 8 AM nudge in Slack</h2><p class="now">What <b>#onboarding</b> gets on ${wd(run)} ${md(run)}, from what you see on the dashboard now. Same rules as the script: overdue or due by tomorrow, grouped by owner.</p>
+ <div class="slack"><div class="sh"><span># onboarding</span><span>${wd(run)} ${md(run)}, 8:00 AM</span></div><div class="sm"><div class="av" aria-hidden="true">OB</div><div><div class="who"><b>Onboarding bot</b><span class="app">APP</span><span class="t">8:00 AM</span></div><div class="body">${body}</div></div></div></div>
+ <p class="now">Plugged in, the script posts this to Slack at 8 AM on weekdays. Nobody has to chase anyone.</p>`)}
+document.getElementById("slackBtn").onclick=slackPreview;
+
+// ---------- How it works ----------
+function howHTML(){
+ const lines=document.getElementById("code-gs").textContent.trim().split("\n").length;
+ const flow=hwFlow({aria:"A new hire row flows through the Google Sheet and Apps Script to Slack, Gmail, Calendar and this dashboard",
+  labels:["WHERE IT STARTS","GOOGLE SHEET + APPS SCRIPT","WHAT HAPPENS"],
+  srcs:[["Offer signed","One row in Hires: date, team, buddy","#0F7A55"],["Checklist template","27 tasks, owners, due vs start","#4A4740"],["Owners","Name + Slack ID for @mentions","#8A6A1F"],["Access by team","Which systems each team gets","#557A6E"],["Ticks","Owners mark Done: Sheet or here","#B42318"]],
+  hub:"Google Sheet + Apps Script",
+  steps:[["Add a hire","One row. The only manual step."],["Build the checklist","Every task, due date from the start date, never a weekend"],["Nudge owners","8 AM Slack digest: overdue and due by tomorrow"],["Welcome","3 days out: welcome email waits in Gmail drafts"],["Book week one","Week 1 meetings go on the calendar"],["Track","A tick stamps Done with the date"]],
+  outs:["#onboarding digest in Slack","Welcome emails in Gmail drafts","Week 1 on Google Calendar","This dashboard, private to the company","Day-1 ready % for the CEO"]});
+ return `<div class="hw">
+ <div><p class="eyebrow">How it works</p><h3>One row per hire. The script does the rest.</h3>
+ <p class="lede">I add a hire to one Google Sheet. A short script builds their checklist, nudges owners in Slack at 8 AM, drafts the welcome email and books week one. This page reads the same Sheet.</p></div>
+ <div class="facts"><span class="fact">Database <b>1 Google Sheet</b></span><span class="fact">Connects <b>Slack · Gmail · Calendar</b></span><span class="fact">Manual work <b>1 row per hire</b></span><span class="fact">Setup <b>15 min, $0</b></span><span class="fact">Tested <b>28 checks</b></span></div>
+ <div class="flowbox">${flow}</div>
+ <div id="plug"><p class="eyebrow">Plug it in, in 5 steps (about 15 minutes)</p><div class="steps">
+  <div class="step"><b>Make the Sheet</b><p>Upload the template to Google Drive, then File › Save as Google Sheets.</p></div>
+  <div class="step"><b>Add the code</b><p>Extensions › Apps Script. Paste <code>Code.gs</code> (below). Add an HTML file named <code>Dashboard</code> with this page.</p></div>
+  <div class="step"><b>Connect Slack</b><p>Make an incoming webhook for #onboarding. Paste it in Project Settings › Script properties as <code>SLACK_WEBHOOK_URL</code>.</p></div>
+  <div class="step"><b>Turn it on</b><p>Reload the Sheet. Onboarding › Turn on daily automation. Approve Google's permission prompt once.</p></div>
+  <div class="step"><b>Share the dashboard</b><p>Deploy › Web app. Execute as me, access: anyone at the company. That link is this page, live and private.</p></div>
+ </div></div>
+ <div class="try"><p><b>Try it first.</b> Use <b>+ Add a hire</b> on the dashboard, or download the template, change a start date and load it here. Nothing leaves your browser.</p>
+  <div class="row2"><button class="hbtn" data-dl-template>Download template (.xlsx)</button><button class="hbtn dark" data-upload>Load my file</button></div></div>
+ <details class="more"><summary><span>More detail: the logic, the tabs and the safety rails</span></summary><div class="more-in">
+ <div><p class="eyebrow">The logic, in order</p><div class="steps">
+  <div class="step"><b>One row per hire</b><p>When an offer is signed I add name, team, manager, buddy, start date and email to <code>Hires</code>. Nothing else is typed by hand.</p></div>
+  <div class="step"><b>Checklist from a template</b><p><code>Checklist</code> holds every task once: owner, which teams, and days from start (T-10 = 10 days before). The script copies it for each hire into <code>Tasks</code>.</p></div>
+  <div class="step"><b>Due dates</b><p>Start date + offset. A weekend date moves back to Friday for prep, forward to Monday for follow-ups. If a start date moves, every due date moves with it.</p></div>
+  <div class="step"><b>Status</b><p>Ready for Day 1 = every pre-start task done. At risk = starts within a day with prep open. Behind = something overdue. Otherwise on track.</p></div>
+  <div class="step"><b>Nudge, don't chase</b><p>8 AM: one Slack post, grouped by owner with @mentions, plus who starts in the next 2 days and whether they are ready.</p></div>
+  <div class="step"><b>A person stays in the loop</b><p>Welcome emails are drafts I read and send. Calendar events go on without emailing anyone until <code>send_invites</code> is Yes.</p></div>
+ </div></div>
+ <div class="two">
+  <div><p class="eyebrow">What each tab holds</p><table><tr><th>Tab</th><th>One row is</th><th>Filled by</th></tr>
+   <tr><td><b>Hires</b></td><td>a new hire and their start date</td><td>Me, when the offer is signed</td></tr>
+   <tr><td><b>Checklist</b></td><td>a task, its owner, its timing</td><td>Me, once; better after each Day-5 pulse</td></tr>
+   <tr><td><b>Tasks</b></td><td>one task for one hire, Open or Done</td><td>The script; owners tick Done</td></tr>
+   <tr><td><b>Owners</b></td><td>an owner and their Slack ID</td><td>Me, once</td></tr>
+   <tr><td><b>Access</b></td><td>a system and which teams get it</td><td>Me + eng admin, once</td></tr>
+   <tr><td><b>Week1</b></td><td>a meeting every hire gets</td><td>Me, once</td></tr>
+   <tr><td><b>Settings</b></td><td>a switch, like welcome timing</td><td>Me, once</td></tr></table></div>
+  <div><p class="eyebrow">In this demo vs. plugged in</p><table><tr><th></th><th>This demo</th><th>Plugged in</th></tr>
+   <tr><td><b>Data</b></td><td>Sample rows built into the page, or your .xlsx</td><td>The Google Sheet, read live</td></tr>
+   <tr><td><b>Ticking a task</b></td><td>Saved in this browser</td><td>Written to the Sheet with the date; everyone sees it live</td></tr>
+   <tr><td><b>Slack</b></td><td>Not sent</td><td>8 AM digest in #onboarding</td></tr>
+   <tr><td><b>Gmail</b></td><td>Not sent</td><td>Welcome drafts, 3 days out</td></tr>
+   <tr><td><b>Calendar</b></td><td>Not sent</td><td>Week 1 events, a week out</td></tr>
+   <tr><td><b>Who can see it</b></td><td>Sample data only, nothing private</td><td>Only people at the company (Google sign-in)</td></tr></table></div>
+ </div>
+ <div><p class="eyebrow">Safety rails</p><ul class="rails">
+  <li><b>No surprise emails.</b> Welcome emails are drafts; invites stay off until someone switches them on.</li>
+  <li><b>No secrets in the Sheet.</b> The Slack webhook lives in Script properties, which only editors of the script can see.</li>
+  <li><b>Private by default.</b> The dashboard runs inside Google, so only people signed in to the company's Google Workspace can open it.</li>
+  <li><b>Safe to re-run.</b> Every step checks what already exists, so running it twice never doubles tasks, drafts or events.</li>
+  <li><b>A paper trail.</b> Done tasks get a date; drafts and invites leave a note on the task row.</li></ul></div>
+ </div></details>
+ <div><div class="row2" style="justify-content:space-between;margin-bottom:8px"><p class="eyebrow" style="margin:0">The code</p><button class="hbtn dark" data-copy-code>Copy Code.gs</button></div>
+  <details><summary><span>Code.gs</span><span class="sm">${lines} lines · Google Apps Script · tested against mocks of Sheets, Slack, Gmail and Calendar</span></summary><pre><code>${hl(document.getElementById("code-gs").textContent.trim())}</code></pre></details></div>
+ <p class="note">Sample data. The Sheet layout, logic and script are real, tested against mocks of Google and Slack, not a live the company account.</p>
+</div>`}
+
+// ---------- Quick tour ----------
+const TOUR_KEY="app-tour-onb";
+const TOUR=[
+ {el:()=>document.getElementById("seg"),title:"Before and after day one",text:"Switch between what I found at 9 AM Monday and where things stand at 5:30 PM."},
+ {el:()=>document.getElementById("kpis"),title:"The four numbers",text:"Who starts tomorrow and is ready, what is overdue, what is done, and who is on track. Overdue means due on an earlier day; tasks due today show as due today."},
+ {el:()=>document.getElementById("startcard"),title:"Start dates",text:"Every hire on the day they start, colored by status. Tap a person to open their checklist."},
+ {el:()=>document.getElementById("panel"),title:"One checklist per hire",text:"Each task has an owner and a due date from the start date. Tick a task to mark it done."},
+ {el:()=>document.getElementById("addBtn"),title:"Add a hire",text:"One row in, a full checklist out: every task, owner and due date."},
+ {el:()=>document.querySelector(".vtabs"),title:"How it works",text:"The Google Sheet and short script behind this page: Slack nudges at 8 AM, welcome drafts, week one on the calendar."}];
+function startTour(){showTab("dash");closeM();kTour(TOUR,TOUR_KEY)}
+document.getElementById("tourBtn").onclick=startTour;
+
+useData(SAMPLE,"sample","");
+initKit();
+if(!kTourSeen(TOUR_KEY)&&!GAS)setTimeout(()=>{if(!KT&&document.getElementById("mov").hidden&&!document.getElementById("view-dash").hidden)kTour(TOUR,TOUR_KEY)},600);
+</script>
+
+</body></html>
